@@ -23,6 +23,8 @@
 
 - 2026-10-14: Tone confirmed design only (no construction). Removed "we build", "Built to Last", "Based & Built" and the OG image wording; added a "Do you build the project?" FAQ; added the partner pitch "we design and do not build, so we are not competing with you."
 
+- 2026-10-14: Tone confirmed hosting is Netlify. Converted the Resend handler to a Netlify Function (`netlify/functions/lead.js`), added `desert-modernist/netlify.toml`, and documented a separate Netlify site (base directory `desert-modernist`) so the old site stays live.
+
 ## Experiments
 (none yet)
 
@@ -33,4 +35,4 @@
 4. (Answered: design only.) Site now says so in About, Process, FAQ and the partner page.
 5. Partner terms. Recommendation: a per-project design fee, tiered by project size, paid by the contractor or passed to their client in the quote. Since you do not build, there is no build to credit it against.
 6. Send the numbers for the baseline above.
-7. Approve merging `claude/desert-modernist-site` to `main` after you review the preview.
+7. Create the second Netlify site from branch `claude/desert-modernist-site` (steps in `desert-modernist/README.md`), review it on the netlify.app address, then tell me when to move the domain. No merge to `main` needed to test.

@@ -22,7 +22,7 @@ Decide, do, and log. Do not hand Tone a menu of options. Give one recommendation
 
 ## Repo map
 - `Index.html.html`: the OLD live site. Do not edit unless Tone says so.
-- `desert-modernist/`: the new site (home page, `contractors/` partner page, `css/`, `js/`, `assets/`, `icons/`, `api/lead.js` Resend handler, `robots.txt`, `sitemap.xml`, `llms.txt`, `README.md` launch checklist).
+- `desert-modernist/`: the new site (home page, `contractors/` partner page, `css/`, `js/`, `assets/`, `icons/`, `netlify/functions/lead.js` Resend handler, `netlify.toml`, `robots.txt`, `sitemap.xml`, `llms.txt`, `README.md` launch checklist). Hosting is Netlify; the new site is meant to be a separate Netlify site with base directory `desert-modernist`, so the old site stays up.
 - `GROWTH_LOG.md`: baseline numbers, decisions, experiments, open questions.
 - `docs/partner-models-and-gaps.md`: research on how successful firms run contractor partnerships, plus the plain-English guide to the website and marketing terms Tone asked about.
 
