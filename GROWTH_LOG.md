@@ -25,10 +25,14 @@
 
 - 2026-10-14: Tone confirmed hosting is Netlify. Converted the Resend handler to a Netlify Function (`netlify/functions/lead.js`), added `desert-modernist/netlify.toml`, and documented a separate Netlify site (base directory `desert-modernist`) so the old site stays live.
 
+- 2026-10-14: Tone confirmed 100+ completed renders. Replaced the "50+ Designs" stat with "100+ Completed Renders" (home stat, schema, llms.txt, contractor page).
+- 2026-10-14: Pricing decision: homeowners get public "starting at" prices (needs Tone's numbers); contractors stay back end (rate sheet by email). Reasoning in `docs/pricing-decision.md`. Contractor page now says partner pricing is not published.
+
 ## Experiments
 (none yet)
 
 ## Open questions for Tone (batched, with recommendation)
+0. Pricing numbers needed to publish: starting price for 3D Render Only, for a full design (renders plus walk-through video), and for the 360° video add-on. Plus a partner rate sheet to email contractors (not published). See `docs/pricing-decision.md`.
 1. Confirm the service cities. Recommendation: keep only cities you actually work in; add each one only when you have a local project to show.
 2. Confirm the domain is stoneandrosellc.com.
 3. Are you licensed, and what is the ROC number? Recommendation: show it in the footer and Google profile.

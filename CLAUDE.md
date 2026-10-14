@@ -7,14 +7,19 @@ Decide, do, and log. Do not hand Tone a menu of options. Give one recommendation
 ## Business facts (verified by the owner; do not invent more)
 - Arizona landscape design studio for backyards, pools, outdoor kitchens and front yards. Tagline: "Your Outdoor Life, Elevated." (owner's brand tagline; use it only as the tagline, never as a headline or in copy).
 - **Design only. Stone & Rose does not build.** Revenue comes from design fees, not construction. Never write or imply that we build, install, or construct. The homeowner takes the approved design to a contractor of their choice. This makes contractors partners, not competitors.
+- Track record (owner-confirmed 2026-10-14): 100+ completed 3D renders. Always say "completed renders", never "projects built" or "designs built". Update the number only when Tone gives a new count.
 - Edge: every design includes photorealistic 3D renders and a walk-through video. A 360° video is an optional add-on, not included. Never describe the 360° video as included.
 - Services (same list on the contact form): Full Backyard Design, Pool & Water Feature, Outdoor Kitchen & Entertainment, Front Yard Design, Lighting & Planting, 3D Render Only, Other.
 - Phone (480) 650-8957. Email tony@stoneandrosellc.com. Instagram @stoneandrose. Use these exactly everywhere (name, phone, email must match across the site, Google Business Profile, directories).
 - Leads arrive from the site forms. Replies promised within 24 hours.
 - Contractor partnerships are a channel: pool builders, general contractors, custom home builders, hardscape and landscape contractors bring Stone & Rose in to design the outdoor space for their client, then they build it. Our pitch: we design and do not build, so we never compete with them for the construction work.
 
+## Pricing policy (decided 2026-10-14; the numbers themselves are pending from Tone)
+- Homeowners: publish a "starting at" price per design package once Tone sets the numbers. Exact quote after consultation. See `docs/pricing-decision.md`.
+- Contractors: pricing stays on the back end. The site says partner pricing is not published; a rate sheet goes out by email after an inquiry. Never publish partner numbers on the site.
+- Never publish, quote or imply any price without Tone's yes on the number.
+
 ## Unverified items (flag before use; never present as fact)
-- "50+" designs (the old site said "Designs Built"; the new site says "Designs Delivered"). Ask Tone for the real count.
 - Service-area cities on the new site (Scottsdale, Gilbert, Chandler, Mesa, Tempe, Queen Creek, Paradise Valley, Fountain Hills, Phoenix): a default chosen from the 480 area code. Tone must confirm or edit.
 - Domain `stoneandrosellc.com` (assumed from the email address; used in canonical URLs, sitemap, schema).
 - AZ ROC license number, years in business, pricing, project timelines, reviews. None are on the site because none are verified.
