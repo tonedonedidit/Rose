@@ -11,7 +11,7 @@ Read this before writing any copy, captions or proposals for Stone & Rose.
 ## Render package (updated 2026-10-14)
 - **Six photos plus one video.** This replaces the old "6 photoreal views plus an interactive 360."
 - Do not mention the interactive 360 in any new copy.
-- Turnaround: 5 days for renders (from the H2 Reel). [NEED: confirm this still holds with the video.]
+- Turnaround: within 3 days for renders (set by the owner on 2026-10-14, replaces the old 5 days). Say "within 3 days" so it works as a ceiling.
 - HOA plans: 48 hours (C2 Reel headline; one card says 47 hours, use 48).
 
 ## Service area
