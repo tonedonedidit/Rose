@@ -6,14 +6,15 @@ Decide, do, and log. Do not hand Tone a menu of options. Give one recommendation
 
 ## Business facts (verified by the owner; do not invent more)
 - Arizona landscape design studio for backyards, pools, outdoor kitchens and front yards. Tagline: "Your Outdoor Life, Elevated." (owner's brand tagline; use it only as the tagline, never as a headline or in copy).
+- **Design only. Stone & Rose does not build.** Revenue comes from design fees, not construction. Never write or imply that we build, install, or construct. The homeowner takes the approved design to a contractor of their choice. This makes contractors partners, not competitors.
 - Edge: every design includes photorealistic 3D renders and a walk-through video. A 360° video is an optional add-on, not included. Never describe the 360° video as included.
 - Services (same list on the contact form): Full Backyard Design, Pool & Water Feature, Outdoor Kitchen & Entertainment, Front Yard Design, Lighting & Planting, 3D Render Only, Other.
 - Phone (480) 650-8957. Email tony@stoneandrosellc.com. Instagram @stoneandrose. Use these exactly everywhere (name, phone, email must match across the site, Google Business Profile, directories).
 - Leads arrive from the site forms. Replies promised within 24 hours.
-- Contractor partnerships are a channel: pool builders, general contractors, custom home builders, hardscape and landscape contractors bring Stone & Rose in to design the outdoor space for their client.
+- Contractor partnerships are a channel: pool builders, general contractors, custom home builders, hardscape and landscape contractors bring Stone & Rose in to design the outdoor space for their client, then they build it. Our pitch: we design and do not build, so we never compete with them for the construction work.
 
 ## Unverified items (flag before use; never present as fact)
-- "50+ Designs Built" (on the old site).
+- "50+" designs (the old site said "Designs Built"; the new site says "Designs Delivered"). Ask Tone for the real count.
 - Service-area cities on the new site (Scottsdale, Gilbert, Chandler, Mesa, Tempe, Queen Creek, Paradise Valley, Fountain Hills, Phoenix): a default chosen from the 480 area code. Tone must confirm or edit.
 - Domain `stoneandrosellc.com` (assumed from the email address; used in canonical URLs, sitemap, schema).
 - AZ ROC license number, years in business, pricing, project timelines, reviews. None are on the site because none are verified.
@@ -68,7 +69,7 @@ Tone is not expected to know web, SEO or marketing jargon. When a term or decisi
 6. **Contractor channel.** A short list of Arizona pool builders, GCs and custom home builders; outreach drafted with `cold-email`; one pilot project to turn into a case study; terms decided by Tone first.
 7. **Content from renders.** Render-to-walk-through clips, carousels, "what this yard could be" posts. Label renders as renders.
 8. **Paid.** Only after 2 to 5 work. Small capped test, cost-per-lead and cost-per-consultation targets set first, budget approved by Tone.
-9. **Business value.** Maintenance and refresh offers, referral rate, documented processes, a pipeline he can show a lender or buyer.
+9. **Business value.** Design revenue ladder (3D Render Only, full design with renders and walk-through video, optional 360° video and revisions; price tiers set by Tone), repeat designs and referrals, referral rate, documented processes, a pipeline he can show a lender or buyer.
 
 ## Cadence
 - **Each session:** read `GROWTH_LOG.md`, name the top priority and why, do the next highest-leverage task, run `site-qa` if the site changed, update the log, end with what you need from Tone (one batched list, each with your recommendation).

@@ -7,7 +7,7 @@
 - Average job value and margin:
 - Current capacity (projects at once):
 - Service cities (confirm the default list on the new site):
-- Do you build, or design only:
+- Do you build, or design only: DESIGN ONLY (confirmed 2026-10-14). Revenue is design fees.
 - Licensed? ROC number:
 - Real reviews available (count, where):
 - Google Business Profile exists? Search Console connected?
@@ -21,6 +21,8 @@
 - 2026-10-14: Rewrote the hero H1 to name the service and place. Old headline kept only as the brand tagline.
 - 2026-10-14: Dropped duplicate portfolio images and cropped phone screenshots (removed a street address).
 
+- 2026-10-14: Tone confirmed design only (no construction). Removed "we build", "Built to Last", "Based & Built" and the OG image wording; added a "Do you build the project?" FAQ; added the partner pitch "we design and do not build, so we are not competing with you."
+
 ## Experiments
 (none yet)
 
@@ -28,7 +30,7 @@
 1. Confirm the service cities. Recommendation: keep only cities you actually work in; add each one only when you have a local project to show.
 2. Confirm the domain is stoneandrosellc.com.
 3. Are you licensed, and what is the ROC number? Recommendation: show it in the footer and Google profile.
-4. Do you build, or design only? Recommendation: say so in the hero sub and the FAQ.
-5. Partner terms. Recommendation: per-project design fee, credited if the client also hires you to build.
+4. (Answered: design only.) Site now says so in About, Process, FAQ and the partner page.
+5. Partner terms. Recommendation: a per-project design fee, tiered by project size, paid by the contractor or passed to their client in the quote. Since you do not build, there is no build to credit it against.
 6. Send the numbers for the baseline above.
 7. Approve merging `claude/desert-modernist-site` to `main` after you review the preview.

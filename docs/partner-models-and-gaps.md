@@ -25,8 +25,8 @@ Sources: [NALP: charging design fees](https://blog.landscapeprofessionals.org/de
 
 | Decision | Recommendation | Why |
 |---|---|---|
-| How a contractor pays for 3D design | Per-project design fee, with the fee credited if the contractor's client also hires Stone & Rose for any build work | Keeps design valued, filters price shoppers, matches how design-build firms charge |
-| Do you build, or only design? | Decide and state it on the site | Contractors will ask first. The old site never said |
+| How a contractor pays for 3D design | Per-project design fee, tiered by project size, paid by the contractor or passed to their client in the quote | You design only, so there is no build to credit it against. A paid fee keeps design valued and filters price shoppers (the Yardzen model: design is the product, someone else builds) |
+| Do you build, or only design? | Answered: design only. Say it plainly | Contractors ask first. "We design, you build" removes the fear that you will take their job |
 | Referral payments to contractors | Hold until the first 3 partners exist; start with a written one-page agreement | Avoids promising terms you have not tested |
 | Pilot | One pool builder, one real project, renders plus walk-through video, then a case study with their permission | Gives proof for outreach |
 | Turnaround time | Measure it on the first 3 projects, then publish a number | A guessed number becomes a promise |
