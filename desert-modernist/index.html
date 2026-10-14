@@ -3,294 +3,348 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Stone & Rose Landscaping | Arizona</title>
-<meta name="description" content="Premium outdoor design in Arizona. Custom landscape design built around how you live, designed in 3D before a single stone is placed.">
+<title>Backyard & Pool Design in Arizona | Stone & Rose Landscaping</title>
+<meta name="description" content="Custom backyard, pool and outdoor kitchen design in Arizona. See your yard in 3D renders and a walk-through video before we build. Call (480) 650-8957.">
+<link rel="canonical" href="https://stoneandrosellc.com/">
+<meta name="robots" content="index, follow, max-image-preview:large">
+<meta name="theme-color" content="#f0ece4">
+<link rel="icon" href="icons/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="manifest" href="site.webmanifest">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Stone & Rose Landscaping">
+<meta property="og:title" content="Backyard & Pool Design in Arizona | Stone & Rose Landscaping">
+<meta property="og:description" content="See your backyard in 3D renders and a walk-through video before we build. Custom backyard, pool and outdoor kitchen design in Arizona.">
+<meta property="og:url" content="https://stoneandrosellc.com/">
+<meta property="og:image" content="https://stoneandrosellc.com/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="3D render of an Arizona backyard with a pool and covered bar at dusk">
+<meta name="twitter:card" content="summary_large_image">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;800&display=swap" rel="stylesheet">
-<style>
-  /* Desert Modernist: warm paper ground, charcoal type, terracotta used only for action and emphasis. */
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  :root {
-    --paper: #f0ece4; --sand: #e6dfd2; --ink: #24211d; --muted: #5f5950;
-    --clay: #b4532a; --clay-dark: #8f3f1d; --line: rgba(36,33,29,0.16);
-    --gutter: clamp(1.25rem, 5vw, 5rem);
-  }
-  html { scroll-behavior: smooth; scroll-padding-top: 5rem; }
-  body { background: var(--paper); color: var(--ink); font-family: 'Archivo', system-ui, sans-serif; font-weight: 400; line-height: 1.6; overflow-x: hidden; }
-  img { display: block; max-width: 100%; }
-  a { color: inherit; }
-  :focus-visible { outline: 2px solid var(--clay); outline-offset: 3px; }
-
-  /* NAV */
-  nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; padding: 0.9rem var(--gutter); display: flex; justify-content: space-between; align-items: center; gap: 1rem; background: var(--paper); border-bottom: 1px solid transparent; transition: border-color 0.3s; }
-  nav.scrolled { border-bottom-color: var(--line); }
-  .nav-brand { display: flex; align-items: center; gap: 0.85rem; text-decoration: none; }
-  .nav-logo-img { width: 46px; height: 46px; object-fit: contain; mix-blend-mode: multiply; }
-  .nav-brand-text { display: flex; flex-direction: column; line-height: 1.05; }
-  .nav-brand-name { font-weight: 800; font-size: 0.95rem; letter-spacing: 0.18em; text-transform: uppercase; }
-  .nav-brand-sub { font-size: 0.62rem; letter-spacing: 0.34em; text-transform: uppercase; color: var(--clay); margin-top: 4px; font-weight: 600; }
-  .nav-links { display: flex; gap: clamp(1.25rem, 3vw, 2.75rem); list-style: none; }
-  .nav-links a { text-decoration: none; font-size: 0.74rem; letter-spacing: 0.16em; text-transform: uppercase; font-weight: 600; padding: 0.4rem 0; border-bottom: 2px solid transparent; transition: border-color 0.2s; }
-  .nav-links a:hover { border-bottom-color: var(--clay); }
-
-  /* HERO */
-  .hero { min-height: 100vh; min-height: 100svh; display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); padding-top: 5rem; }
-  .hero-content { padding: clamp(2rem, 5vw, 4.5rem) var(--gutter); display: flex; flex-direction: column; justify-content: center; align-items: flex-start; gap: 1.6rem; }
-  .hero-eyebrow { font-size: 0.72rem; letter-spacing: 0.22em; text-transform: uppercase; font-weight: 600; color: var(--clay); }
-  .hero-title { font-size: clamp(2.8rem, 6.2vw, 5.2rem); line-height: 0.98; font-weight: 600; letter-spacing: -0.035em; text-wrap: balance; }
-  .hero-title em { font-style: normal; color: var(--clay); }
-  .hero-sub { font-size: 1.05rem; line-height: 1.65; color: var(--muted); max-width: 40ch; }
-  .hero-actions { display: flex; flex-wrap: wrap; gap: 0.9rem; align-items: center; margin-top: 0.4rem; }
-  .btn-primary, .btn-ghost { display: inline-block; padding: 1.05rem 2rem; text-decoration: none; font-size: 0.74rem; letter-spacing: 0.16em; text-transform: uppercase; font-weight: 600; transition: background 0.2s, color 0.2s, border-color 0.2s; }
-  .btn-primary { background: var(--ink); color: var(--paper); border: 1px solid var(--ink); }
-  .btn-primary:hover { background: var(--clay); border-color: var(--clay); }
-  .btn-ghost { border: 1px solid var(--ink); color: var(--ink); }
-  .btn-ghost:hover { background: var(--ink); color: var(--paper); }
-  .hero-media { position: relative; min-height: 360px; background: var(--sand); }
-  .hero-media img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 60% 50%; }
-  .hero-scroll { position: absolute; left: 0; bottom: 0; background: var(--paper); padding: 0.9rem 1.4rem 0.7rem 0; display: flex; align-items: center; gap: 0.8rem; font-size: 0.64rem; letter-spacing: 0.3em; text-transform: uppercase; font-weight: 600; color: var(--muted); }
-  .scroll-line { width: 40px; height: 1px; background: var(--clay); }
-
-  /* ABOUT */
-  .about-section { padding: clamp(4rem, 9vw, 8rem) var(--gutter); display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); gap: clamp(2.5rem, 7vw, 7rem); align-items: center; border-top: 1px solid var(--line); }
-  .section-eyebrow { font-size: 0.72rem; letter-spacing: 0.22em; text-transform: uppercase; font-weight: 600; color: var(--clay); margin-bottom: 1.2rem; }
-  .section-heading { font-size: clamp(1.9rem, 3.6vw, 3.1rem); font-weight: 600; line-height: 1.06; letter-spacing: -0.03em; margin-bottom: 1.6rem; text-wrap: balance; }
-  .section-heading em { font-style: normal; color: var(--clay); }
-  .section-text { font-size: 1rem; line-height: 1.75; color: var(--muted); margin-bottom: 1.1rem; max-width: 52ch; }
-  .about-logo { display: flex; flex-direction: column; align-items: center; gap: 2.2rem; min-width: 0; }
-  .about-logo-img { width: min(260px, 70%); height: auto; mix-blend-mode: multiply; }
-  .about-stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); width: 100%; border-top: 1px solid var(--ink); }
-  .stat { padding: 1.4rem 1rem 0.4rem 0; }
-  .stat + .stat { padding-left: 1.2rem; border-left: 1px solid var(--line); }
-  .stat-number { font-size: clamp(2rem, 4vw, 3rem); font-weight: 600; letter-spacing: -0.04em; line-height: 1; color: var(--clay); }
-  .stat-label { font-size: 0.68rem; letter-spacing: 0.16em; text-transform: uppercase; font-weight: 600; color: var(--muted); margin-top: 0.6rem; }
-
-  /* PORTFOLIO */
-  .portfolio-section { border-top: 1px solid var(--line); padding: clamp(3.5rem, 7vw, 6rem) var(--gutter) clamp(4rem, 8vw, 7rem); background: var(--sand); }
-  .portfolio-header { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem; margin-bottom: clamp(1.75rem, 4vw, 3rem); }
-  .portfolio-title { font-size: clamp(2.4rem, 6vw, 4.6rem); font-weight: 600; letter-spacing: -0.04em; line-height: 1; }
-  .portfolio-counter { font-size: 0.78rem; letter-spacing: 0.2em; text-transform: uppercase; font-weight: 600; color: var(--muted); font-variant-numeric: tabular-nums; }
-  .portfolio-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(0.5rem, 1.2vw, 1rem); }
-  .tile { position: relative; aspect-ratio: 3 / 2; overflow: hidden; border: 0; padding: 0; cursor: zoom-in; background: #1a1814; display: block; width: 100%; }
-  .tile img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s cubic-bezier(0.2, 0.7, 0.2, 1); }
-  .tile:hover img { transform: scale(1.04); }
-  .tile .num { position: absolute; left: 0; bottom: 0; background: var(--paper); color: var(--ink); font-size: 0.7rem; font-weight: 600; letter-spacing: 0.16em; padding: 0.45rem 0.8rem; font-variant-numeric: tabular-nums; }
-
-  .lightbox { position: fixed; inset: 0; z-index: 200; background: rgba(20,18,16,0.96); display: none; align-items: center; justify-content: center; padding: 4.5rem 1rem 4rem; }
-  .lightbox.open { display: flex; }
-  .lightbox img { max-width: min(1200px, 100%); max-height: 100%; width: auto; height: auto; object-fit: contain; }
-  .lb-btn { position: absolute; width: 52px; height: 52px; border: 1px solid rgba(240,236,228,0.4); background: transparent; color: var(--paper); font-size: 1.3rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.2s, border-color 0.2s; }
-  .lb-btn:hover { background: var(--clay); border-color: var(--clay); }
-  .lb-close { top: 1rem; right: 1rem; }
-  .lb-prev { left: 1rem; top: 50%; transform: translateY(-50%); }
-  .lb-next { right: 1rem; top: 50%; transform: translateY(-50%); }
-  .lb-count { position: absolute; left: 1.25rem; top: 1.4rem; color: var(--paper); font-size: 0.78rem; letter-spacing: 0.2em; font-weight: 600; font-variant-numeric: tabular-nums; }
-
-  /* PROCESS */
-  .process-section { padding: clamp(4rem, 9vw, 8rem) var(--gutter); border-top: 1px solid var(--line); }
-  .process-header { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem; flex-wrap: wrap; margin-bottom: clamp(2rem, 5vw, 4rem); padding-bottom: 1.3rem; border-bottom: 1px solid var(--ink); }
-  .process-header .section-eyebrow { margin: 0; }
-  .section-title { font-size: clamp(1.7rem, 3vw, 2.4rem); font-weight: 600; letter-spacing: -0.03em; }
-  .process-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); }
-  .process-step { padding: 0 clamp(1rem, 3vw, 2.5rem) 0 0; }
-  .process-step + .process-step { padding-left: clamp(1rem, 3vw, 2.5rem); border-left: 1px solid var(--line); }
-  .process-num { font-size: clamp(3.4rem, 6vw, 5rem); font-weight: 800; letter-spacing: -0.05em; color: var(--clay); line-height: 1; margin-bottom: 1.2rem; font-variant-numeric: tabular-nums; }
-  .process-title { font-size: 1.3rem; font-weight: 600; letter-spacing: -0.02em; margin-bottom: 0.8rem; }
-  .process-text { font-size: 0.98rem; line-height: 1.75; color: var(--muted); }
-
-  /* CONTACT */
-  .contact-section { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); border-top: 1px solid var(--line); }
-  .contact-left { background: var(--ink); color: var(--paper); padding: clamp(3.5rem, 8vw, 7rem) var(--gutter); display: flex; flex-direction: column; justify-content: center; }
-  .contact-left .section-eyebrow { color: #e08a63; }
-  .contact-heading { font-size: clamp(2.1rem, 4vw, 3.5rem); font-weight: 600; line-height: 1.04; letter-spacing: -0.035em; margin-bottom: 1.3rem; text-wrap: balance; }
-  .contact-heading em { font-style: normal; color: #e08a63; }
-  .contact-sub { font-size: 1rem; line-height: 1.75; color: #cfc8bb; margin-bottom: 3rem; max-width: 46ch; }
-  .contact-logo-wrap { margin-top: auto; padding-top: 2rem; border-top: 1px solid rgba(240,236,228,0.2); display: flex; align-items: center; gap: 1rem; }
-  .contact-logo-img { width: 64px; height: 64px; object-fit: contain; background: var(--paper); border-radius: 2px; padding: 4px; }
-  .contact-logo-text .name { display: block; font-weight: 800; letter-spacing: 0.18em; text-transform: uppercase; font-size: 0.9rem; }
-  .contact-logo-text .tagline { display: block; font-size: 0.66rem; letter-spacing: 0.26em; text-transform: uppercase; color: #e08a63; margin-top: 4px; font-weight: 600; }
-  .contact-right { padding: clamp(3.5rem, 8vw, 7rem) var(--gutter); display: flex; flex-direction: column; justify-content: center; background: var(--paper); }
-  .form-heading { font-size: 1.7rem; font-weight: 600; letter-spacing: -0.03em; margin-bottom: 0.5rem; }
-  .form-sub { font-size: 0.95rem; color: var(--muted); margin-bottom: 2rem; line-height: 1.6; }
-  .form-group { margin-bottom: 1.25rem; }
-  .form-label { display: block; font-size: 0.68rem; letter-spacing: 0.18em; text-transform: uppercase; font-weight: 600; margin-bottom: 0.5rem; }
-  .form-input, .form-select, .form-textarea { width: 100%; background: #fbf9f5; border: 1px solid var(--line); border-bottom: 2px solid var(--ink); border-radius: 0; color: var(--ink); padding: 0.9rem 1rem; font-family: inherit; font-size: 1rem; font-weight: 400; outline: none; appearance: none; -webkit-appearance: none; transition: border-color 0.2s, background 0.2s; }
-  .form-input:focus, .form-select:focus, .form-textarea:focus { border-bottom-color: var(--clay); background: #fff; }
-  .form-input::placeholder, .form-textarea::placeholder { color: #8a8378; }
-  .form-textarea { resize: vertical; min-height: 120px; }
-  .form-select { cursor: pointer; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%2324211d' stroke-width='1.6'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 1rem center; padding-right: 2.5rem; }
-  .form-row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 1rem; }
-  .form-submit { width: 100%; padding: 1.15rem; background: var(--clay); color: #fff; border: 0; font-family: inherit; font-size: 0.78rem; letter-spacing: 0.2em; text-transform: uppercase; font-weight: 600; cursor: pointer; transition: background 0.2s; margin-top: 0.4rem; }
-  .form-submit:hover:not(:disabled) { background: var(--clay-dark); }
-  .form-submit:disabled { opacity: 0.7; cursor: default; }
-  .form-error { color: var(--clay-dark); font-size: 0.88rem; font-weight: 500; margin-top: 0.9rem; min-height: 1.2em; }
-  .form-note { font-size: 0.78rem; color: var(--muted); text-align: center; margin-top: 0.8rem; }
-  .form-success { display: none; padding: 2.5rem 2rem; border: 1px solid var(--ink); border-left: 6px solid var(--clay); }
-  .form-success.show { display: block; }
-  .success-title { font-size: 1.6rem; font-weight: 600; letter-spacing: -0.03em; margin-bottom: 0.7rem; }
-  .success-text { color: var(--muted); line-height: 1.7; }
-
-  /* FOOTER */
-  footer { padding: 2.5rem var(--gutter) 2rem; background: var(--ink); color: var(--paper); border-top: 1px solid rgba(240,236,228,0.15); }
-  .footer-top { display: flex; justify-content: space-between; align-items: center; gap: 1.5rem; flex-wrap: wrap; padding-bottom: 1.75rem; margin-bottom: 1.5rem; border-bottom: 1px solid rgba(240,236,228,0.18); }
-  .footer-brand { display: flex; align-items: center; gap: 0.85rem; }
-  .footer-logo { width: 44px; height: 44px; object-fit: contain; background: var(--paper); border-radius: 2px; padding: 3px; }
-  .footer-name { font-weight: 800; letter-spacing: 0.18em; text-transform: uppercase; font-size: 0.9rem; }
-  .footer-contact { display: flex; gap: 0.6rem 2rem; align-items: center; flex-wrap: wrap; }
-  .footer-contact a { text-decoration: none; font-size: 0.9rem; color: #d8d1c4; transition: color 0.2s; }
-  .footer-contact a span { display: block; font-size: 0.6rem; letter-spacing: 0.22em; text-transform: uppercase; font-weight: 600; color: #e08a63; margin-bottom: 2px; }
-  .footer-contact a:hover { color: #fff; }
-  .footer-bottom { display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap; }
-  .footer-copy { font-size: 0.68rem; letter-spacing: 0.14em; color: #a59e91; text-transform: uppercase; }
-  .footer-nav { display: flex; gap: 1.75rem; }
-  .footer-nav a { font-size: 0.68rem; letter-spacing: 0.16em; text-transform: uppercase; color: #a59e91; text-decoration: none; font-weight: 600; transition: color 0.2s; }
-  .footer-nav a:hover { color: #fff; }
-
-  /* TABLET + MOBILE */
-  @media (max-width: 960px) {
-    .portfolio-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  }
-  @media (max-width: 768px) {
-    nav { padding-block: 0.7rem; }
-    .nav-brand-sub { display: none; }
-    .nav-links { gap: 1.1rem; }
-    .nav-links a { font-size: 0.66rem; letter-spacing: 0.12em; }
-    .hero { grid-template-columns: minmax(0, 1fr); min-height: 0; padding-top: 4.4rem; }
-    .hero-media { order: -1; min-height: 0; aspect-ratio: 4 / 3; }
-    .hero-scroll { display: none; }
-    .about-section, .contact-section { grid-template-columns: minmax(0, 1fr); }
-    .about-section { gap: 3rem; }
-    .process-grid { grid-template-columns: minmax(0, 1fr); }
-    .process-step, .process-step + .process-step { padding: 2rem 0; border-left: 0; border-top: 1px solid var(--line); }
-    .process-step:first-child { border-top: 0; padding-top: 0; }
-    .form-row { grid-template-columns: minmax(0, 1fr); gap: 0; }
-    .footer-top, .footer-bottom { flex-direction: column; align-items: flex-start; }
-    .footer-nav { display: none; }
-    .lb-prev { left: 0.5rem; } .lb-next { right: 0.5rem; }
-    .lb-btn { width: 44px; height: 44px; }
-  }
-  @media (max-width: 520px) {
-    .portfolio-grid { grid-template-columns: minmax(0, 1fr); }
-    .about-stats { grid-template-columns: minmax(0, 1fr); }
-    .stat, .stat + .stat { padding: 1.1rem 0; border-left: 0; border-bottom: 1px solid var(--line); }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    html { scroll-behavior: auto; }
-    .tile img, .btn-primary, .btn-ghost { transition: none; }
-  }
-</style>
+<link rel="stylesheet" href="css/site.css">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "HomeAndConstructionBusiness",
+      "@id": "https://stoneandrosellc.com/#business",
+      "name": "Stone & Rose Landscaping",
+      "alternateName": "Stone & Rose",
+      "url": "https://stoneandrosellc.com/",
+      "slogan": "Your Outdoor Life, Elevated.",
+      "description": "Arizona landscape design studio for backyards, pools, outdoor kitchens and front yards. Every design includes photorealistic 3D renders and a walk-through video.",
+      "telephone": "+1-480-650-8957",
+      "email": "tony@stoneandrosellc.com",
+      "image": "https://stoneandrosellc.com/og.png",
+      "logo": "https://stoneandrosellc.com/assets/logo.png",
+      "sameAs": ["https://instagram.com/stoneandrose"],
+      "areaServed": [
+        {"@type": "State", "name": "Arizona"},
+        {"@type": "City", "name": "Scottsdale"},
+        {"@type": "City", "name": "Gilbert"},
+        {"@type": "City", "name": "Chandler"},
+        {"@type": "City", "name": "Mesa"},
+        {"@type": "City", "name": "Tempe"},
+        {"@type": "City", "name": "Queen Creek"},
+        {"@type": "City", "name": "Paradise Valley"},
+        {"@type": "City", "name": "Fountain Hills"},
+        {"@type": "City", "name": "Phoenix"}
+      ],
+      "hasOfferCatalog": {
+        "@type": "OfferCatalog",
+        "name": "Outdoor design services",
+        "itemListElement": [
+          {"@type": "Offer", "itemOffered": {"@type": "Service", "name": "Full backyard design"}},
+          {"@type": "Offer", "itemOffered": {"@type": "Service", "name": "Pool and water feature design"}},
+          {"@type": "Offer", "itemOffered": {"@type": "Service", "name": "Outdoor kitchen and entertainment design"}},
+          {"@type": "Offer", "itemOffered": {"@type": "Service", "name": "Front yard design"}},
+          {"@type": "Offer", "itemOffered": {"@type": "Service", "name": "Lighting and planting design"}},
+          {"@type": "Offer", "itemOffered": {"@type": "Service", "name": "3D render only"}}
+        ]
+      }
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://stoneandrosellc.com/#website",
+      "url": "https://stoneandrosellc.com/",
+      "name": "Stone & Rose Landscaping",
+      "publisher": {"@id": "https://stoneandrosellc.com/#business"}
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {"@type": "Question", "name": "What do I get with a Stone & Rose design?", "acceptedAnswer": {"@type": "Answer", "text": "Photorealistic 3D renders of your yard and a walk-through video are included with every design. A 360° video is an optional add-on."}},
+        {"@type": "Question", "name": "Is the 360° video included?", "acceptedAnswer": {"@type": "Answer", "text": "No. The 360° video is optional. The 3D renders and the walk-through video are included."}},
+        {"@type": "Question", "name": "How does the design process work?", "acceptedAnswer": {"@type": "Answer", "text": "It starts with a consultation about your yard and your goals. We then design the space in 3D, and you review the renders and the walk-through video before any construction begins."}},
+        {"@type": "Question", "name": "Can I get 3D renders without a full design project?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. 3D Render Only is one of the services you can choose on our contact form."}},
+        {"@type": "Question", "name": "Do you work with contractors and pool builders?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. Contractors can bring us in to design the outdoor space for their client, so the client sees renders and a walk-through video before the build is quoted."}},
+        {"@type": "Question", "name": "Which parts of Arizona do you serve?", "acceptedAnswer": {"@type": "Answer", "text": "We design backyards, pools and outdoor kitchens in Scottsdale, Gilbert, Chandler, Mesa, Tempe, Queen Creek, Paradise Valley, Fountain Hills and Phoenix."}},
+        {"@type": "Question", "name": "How do I get started?", "acceptedAnswer": {"@type": "Answer", "text": "Call (480) 650-8957, email tony@stoneandrosellc.com, or use the contact form. We reply within 24 hours."}}
+      ]
+    }
+  ]
+}
+</script>
 </head>
 <body>
+<a class="skip" href="#main">Skip to content</a>
 
-<nav id="mainNav">
+<nav class="main" id="mainNav" aria-label="Main">
   <a href="#top" class="nav-brand">
-    <img src="assets/logo.png" alt="Stone & Rose Landscaping logo" class="nav-logo-img">
+    <img src="assets/logo.png" alt="Stone & Rose Landscaping logo" class="nav-logo-img" width="46" height="46">
     <div class="nav-brand-text">
       <span class="nav-brand-name">Stone & Rose</span>
       <span class="nav-brand-sub">Landscaping</span>
     </div>
   </a>
-  <ul class="nav-links">
-    <li><a href="#work">Work</a></li>
-    <li><a href="#process">Process</a></li>
-    <li><a href="#contact">Contact</a></li>
-  </ul>
+  <div class="nav-right">
+    <ul class="nav-links">
+      <li><a href="#services">Services</a></li>
+      <li><a href="#work">Work</a></li>
+      <li><a href="#process">Process</a></li>
+      <li><a href="contractors/">Contractors</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+    <a class="nav-phone" href="tel:+14806508957">(480) 650-8957</a>
+  </div>
 </nav>
 
+<main id="main">
 <section class="hero" id="top">
   <div class="hero-content">
-    <p class="hero-eyebrow">Premium Outdoor Design — Arizona</p>
-    <h1 class="hero-title">Your Outdoor<br>Life, <em>Elevated.</em></h1>
-    <p class="hero-sub">Custom landscape design built around how you live. Every space is one of a kind — designed in 3D before a single stone is placed.</p>
+    <p class="hero-eyebrow">Landscape design studio, Arizona</p>
+    <h1 class="hero-title">Backyard and pool design in Arizona, <em>seen in 3D before we build.</em></h1>
+    <p class="hero-sub">Custom landscape design built around how you live. Every design includes photorealistic 3D renders and a walk-through video of your finished yard before a single stone is placed.</p>
     <div class="hero-actions">
-      <a href="#contact" class="btn-primary">Start Your Project</a>
-      <a href="#work" class="btn-ghost">View Our Work</a>
+      <a href="#contact" class="btn-primary">Get a design consultation</a>
+      <a href="#work" class="btn-ghost">See 3D renders</a>
     </div>
+    <p class="hero-call">Prefer to talk? <a href="tel:+14806508957">Call (480) 650-8957</a></p>
   </div>
   <div class="hero-media">
-    <img src="assets/work-01.jpg" alt="3D render of a modern Arizona backyard with a pool, covered bar and desert planting at dusk" fetchpriority="high">
-    <div class="hero-scroll"><span>Scroll</span><div class="scroll-line"></div></div>
+    <img src="assets/work-01.jpg" alt="3D render of an Arizona backyard with a pool, covered bar and desert planting at dusk" width="780" height="719" fetchpriority="high">
   </div>
 </section>
 
-<section class="about-section" id="about">
+<div class="trust" role="list" aria-label="What is included">
+  <div role="listitem"><small>Included</small>Photorealistic 3D renders</div>
+  <div role="listitem"><small>Included</small>Walk-through video</div>
+  <div role="listitem"><small>Optional add-on</small>360° video</div>
+  <div role="listitem"><small>Based in</small>Arizona</div>
+</div>
+
+<section class="about-section pad" id="about">
   <div>
-    <p class="section-eyebrow">Who We Are</p>
-    <h2 class="section-heading">Crafting spaces that feel like <em>home</em></h2>
-    <p class="section-text">Stone & Rose is an Arizona-based landscape design studio creating high-end outdoor environments built around how you actually live. Every project starts with a conversation — not a template.</p>
-    <p class="section-text">We combine detailed 3D visualization with deep knowledge of Arizona's climate, materials, and plant life to deliver designs that are as durable as they are beautiful.</p>
+    <p class="section-eyebrow">About Stone & Rose</p>
+    <h2 class="section-heading">An Arizona landscape design studio that shows you the finished yard first</h2>
+    <p class="section-text">Stone & Rose designs high-end outdoor spaces around how you actually live: where you cook, where your family swims, where you sit in the evening. Each project starts with a conversation about your yard and your goals.</p>
+    <p class="section-text">We combine detailed 3D visualization with knowledge of Arizona's climate, materials, and plant life, so the design you approve is one that holds up in the desert.</p>
   </div>
   <div class="about-logo">
-    <img src="assets/logo.png" alt="Stone & Rose Landscaping" class="about-logo-img" loading="lazy">
+    <img src="assets/logo.png" alt="Stone & Rose Landscaping logo: roses beside a stone waterfall" class="about-logo-img" width="260" height="260" loading="lazy">
     <div class="about-stats">
       <div class="stat"><div class="stat-number">50+</div><div class="stat-label">Designs Built</div></div>
-      <div class="stat"><div class="stat-number">3D</div><div class="stat-label">Renders Included</div></div>
+      <div class="stat"><div class="stat-number">3D</div><div class="stat-label">Renders + Walk-Through Included</div></div>
       <div class="stat"><div class="stat-number">AZ</div><div class="stat-label">Based & Built</div></div>
     </div>
   </div>
 </section>
 
-<section class="portfolio-section" id="work">
+<section class="services pad rule-top" id="services">
+  <div class="section-head">
+    <p class="section-eyebrow">Services</p>
+    <h2 class="section-heading">Outdoor design services in Arizona</h2>
+    <p class="section-text">Pick one space or design the whole property. Each service below is designed in 3D before construction.</p>
+  </div>
+  <div class="services-grid">
+    <article class="service">
+      <h3>Full backyard design</h3>
+      <p>One plan for the whole yard: patio, lawn, planting, lighting, and how each area connects.</p>
+    </article>
+    <article class="service">
+      <h3>Pool and water feature design</h3>
+      <p>Pool and spa layouts, seat walls with water spouts, and the hardscape around them.</p>
+    </article>
+    <article class="service">
+      <h3>Outdoor kitchen and entertainment design</h3>
+      <p>Covered patios, built-in grills, bar seating, fire tables and TV walls.</p>
+    </article>
+    <article class="service">
+      <h3>Front yard design</h3>
+      <p>Entry courtyards, desert planting, gravel areas and seating by the front door.</p>
+    </article>
+    <article class="service">
+      <h3>Lighting and planting design</h3>
+      <p>Planting plans for Arizona heat and landscape lighting you can see in the night renders.</p>
+    </article>
+    <article class="service">
+      <h3>3D render only</h3>
+      <p>Renders and a walk-through video of your project when you want the visuals without a full design engagement. Contractors can use it for a client's project.</p>
+    </article>
+  </div>
+</section>
+
+<section class="pad rule-top" id="included">
+  <div class="section-head">
+    <p class="section-eyebrow">Deliverables</p>
+    <h2 class="section-heading">What you get with every design</h2>
+  </div>
+  <div class="included-grid">
+    <div class="deliverable">
+      <span class="tag tag-in">Included</span>
+      <h3>Photorealistic 3D renders</h3>
+      <p>Views of your finished yard from the angles you will actually use it, showing materials, planting, lighting, and layout.</p>
+    </div>
+    <div class="deliverable">
+      <span class="tag tag-in">Included</span>
+      <h3>Walk-through video</h3>
+      <p>A video that walks you through the space so you can see how it flows before construction begins.</p>
+    </div>
+    <div class="deliverable">
+      <span class="tag tag-opt">Optional add-on</span>
+      <h3>360° video</h3>
+      <p>A 360° video you can look around in. It is not part of the standard design. Ask for it when you book.</p>
+    </div>
+  </div>
+</section>
+
+<section class="portfolio-section pad rule-top" id="work">
   <div class="portfolio-header">
     <h2 class="portfolio-title">Portfolio</h2>
-    <span class="portfolio-counter">12 Designs</span>
+    <span class="portfolio-counter">3D renders of Arizona backyards, pools and outdoor kitchens</span>
   </div>
   <div class="portfolio-grid" id="portfolioGrid">
-    <button class="tile" data-index="0" aria-label="Open portfolio image 1"><img src="assets/work-01.jpg" alt="Portfolio design 1" loading="lazy"><span class="num">01</span></button>
-    <button class="tile" data-index="1" aria-label="Open portfolio image 2"><img src="assets/work-02.jpg" alt="Portfolio design 2" loading="lazy"><span class="num">02</span></button>
-    <button class="tile" data-index="2" aria-label="Open portfolio image 3"><img src="assets/work-03.jpg" alt="Portfolio design 3" loading="lazy"><span class="num">03</span></button>
-    <button class="tile" data-index="3" aria-label="Open portfolio image 4"><img src="assets/work-04.jpg" alt="Portfolio design 4" loading="lazy"><span class="num">04</span></button>
-    <button class="tile" data-index="4" aria-label="Open portfolio image 5"><img src="assets/work-05.jpg" alt="Portfolio design 5" loading="lazy"><span class="num">05</span></button>
-    <button class="tile" data-index="5" aria-label="Open portfolio image 6"><img src="assets/work-06.jpg" alt="Portfolio design 6" loading="lazy"><span class="num">06</span></button>
-    <button class="tile" data-index="6" aria-label="Open portfolio image 7"><img src="assets/work-07.jpg" alt="Portfolio design 7" loading="lazy"><span class="num">07</span></button>
-    <button class="tile" data-index="7" aria-label="Open portfolio image 8"><img src="assets/work-08.jpg" alt="Portfolio design 8" loading="lazy"><span class="num">08</span></button>
-    <button class="tile" data-index="8" aria-label="Open portfolio image 9"><img src="assets/work-09.jpg" alt="Portfolio design 9" loading="lazy"><span class="num">09</span></button>
-    <button class="tile" data-index="9" aria-label="Open portfolio image 10"><img src="assets/work-10.jpg" alt="Portfolio design 10" loading="lazy"><span class="num">10</span></button>
-    <button class="tile" data-index="10" aria-label="Open portfolio image 11"><img src="assets/work-11.jpg" alt="Portfolio design 11" loading="lazy"><span class="num">11</span></button>
-    <button class="tile" data-index="11" aria-label="Open portfolio image 12"><img src="assets/work-12.jpg" alt="Portfolio design 12" loading="lazy"><span class="num">12</span></button>
+    <button class="tile feature" aria-label="Open portfolio image 1"><img src="assets/work-01.jpg" alt="3D render of an Arizona backyard with a pool, covered bar and desert planting at dusk" width="780" height="719" loading="lazy"><span class="num">01</span></button>
+    <button class="tile" aria-label="Open portfolio image 2"><img src="assets/work-02.jpg" alt="3D render of a lawn and paver walkway leading to a pool and covered patio at sunset" width="1200" height="674" loading="lazy"><span class="num">02</span></button>
+    <button class="tile" aria-label="Open portfolio image 3"><img src="assets/work-03.jpg" alt="3D render of a pool and covered outdoor bar with red-leaf tree and aloe planting" width="1200" height="674" loading="lazy"><span class="num">03</span></button>
+    <button class="tile wide" aria-label="Open portfolio image 4"><img src="assets/work-06.jpg" alt="3D render of a covered outdoor kitchen with grill, bar seating and stacked-stone columns" width="1200" height="669" loading="lazy"><span class="num">04</span></button>
+    <button class="tile" aria-label="Open portfolio image 5"><img src="assets/work-07.jpg" alt="3D render of a fire table bar with a TV wall and built-in grill under a covered patio" width="418" height="236" loading="lazy"><span class="num">05</span></button>
+    <button class="tile" aria-label="Open portfolio image 6"><img src="assets/work-04.jpg" alt="3D render of a covered patio with a fire bowl, dining set and mountain view" width="1200" height="674" loading="lazy"><span class="num">06</span></button>
+    <button class="tile" aria-label="Open portfolio image 7"><img src="assets/work-05.jpg" alt="3D render of an in-ground spa under a pergola at night with landscape lighting" width="1200" height="674" loading="lazy"><span class="num">07</span></button>
+    <button class="tile" aria-label="Open portfolio image 8"><img src="assets/work-08.jpg" alt="3D render of a lit seat wall with three water spouts and tall cacti planting" width="418" height="237" loading="lazy"><span class="num">08</span></button>
+    <button class="tile nine" aria-label="Open portfolio image 9"><img src="assets/work-09.jpg" alt="3D render of a backyard with a sunken fire seating area, lawn and palm at sunset" width="418" height="237" loading="lazy"><span class="num">09</span></button>
+    <button class="tile wide" aria-label="Open portfolio image 10"><img src="assets/work-10.jpg" alt="3D render of a front courtyard with a fire bowl, chairs and tall desert cactus" width="1200" height="657" loading="lazy"><span class="num">10</span></button>
   </div>
 </section>
 
 <div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Portfolio viewer">
-  <span class="lb-count" id="lbCount">01 / 12</span>
+  <span class="lb-count" id="lbCount">01 / 10</span>
   <button class="lb-btn lb-close" id="lbClose" aria-label="Close">&#10005;</button>
-  <button class="lb-btn lb-prev" id="prevBtn" aria-label="Previous">&#8592;</button>
+  <button class="lb-btn lb-prev" id="prevBtn" aria-label="Previous image">&#8592;</button>
   <img id="lbImg" alt="">
-  <button class="lb-btn lb-next" id="nextBtn" aria-label="Next">&#8594;</button>
+  <button class="lb-btn lb-next" id="nextBtn" aria-label="Next image">&#8594;</button>
 </div>
 
-<section class="process-section" id="process">
+<section class="process-section pad rule-top" id="process">
   <div class="process-header">
     <span class="section-eyebrow">How It Works</span>
-    <span class="section-title">The Process</span>
+    <h2 class="section-title">The Process</h2>
   </div>
   <div class="process-grid">
     <div class="process-step">
       <div class="process-num">01</div>
       <h3 class="process-title">Consultation</h3>
-      <p class="process-text">We start by understanding how you use your outdoor space, your aesthetic, and your vision. No generic questionnaires — a real conversation about what matters to you.</p>
+      <p class="process-text">We start with a conversation about how you use your outdoor space, the style you like, and what you want to change.</p>
     </div>
     <div class="process-step">
       <div class="process-num">02</div>
       <h3 class="process-title">3D Design</h3>
-      <p class="process-text">You'll see your completed outdoor space before construction begins. Photorealistic renders give you complete clarity on materials, planting, lighting, and layout.</p>
+      <p class="process-text">You see your finished outdoor space before construction begins. Photorealistic renders and a walk-through video show materials, planting, lighting, and layout.</p>
     </div>
     <div class="process-step">
       <div class="process-num">03</div>
       <h3 class="process-title">Built to Last</h3>
-      <p class="process-text">Every design is calibrated to Arizona's climate — materials, plants, and systems that perform as beautifully as they look for years to come.</p>
+      <p class="process-text">Each design is matched to Arizona's climate, with materials, plants, and systems chosen to hold up through the heat.</p>
     </div>
+  </div>
+</section>
+
+<section class="on-dark pad" id="partners">
+  <div class="partner-band">
+    <div>
+      <p class="section-eyebrow">Contractor partnerships</p>
+      <h2 class="section-heading">Bring a 3D design partner onto your next Arizona project</h2>
+      <p class="section-text">Pool builders, general contractors, hardscape crews and custom home builders can bring us in to design the outdoor space for their client. The client sees 3D renders and a walk-through video before you quote the build.</p>
+      <div class="partner-actions">
+        <a class="btn-primary" href="contractors/">See contractor partnerships</a>
+        <a class="btn-ghost" href="contractors/#partner-form">Become a partner</a>
+      </div>
+    </div>
+    <ul class="partner-list">
+      <li>Pool builders</li>
+      <li>General contractors and remodelers</li>
+      <li>Custom home builders</li>
+      <li>Hardscape and masonry contractors</li>
+      <li>Landscape, irrigation and lighting contractors</li>
+    </ul>
+  </div>
+</section>
+
+<!-- CONFIRM SERVICE AREA: this city list also appears in the JSON-LD areaServed, the FAQ and llms.txt. -->
+<section class="pad rule-top" id="areas">
+  <div class="section-head">
+    <p class="section-eyebrow">Service area</p>
+    <h2 class="section-heading">Backyard and pool design across the Phoenix area</h2>
+    <p class="section-text">We design backyards, pools and outdoor kitchens for homeowners in these cities. Not on the list? Call us and ask.</p>
+  </div>
+  <ul class="areas">
+    <li>Scottsdale</li><li>Gilbert</li><li>Chandler</li><li>Mesa</li><li>Tempe</li><li>Queen Creek</li><li>Paradise Valley</li><li>Fountain Hills</li><li>Phoenix</li>
+  </ul>
+</section>
+
+<section class="pad rule-top" id="faq">
+  <div class="section-head">
+    <p class="section-eyebrow">Questions</p>
+    <h2 class="section-heading">Common questions about working with Stone & Rose</h2>
+  </div>
+  <div class="faq">
+    <details>
+      <summary>What do I get with a Stone & Rose design?</summary>
+      <div class="answer">Photorealistic 3D renders of your yard and a walk-through video are included with every design. A 360° video is an optional add-on.</div>
+    </details>
+    <details>
+      <summary>Is the 360° video included?</summary>
+      <div class="answer">No. The 360° video is optional. The 3D renders and the walk-through video are included.</div>
+    </details>
+    <details>
+      <summary>How does the design process work?</summary>
+      <div class="answer">It starts with a consultation about your yard and your goals. We then design the space in 3D, and you review the renders and the walk-through video before any construction begins.</div>
+    </details>
+    <details>
+      <summary>Can I get 3D renders without a full design project?</summary>
+      <div class="answer">Yes. 3D Render Only is one of the services you can choose on our contact form.</div>
+    </details>
+    <details>
+      <summary>Do you work with contractors and pool builders?</summary>
+      <div class="answer">Yes. Contractors can bring us in to design the outdoor space for their client, so the client sees renders and a walk-through video before the build is quoted. <a href="contractors/">See contractor partnerships</a>.</div>
+    </details>
+    <details>
+      <summary>Which parts of Arizona do you serve?</summary>
+      <div class="answer">We design backyards, pools and outdoor kitchens in Scottsdale, Gilbert, Chandler, Mesa, Tempe, Queen Creek, Paradise Valley, Fountain Hills and Phoenix.</div>
+    </details>
+    <details>
+      <summary>How do I get started?</summary>
+      <div class="answer">Call <a href="tel:+14806508957">(480) 650-8957</a>, email <a href="mailto:tony@stoneandrosellc.com">tony@stoneandrosellc.com</a>, or use the contact form below. We reply within 24 hours.</div>
+    </details>
   </div>
 </section>
 
 <section class="contact-section" id="contact">
   <div class="contact-left">
     <p class="section-eyebrow">Contact</p>
-    <h2 class="contact-heading">Let's build something <em>extraordinary.</em></h2>
-    <p class="contact-sub">Every project starts with a conversation. No pressure, no templates — just a real discussion about your vision and what your outdoor space could become.</p>
+    <h2 class="contact-heading">Start with a conversation about <em>your yard.</em></h2>
+    <p class="contact-sub">Tell us about your space and what you want it to do. We reply within 24 hours.</p>
+    <ul class="contact-direct">
+      <li><span>Call</span><a href="tel:+14806508957">(480) 650-8957</a></li>
+      <li><span>Email</span><a href="mailto:tony@stoneandrosellc.com">tony@stoneandrosellc.com</a></li>
+    </ul>
     <div class="contact-logo-wrap">
-      <img src="assets/logo.png" alt="" class="contact-logo-img" loading="lazy">
+      <img src="assets/logo.png" alt="" class="contact-logo-img" width="64" height="64" loading="lazy">
       <div class="contact-logo-text">
         <span class="name">Stone & Rose</span>
         <span class="tagline">Your Outdoor Life, Elevated.</span>
@@ -298,18 +352,18 @@
     </div>
   </div>
   <div class="contact-right">
-    <div id="contactForm">
+    <form id="contactForm" data-lead="homeowner" data-endpoint="api/lead" data-success="formSuccess" novalidate>
       <h3 class="form-heading">Start Your Project</h3>
       <p class="form-sub">Tell us about your space and we'll be in touch within 24 hours.</p>
       <div class="form-row">
-        <div class="form-group"><label class="form-label" for="firstName">First Name</label><input type="text" class="form-input" placeholder="John" id="firstName" autocomplete="given-name"></div>
-        <div class="form-group"><label class="form-label" for="lastName">Last Name</label><input type="text" class="form-input" placeholder="Smith" id="lastName" autocomplete="family-name"></div>
+        <div class="form-group"><label class="form-label" for="firstName">First Name</label><input type="text" class="form-input" placeholder="John" id="firstName" name="firstName" autocomplete="given-name" required></div>
+        <div class="form-group"><label class="form-label" for="lastName">Last Name</label><input type="text" class="form-input" placeholder="Smith" id="lastName" name="lastName" autocomplete="family-name"></div>
       </div>
-      <div class="form-group"><label class="form-label" for="email">Email</label><input type="email" class="form-input" placeholder="john@email.com" id="email" autocomplete="email"></div>
-      <div class="form-group"><label class="form-label" for="phone">Phone</label><input type="tel" class="form-input" placeholder="(480) 000-0000" id="phone" autocomplete="tel"></div>
+      <div class="form-group"><label class="form-label" for="email">Email</label><input type="email" class="form-input" placeholder="john@email.com" id="email" name="email" autocomplete="email" required></div>
+      <div class="form-group"><label class="form-label" for="phone">Phone</label><input type="tel" class="form-input" placeholder="(480) 000-0000" id="phone" name="phone" autocomplete="tel"></div>
       <div class="form-group">
         <label class="form-label" for="projectType">Project Type</label>
-        <select class="form-select" id="projectType">
+        <select class="form-select" id="projectType" name="service" required>
           <option value="" disabled selected>Select a service</option>
           <option>Full Backyard Design</option>
           <option>Pool & Water Feature</option>
@@ -320,132 +374,49 @@
           <option>Other / Not Sure Yet</option>
         </select>
       </div>
-      <div class="form-group"><label class="form-label" for="message">Tell Us About Your Vision</label><textarea class="form-textarea" placeholder="Describe your space, budget, timeline, or anything else we should know..." id="message"></textarea></div>
-      <button class="form-submit" id="submitBtn">Send Message</button>
-      <p class="form-error" id="formError" role="alert"></p>
+      <div class="form-group"><label class="form-label" for="message">Tell Us About Your Vision</label><textarea class="form-textarea" placeholder="Describe your space, budget, timeline, or anything else we should know. Mention if you want the optional 360° video." id="message" name="message"></textarea></div>
+      <div class="hp" aria-hidden="true"><label for="website">Leave this field empty</label><input type="text" id="website" name="website" tabindex="-1" autocomplete="off"></div>
+      <button class="form-submit" type="submit">Send Message</button>
+      <p class="form-error" role="alert"></p>
       <p class="form-note">We respond within 24 hours · Arizona based</p>
-    </div>
+    </form>
     <div class="form-success" id="formSuccess">
       <h3 class="success-title">Message Received</h3>
-      <p class="success-text">Thank you for reaching out. We'll be in touch within 24 hours to discuss your project.</p>
+      <p class="success-text">Thank you for reaching out. We'll be in touch within 24 hours to discuss your project. If it is urgent, call (480) 650-8957.</p>
     </div>
   </div>
 </section>
+</main>
 
 <footer>
   <div class="footer-top">
     <div class="footer-brand">
-      <img src="assets/logo.png" alt="" class="footer-logo" loading="lazy">
+      <img src="assets/logo.png" alt="" class="footer-logo" width="44" height="44" loading="lazy">
       <span class="footer-name">Stone & Rose</span>
     </div>
     <div class="footer-contact">
-      <a href="tel:4809735166"><span>Phone</span>(480) 973-5166</a>
-      <a href="mailto:Stoneandrose@gmail.com"><span>Email</span>Stoneandrose@gmail.com</a>
-      <a href="https://instagram.com/stoneandrose" target="_blank" rel="noopener"><span>Instagram</span>@stoneandrose</a>
+      <a href="tel:+14806508957"><span>Phone</span>(480) 650-8957</a>
+      <a href="mailto:tony@stoneandrosellc.com"><span>Email</span>tony@stoneandrosellc.com</a>
+      <a href="https://instagram.com/stoneandrose" target="_blank" rel="noopener noreferrer"><span>Instagram</span>@stoneandrose</a>
     </div>
   </div>
   <div class="footer-bottom">
-    <div class="footer-copy">© 2025 Stone & Rose Landscaping · Arizona</div>
+    <div class="footer-copy">© 2026 Stone & Rose Landscaping · Arizona</div>
     <div class="footer-nav">
+      <a href="#services">Services</a>
       <a href="#work">Work</a>
       <a href="#process">Process</a>
+      <a href="contractors/">Contractors</a>
       <a href="#contact">Contact</a>
     </div>
   </div>
 </footer>
 
-<script>
-  var photos = [];
-  var tiles = document.querySelectorAll('.tile');
-  tiles.forEach(function(t) { photos.push(t.querySelector('img').getAttribute('src')); });
-  var total = photos.length;
-  var current = 0;
-  var lightbox = document.getElementById('lightbox');
-  var lbImg = document.getElementById('lbImg');
-  var lbCount = document.getElementById('lbCount');
-  var lastFocus = null;
+<div class="mobile-cta" aria-label="Quick contact">
+  <a href="tel:+14806508957">Call now</a>
+  <a href="#contact">Book a consultation</a>
+</div>
 
-  function show(n) {
-    current = ((n % total) + total) % total;
-    lbImg.src = photos[current];
-    lbImg.alt = 'Portfolio design ' + (current + 1);
-    lbCount.textContent = String(current + 1).padStart(2, '0') + ' / ' + total;
-  }
-  function openBox(n) {
-    lastFocus = document.activeElement;
-    show(n);
-    lightbox.classList.add('open');
-    document.body.style.overflow = 'hidden';
-    document.getElementById('lbClose').focus();
-  }
-  function closeBox() {
-    lightbox.classList.remove('open');
-    document.body.style.overflow = '';
-    if (lastFocus) lastFocus.focus();
-  }
-
-  tiles.forEach(function(t, i) { t.addEventListener('click', function() { openBox(i); }); });
-  document.getElementById('lbClose').addEventListener('click', closeBox);
-  document.getElementById('prevBtn').addEventListener('click', function() { show(current - 1); });
-  document.getElementById('nextBtn').addEventListener('click', function() { show(current + 1); });
-  lightbox.addEventListener('click', function(e) { if (e.target === lightbox) closeBox(); });
-  document.addEventListener('keydown', function(e) {
-    if (!lightbox.classList.contains('open')) return;
-    if (e.key === 'ArrowRight') show(current + 1);
-    if (e.key === 'ArrowLeft') show(current - 1);
-    if (e.key === 'Escape') closeBox();
-  });
-
-  window.addEventListener('scroll', function() {
-    document.getElementById('mainNav').classList.toggle('scrolled', window.scrollY > 20);
-  });
-
-  var errorEl = document.getElementById('formError');
-  document.getElementById('submitBtn').addEventListener('click', function() {
-    var firstName = document.getElementById('firstName').value.trim();
-    var lastName = document.getElementById('lastName').value.trim();
-    var email = document.getElementById('email').value.trim();
-    var phone = document.getElementById('phone').value.trim();
-    var projectType = document.getElementById('projectType').value;
-    var message = document.getElementById('message').value.trim();
-    errorEl.textContent = '';
-
-    if (!firstName || !email || !projectType) {
-      errorEl.textContent = 'Please fill in your name, email, and project type.';
-      return;
-    }
-
-    var btn = document.getElementById('submitBtn');
-    btn.textContent = 'Sending...';
-    btn.disabled = true;
-
-    function fail() {
-      errorEl.textContent = 'Something went wrong. Please email us at Stoneandrose@gmail.com';
-      btn.textContent = 'Send Message';
-      btn.disabled = false;
-    }
-
-    fetch('https://formspree.io/f/mlgpprov', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-      body: JSON.stringify({
-        name: firstName + ' ' + lastName,
-        email: email,
-        phone: phone,
-        projectType: projectType,
-        message: message
-      })
-    })
-    .then(function(response) {
-      if (response.ok) {
-        document.getElementById('contactForm').style.display = 'none';
-        document.getElementById('formSuccess').classList.add('show');
-      } else {
-        fail();
-      }
-    })
-    .catch(fail);
-  });
-</script>
+<script src="js/site.js" defer></script>
 </body>
 </html>
