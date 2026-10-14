@@ -26,7 +26,7 @@ Stone & Rose provides design and documentation services only. We hold no Arizona
 
 **Hashtags**
 
-#hoaapproval #hoasubmittal #arizonacontractors #landscapecontractor #poolcontractor #arizonalandscaping #phoenixcontractors #outdoorkitchen #landscapedesign #3drenders
+#hoaapproval #hoasubmittal #arizonacontractors #landscapecontractor #poolcontractor #arizonalandscaping #outdoorkitchen #landscapedesign #3drenders
 
 ---
 
@@ -36,7 +36,7 @@ Stone & Rose provides design and documentation services only. We hold no Arizona
 
 Before you landscape, do this first.
 
-See the yard before anyone digs. You get 6 photoreal views plus an interactive 360 of your own backyard, delivered in 5 days. Check where the shade lands, how the pool looks against the house, and how the outdoor kitchen looks lit at 7pm.
+See the yard before anyone digs. You get six photoreal photos plus one video of your own backyard, delivered in 5 days. Check where the shade lands, how the pool looks against the house, and how the outdoor kitchen looks lit at 7pm. We design backyards across all of Arizona.
 
 Start with renders. Link in bio.
 
@@ -44,7 +44,7 @@ Stone & Rose provides design and documentation services only. We hold no Arizona
 
 **Hashtags**
 
-#arizonabackyard #backyarddesign #3dlandscapedesign #backyardrenovation #outdoorkitchen #poolbackyard #arizonahomes #phoenixhomes #scottsdalehomes #landscapedesign
+#arizonabackyard #backyarddesign #3dlandscapedesign #backyardrenovation #outdoorkitchen #poolbackyard #arizonahomes #arizonarealestate #azhomeowners #landscapedesign
 
 ---
 
@@ -52,6 +52,7 @@ Stone & Rose provides design and documentation services only. We hold no Arizona
 
 - The end card shows @StoneandroseLLC and stoneandrosellc.com. The website's footer shows @stoneandrose and a different domain style. Confirm which handle is live and put the same one in your bio link.
 - C2's headline says 48 hours and its turnaround card says 47 hours. The caption uses 48 hours. Use one number everywhere.
-- The H2 "5 days" and "6 views plus 360" are taken from the video. [NEED: confirm they are the standard deliverable.]
-- Hashtag cities (Phoenix, Scottsdale) are guesses. [NEED: cities you serve.]
+- The H2 video still says "6 photoreal views plus an interactive 360" on screen. The package is now six photos plus one video, so that card needs re-cutting, or the caption and the video will disagree.
+- The "5 days" turnaround is from the old video. [NEED: confirm it still holds with a video included.]
+- Service area is all of Arizona. City hashtags were removed; add the city tags for any market you want to push.
 - Post C2 where contractors are (Tuesday to Thursday morning) and H2 on a weekend evening when homeowners scroll.
