@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
-"""Ad A (outdoor kitchen / ramada / fire builders). Structure: three-beat list.
-usage: build_outdoor_kitchen.py SRC OUTDIR preview|audio|render9|render45|bumper"""
+"""Ad A (outdoor builders). Structure: three-beat list.
+usage: build_ad_a.py SRC OUTDIR preview|audio|render9|render45|bumper"""
 import sys, os, subprocess, numpy as np
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from sr_kit import *
@@ -21,8 +21,8 @@ MAIN_SHOTS = [
 ]
 # cards: (shot index, t_in, t_out) in ad time. hook is hard-in at 0.
 MAIN_CARDS = [
-    dict(k='hook', label='OUTDOOR KITCHEN BUILDERS', lines=[[('Selling islands', 'n')], [('off a ', 'n'), ('spec sheet?', 'a')]], t=(0.0, 1.5), hard=True, shot='H', size=118, lab=46),
-    dict(k='three', label='THREE THINGS', lines=[[('A spec sheet', 'n')], [("can't ", 'a'), ('show.', 'n')]], t=(1.5, 2.8), shot='H'),
+    dict(k='hook', label='ARIZONA OUTDOOR BUILDERS', lines=[[('Selling yards', 'n')], [('off a ', 'n'), ('sketch?', 'a')]], t=(0.0, 1.5), hard=True, shot='H', size=118, lab=46),
+    dict(k='three', label='THREE THINGS', lines=[[('A sketch', 'n')], [("can't ", 'a'), ('show.', 'n')]], t=(1.5, 2.8), shot='H'),
     dict(k='b1', label='01 / PLACEMENT', lines=[[('Where it ', 'n'), ('sits.', 'a')]], t=(2.8, 6.8), shot='B1'),
     dict(k='b2', label='02 / FLOW', lines=[[('How the yard', 'n')], [('connects.', 'a')]], t=(6.8, 9.4), shot='B2'),
     dict(k='b3', label='03 / THE UPSELL', lines=[[('The fire pit', 'n')], [('they ', 'n'), ('skip.', 'a')]], t=(9.4, 12.8), shot='B3', y={'9x16': 600, '4x5': 470}),
@@ -35,7 +35,7 @@ BUMPER_SHOTS = [
     dict(id='E',  src=48.8, dur=2.0, z=1.03, cx={'9x16': [(0, 1100), (2.0, 1100)],           '4x5': [(0, 1100), (2.0, 1100)]}),
 ]
 BUMPER_CARDS = [
-    dict(k='hook', label='OUTDOOR KITCHEN BUILDERS', lines=[[('Selling islands', 'n')], [('off a ', 'n'), ('spec sheet?', 'a')]], t=(0.0, 2.2), hard=True, shot='H'),
+    dict(k='hook', label='ARIZONA OUTDOOR BUILDERS', lines=[[('Selling yards', 'n')], [('off a ', 'n'), ('sketch?', 'a')]], t=(0.0, 2.2), hard=True, shot='H'),
     dict(k='pay', label='SHOW IT FIRST', lines=[[('Where it ', 'n'), ('sits.', 'a')]], t=(2.2, 4.0), shot='B1'),
 ]
 BUMPER_END_T = 4.0
@@ -180,6 +180,6 @@ def preview():
 if MODE == 'preview': preview()
 elif MODE == 'audio':
     audio('main', f'{OUT}/audio_main.wav'); audio('bumper', f'{OUT}/audio_bumper.wav')
-elif MODE == 'render9': run_render('9x16', MAIN_SHOTS, MAIN_CARDS, END_T, True, 15.3, f'{OUT}/audio_main.wav', f'{OUT}/SR_outdoor_kitchen_9x16.mp4')
-elif MODE == 'render45': run_render('4x5', MAIN_SHOTS, MAIN_CARDS, END_T, True, 15.3, f'{OUT}/audio_main.wav', f'{OUT}/SR_outdoor_kitchen_4x5.mp4')
-elif MODE == 'bumper': run_render('9x16', BUMPER_SHOTS, BUMPER_CARDS, BUMPER_END_T, True, 6.0, f'{OUT}/audio_bumper.wav', f'{OUT}/SR_outdoor_kitchen_6s_9x16.mp4')
+elif MODE == 'render9': run_render('9x16', MAIN_SHOTS, MAIN_CARDS, END_T, True, 15.3, f'{OUT}/audio_main.wav', f'{OUT}/SR_outdoor_builders_9x16.mp4')
+elif MODE == 'render45': run_render('4x5', MAIN_SHOTS, MAIN_CARDS, END_T, True, 15.3, f'{OUT}/audio_main.wav', f'{OUT}/SR_outdoor_builders_4x5.mp4')
+elif MODE == 'bumper': run_render('9x16', BUMPER_SHOTS, BUMPER_CARDS, BUMPER_END_T, True, 6.0, f'{OUT}/audio_bumper.wav', f'{OUT}/SR_outdoor_builders_6s_9x16.mp4')

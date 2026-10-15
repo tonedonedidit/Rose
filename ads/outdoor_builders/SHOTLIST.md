@@ -1,6 +1,6 @@
-# Shot list: Ad A (outdoor kitchen)
+# Shot list: Ad A (outdoor builders)
 
-30 fps output from 60 fps source, no speed ramps (every shot is a hero moment, real-time). Crop windows follow hero centers measured on 1920-px source frames. 9:16 = 608x1080 source window scaled to 1080x1920. 4:5 = 864x1080 window scaled to 1080x1350. Windows are top-anchored (y0 = 0) so the hero sits low and the text zone above it stays clean.
+60 fps output from the native 60 fps source (no frame dropping or blending), no speed ramps (every shot is a hero moment, real-time). Crop windows follow hero centers measured on 1920-px source frames. 9:16 = 608x1080 source window scaled to 1080x1920. 4:5 = 864x1080 window scaled to 1080x1350. Windows are top-anchored (y0 = 0) so the hero sits low and the text zone above it stays clean.
 
 Grade (all shots): shadow lift (gamma 0.90), mild S-curve, +2.5% red / −3.5% blue. The footage is one golden-hour daylight state throughout, so the grade is identical on every shot and no cut jumps.
 

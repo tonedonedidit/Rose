@@ -8,7 +8,7 @@ FONT_ITAL = HERE + '/fonts/CG-Italic600.ttf'
 FONT_MONO = HERE + '/fonts/Plex500.ttf'
 OFFWHITE = (238, 232, 226)
 ROSE = (201, 143, 114)
-FPS = 30
+FPS = 60
 SR = 44100
 
 # ---------- grade ----------

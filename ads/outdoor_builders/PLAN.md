@@ -1,4 +1,12 @@
-# Ad A: Outdoor kitchen, ramada and fire builders (segment S5)
+# Ad A: Arizona outdoor builders (was S5 outdoor kitchen / ramada / fire)
+
+## Revision (Oct 15)
+"Outdoor kitchen" was removed from the on-screen wording at the owner's request. New call-out label: **ARIZONA OUTDOOR BUILDERS**. New hook: **"Selling yards off a sketch?"** ("sketch" is also literally what the opening line-drawing wipe shows). CTA: "Send us your next outdoor plan." Masters re-rendered at 60 fps. Research behind these choices and its limits: `MARKET_NOTES.md`.
+
+**Consequence for the campaign:** this is now a broad outdoor-builder ad, not a segment-specific one. The brief asks for one segment per video, and the research notes say service-specific creative tends to do better. Keep a kitchen-specific variant (island hook, S5 label) as a hook swap-in for the S5 ad set; the footage supports it. The body text below was written for the S5 version and is kept for that variant; the hook list marks the current live hook.
+
+---
+
 
 Status: **provisional assignment.** Videos B, D and E have not been audited yet. If another video proves S5 better, A gets re-fit and this plan is redone. Evidence for the fit is in `audit/A_scene_log.md`.
 
@@ -33,7 +41,8 @@ Rejected: it invents spec-sheet copy and costs the first seconds on text, not on
 **Why V1:** it puts the stainless grill hero at frame 0, which is the thumb-stopper from the audit, and the beats double as the segment's pains. Every card is proven by a shot, so nothing in the copy goes beyond the footage.
 
 ## Hooks (≤7 words, ranked, all visible at frame 0)
-1. **Selling islands off a spec sheet?** (used; call-out label above it: OUTDOOR KITCHEN BUILDERS)
+0. **Selling yards off a sketch?** (LIVE; label ARIZONA OUTDOOR BUILDERS)
+1. Selling islands off a spec sheet? (S5 kitchen variant; label OUTDOOR KITCHEN BUILDERS)
 2. Outdoor kitchen builders: send the plan.
 3. Your spec sheet isn't closing the island.
 4. A spec sheet can't show scale.

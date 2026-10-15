@@ -2,7 +2,7 @@
 
 | Video | Status |
 |---|---|
-| A | Audited. Assigned S5 (outdoor kitchen, ramada, fire builders). |
+| A | Audited. Evidence fits S5 (outdoor kitchen, ramada, fire builders). As of Oct 15 the ad itself is worded for general Arizona outdoor builders, with the S5 kitchen hook kept as a variant (see ads/outdoor_builders/PLAN.md). |
 | B | Not yet available in the working session. |
 | C | Frames extracted and contact sheets read; scene log not yet written. |
 | D | Not yet available (file not shared for download). |

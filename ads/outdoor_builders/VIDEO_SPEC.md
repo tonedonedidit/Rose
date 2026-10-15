@@ -1,19 +1,21 @@
-# VIDEO_SPEC: Outdoor kitchen / ramada / fire builders (Ad A)
+# VIDEO_SPEC: Arizona outdoor builders (Ad A)
 
-Files: `SR_outdoor_kitchen_9x16.mp4` (1080x1920, 15.3 s), `SR_outdoor_kitchen_4x5.mp4` (1080x1350, 15.3 s), `SR_outdoor_kitchen_6s_9x16.mp4` (6.0 s retargeting bumper). Source is video A, referenced by ID only.
+Files: `SR_outdoor_builders_9x16.mp4` (1080x1920, 15.3 s), `SR_outdoor_builders_4x5.mp4` (1080x1350, 15.3 s), `SR_outdoor_builders_6s_9x16.mp4` (6.0 s retargeting bumper). Source is video A, referenced by ID only.
+
+> Revised Oct 15: "outdoor kitchen" removed from the wording, hook changed to "Selling yards off a sketch?", CTA "Send us your next outdoor plan.", 60 fps. Reviewer scores below are for the earlier kitchen-worded cut and have not been re-run.
 
 ## Concept and why
-**"Three things a spec sheet can't show."** Three-beat list: placement, flow, the upsell. Each beat is a different zone of the same yard, proven by its own shot. Chosen because the footage has a signature grill moment (stops a thumb at frame 0), a clean island-in-pad shot, a wide pullback that shows zones connecting, and a fire pit with a real flame. It has no night and no bare lot, so lights-on and before/after were never options. Segment assignment is provisional until B, D and E are audited.
+**"Three things a sketch can't show."** Three-beat list: placement, flow, the upsell. Each beat is a different zone of the same yard, proven by its own shot. Chosen because the footage has a signature grill moment (stops a thumb at frame 0), a clean island-in-pad shot, a wide pullback that shows zones connecting, and a fire pit with a real flame. It has no night and no bare lot, so lights-on and before/after were never options. Segment assignment is provisional until B, D and E are audited.
 
 ## Audience and pain
-Owners and sales reps at outdoor kitchen, ramada/pergola and fire-feature companies in the East Valley. Pain: high-ticket structures sold off a spec sheet; homeowners can't judge scale and placement; upsells (fire pit, heater, lighting) get skipped. Secondary viewer: the homeowner, who just sees a yard they want.
+Owners and sales reps at outdoor-living contractors in the East Valley (kitchens, ramadas, fire features, pavers, landscape). Pain: projects sold off a sketch or spec sheet; homeowners can't judge scale and placement; upsells (fire pit, heater, lighting) get skipped. Secondary viewer: the homeowner, who just sees a yard they want.
 
 ## On-screen lines, exactly as rendered (9:16 and 4:5 carry the same text)
 
 | Time | Label (Plex Mono, tracked) | Headline (Cormorant Garamond, rose italic accent in *asterisks*) |
 |---|---|---|
-| 0.0–1.5 | OUTDOOR KITCHEN BUILDERS | Selling islands / off a *spec sheet?* (full alpha at frame 0; background wipes from a flat line drawing into the render over 0.0–0.9 s) |
-| 1.5–2.8 | THREE THINGS | A spec sheet / *can't* show. |
+| 0.0–1.5 | ARIZONA OUTDOOR BUILDERS | Selling yards / off a *sketch?* (full alpha at frame 0; background wipes from a flat line drawing into the render over 0.0–0.9 s) |
+| 1.5–2.8 | THREE THINGS | A sketch / *can't* show. |
 | 2.8–6.8 | 01 / PLACEMENT | Where it *sits.* |
 | 6.8–9.4 | 02 / FLOW | How the yard / *connects.* |
 | 9.4–12.8 | 03 / THE UPSELL | The fire pit / they *skip.* |
@@ -24,7 +26,7 @@ Bumper (6.0 s): 0.0–2.2 hook card (same as above), 2.2–4.0 "SHOW IT FIRST" /
 Fade in/out 0.22 s per card (hook has no fade-in). Label size is 0.40x headline size (hook label 46 px on a 118 px headline). Text sits in negative space; per-card placement and luma in `SHOTLIST.md`.
 
 ## Runner-up hooks (primary-text candidates)
-Outdoor kitchen builders: send the plan. / Your spec sheet isn't closing the island. / A spec sheet can't show scale. / Homeowner can't place the island? / Ramada builders: show the yard first. (full ranked list of 14 in `PLAN.md`)
+Arizona outdoor builders: send the plan. / Your sketch isn't closing the yard. / A sketch can't show scale. / Homeowner can't place the build? / Show the yard first. (full ranked list of 14 in `PLAN.md`)
 
 ## CTA
 **Send us your next outdoor plan.** (31 characters.) Same wording on the end card, instant-form headline, button and primary text.
@@ -37,7 +39,7 @@ Warm A-minor pad bed, around −24 dB. Ticks on every card-in. A rising whoosh i
 - Feed 4:5: bottom 15% (y > 1147) clear. Checked in preview.
 - Phone read at 360 px wide: `QA_phone360.jpg`. Labels, headlines and the CTA are legible.
 - Decode: `ffmpeg -v error -i X -f null -` returned zero errors on all three files.
-- Sizes: 19.7 MB (9:16), 18.8 MB (4:5), 8.0 MB (bumper). All under 30 MB. Encode: x264 `-preset medium -crf 19 -maxrate 10M -bufsize 20M`, 30 fps, yuv420p, faststart.
+- Sizes: 20.0 MB (9:16), 19.3 MB (4:5), 8.3 MB (bumper). All under 30 MB. Encode: x264 `-preset medium -crf 19 -maxrate 10M -bufsize 20M`, 60 fps (source native), yuv420p, faststart.
 - Length 15.3 s (inside 15–20 s). Payoff (grill hero, island reveal, boom) by 2.8 s. End card 2.5 s.
 - Banned source seconds not used: 0–4, 39–42, 51–55, 66–75, and 26–27 s. The ball is outside every crop.
 
@@ -46,11 +48,14 @@ Warm A-minor pad bed, around −24 dB. Ticks on every card-in. A rising whoosh i
 2. **Soft in 9:16.** A 608x1080 window scaled to 1080x1920 is a 1.78x upscale from a 1080p render. Stills of the grill look good but fine texture (stone, pavers) is soft on large phones.
 3. **B2 scrim.** The flow headline sits on sky and mountains (luma ≈ 185), so its local scrim is the strongest in the ad (0.59). It reads as a soft glow, not a panel. (B3's text was moved onto the gray wall to avoid the same issue.)
 4. **Fire pit cut at the edge in B2.** In the 9:16 flow shot the bowl is partly outside the window because a 608 px window can't hold pit and kitchen. Hero there is the dining pad and kitchen.
-5. **Competitor-paste.** "Selling islands off a spec sheet?" is audience-specific but a rival render shop with its own footage could run it. Frame 0 and the end card are the parts they can't paste.
+5. **Competitor-paste.** "Selling yards off a sketch?" is audience-specific (builders, Arizona) but a rival render shop with its own footage could run it. Frame 0 and the end card are the parts they can't paste.
 6. **Claim check.** The ad claims only what it shows. "The upsell" card shows a fire pit and does not claim any sales result.
 7. **Statue vignette** at the right edge of the pullback (63.4–66 s) is small and cropped out of the 9:16; it's visible in the 4:5. Client-identifying? No names or addresses, but it's a personal item. Review before posting.
 8. **Time of day.** No night shot exists in this footage, so this ad cannot claim or imply the evening-use story.
 9. **Provisional.** Assignment and structure may change after B, D and E are audited.
+
+## Frame rate
+Masters are 60 fps. Third-party specs say Meta accepts 60 fps but may re-encode ads to 30, so the benefit may show only on organic and direct delivery. See `MARKET_NOTES.md`.
 
 ## Legal audit (AZ ROC)
 Every line checked: no "we build", "our crews", "design-build", "we install", "we manage", "licensed contractor" or "landscape architect". The CTA asks the contractor to send a plan. The crew that builds is the viewer's crew. **Pass.**
@@ -74,5 +79,5 @@ Reviewer suggestions rejected because they break house rules: solid pill behind 
 Still open, in priority order:
 1. **CTA/service clarity (4):** add a "WE DESIGN. YOU BUILD." tracked line above the CTA on the end card. It is on-brief for the ROC rule and tells the viewer what they get back. Not done yet.
 2. **Stop power (5):** the hook text is still small relative to a feed-stopping headline, and a 608 px window forces the grill to sit small at 15–18 s. Options: open on the 22.2–24 s sun-glare grill with the hook over a clean lower area, accepting a tighter crop.
-3. **"Spec sheet" proof:** the linework wipe is a filtered render, not a spec sheet. A real spec-sheet inset needs a real spec sheet from Tone.
+3. **"Sketch" proof:** the linework wipe is an edge-filtered render, which reads as a sketch, but it is not a real hand sketch. A real inset needs one from Tone.
 4. **Beat 2 (flow):** the pullback shows zones, not a path. Needs a travelling shot (a 60 fps glide from kitchen to fire pit does not exist in this footage).
