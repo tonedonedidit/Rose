@@ -9,7 +9,7 @@
 | 2.8–6.8 | "Where the island actually sits. Under the ramada." | 8 |
 | 6.8–9.4 | "How the whole yard connects." | 5 |
 | 9.4–12.8 | "The fire pit they'd skip on paper." | 7 |
-| 12.8–15.3 | "Send us your next kitchen plan." | 6 |
+| 12.8–15.3 | "Send us your next outdoor plan." | 6 |
 
 Total: 38 words.
 
@@ -22,4 +22,4 @@ Total: 38 words.
 - Record flat and close to the mic. Room tone under all the audio is fine; the music bed is quiet, around −24 dB.
 
 ## 6-second bumper cut-down (retargeting)
-Same VO, trimmed: "Still selling islands off a spec sheet?" (0.0–2.2) ... "Where the island sits." (2.2–4.0) ... "Send us your next kitchen plan." (4.0–6.0). 17 words.
+Same VO, trimmed: "Still selling islands off a spec sheet?" (0.0–2.2) ... "Where the island sits." (2.2–4.0) ... "Send us your next outdoor plan." (4.0–6.0). 17 words.

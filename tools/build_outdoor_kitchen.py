@@ -8,7 +8,7 @@ from sr_kit import *
 SRC, OUT, MODE = sys.argv[1], sys.argv[2], sys.argv[3]
 os.makedirs(OUT, exist_ok=True)
 CANVAS = {'9x16': (1080, 1920), '4x5': (1080, 1350)}
-CTA = [[('Send us your next', 'n')], [('kitchen ', 'n'), ('plan.', 'a')]]
+CTA = [[('Send us your next', 'n')], [('outdoor ', 'n'), ('plan.', 'a')]]
 URL = 'stoneandrosellc.com'
 
 # crop keyframes: (t_rel, hero centre x in source px). Reason per shot in SHOTLIST.md

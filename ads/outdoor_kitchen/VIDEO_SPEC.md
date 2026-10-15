@@ -17,7 +17,7 @@ Owners and sales reps at outdoor kitchen, ramada/pergola and fire-feature compan
 | 2.8–6.8 | 01 / PLACEMENT | Where it *sits.* |
 | 6.8–9.4 | 02 / FLOW | How the yard / *connects.* |
 | 9.4–12.8 | 03 / THE UPSELL | The fire pit / they *skip.* |
-| 12.8–15.3 | STONE & ROSE (wordmark) | Send us your next / kitchen *plan.* + stoneandrosellc.com + rose rule, over the last hero shot dimmed to 56% |
+| 12.8–15.3 | STONE & ROSE (wordmark) | Send us your next / outdoor *plan.* + stoneandrosellc.com + rose rule, over the last hero shot dimmed to 56% |
 
 Bumper (6.0 s): 0.0–2.2 hook card (same as above), 2.2–4.0 "SHOW IT FIRST" / "Where it *sits.*", 4.0–6.0 end card.
 
@@ -27,7 +27,7 @@ Fade in/out 0.22 s per card (hook has no fade-in). Label size is 0.40x headline 
 Outdoor kitchen builders: send the plan. / Your spec sheet isn't closing the island. / A spec sheet can't show scale. / Homeowner can't place the island? / Ramada builders: show the yard first. (full ranked list of 14 in `PLAN.md`)
 
 ## CTA
-**Send us your next kitchen plan.** (31 characters.) Same wording on the end card, instant-form headline, button and primary text.
+**Send us your next outdoor plan.** (31 characters.) Same wording on the end card, instant-form headline, button and primary text.
 
 ## Audio (synthesized; no licensed music)
 Warm A-minor pad bed, around −24 dB. Ticks on every card-in. A rising whoosh into the biggest boom at 2.8 s (the island reveal, inside the 5 s payoff window). Smaller whoosh and boom at the 6.8 and 9.4 s cuts. A filtered-noise crackle bed under the fire pit shot (9.4–12.8 s). A bell chime on the end card at 12.8 s. Master: two-pass loudnorm with a pre-compressor. **Measured: −14.2 LUFS integrated, −1.2 dBFS peak** (9:16 and 4:5), −14.0 LUFS / −2.3 dBFS (bumper). Source audio is near-silent and unused.
@@ -37,7 +37,7 @@ Warm A-minor pad bed, around −24 dB. Ticks on every card-in. A rising whoosh i
 - Feed 4:5: bottom 15% (y > 1147) clear. Checked in preview.
 - Phone read at 360 px wide: `QA_phone360.jpg`. Labels, headlines and the CTA are legible.
 - Decode: `ffmpeg -v error -i X -f null -` returned zero errors on all three files.
-- Sizes: 19.8 MB (9:16), 18.8 MB (4:5), 8.0 MB (bumper). All under 30 MB. Encode: x264 `-preset medium -crf 19 -maxrate 10M -bufsize 20M`, 30 fps, yuv420p, faststart.
+- Sizes: 19.7 MB (9:16), 18.8 MB (4:5), 8.0 MB (bumper). All under 30 MB. Encode: x264 `-preset medium -crf 19 -maxrate 10M -bufsize 20M`, 30 fps, yuv420p, faststart.
 - Length 15.3 s (inside 15–20 s). Payoff (grill hero, island reveal, boom) by 2.8 s. End card 2.5 s.
 - Banned source seconds not used: 0–4, 39–42, 51–55, 66–75, and 26–27 s. The ball is outside every crop.
 

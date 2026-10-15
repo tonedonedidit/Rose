@@ -56,7 +56,7 @@ Types covered: call-out (2, 6, 11), pain (5, 8, 10), contrarian (3, 7), stakes w
 - Cards 2–5 each name a thing the footage shows. No card says anything a generic render shop could claim without the shot.
 
 ## CTA
-**"Send us your next kitchen plan."** (31 characters, an instruction.) Also the instant-form headline. Wording identical across end card, form headline, button and primary text.
+**"Send us your next outdoor plan."** (31 characters, an instruction.) Also the instant-form headline. Wording identical across end card, form headline, button and primary text.
 
 ## Banned list check
 No "Tired of", "Imagine", "Look no further", "game-changer", elevate, transform, seamless, unlock, bespoke, nestled, curated, stunning, dream, "we don't just". No em dashes. No prices, stats, reviews, years, turnaround numbers.
