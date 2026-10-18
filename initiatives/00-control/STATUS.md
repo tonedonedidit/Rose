@@ -8,7 +8,8 @@ The AI Automation Studio plan (v2.1) is dropped — see DECISIONS.md. Active pro
 |---|---|---|---|---|---|
 | 01 | Niche research | DONE ✔ verified | 5 niches picked from Trends data; re-check monthly | you | — |
 | 02 | Agent team (9 agents in `.claude/agents/`) | DONE ✔ verified (dry run: ideas → script → fact-check → compliance) | 4 of 5 test scripts approved; AI-stories needs rename (fictional brand collided with a real app) | you | — |
-| 02 | Render tool `studio/tools/render.py` | NOT STARTED | Build: TTS + visuals + captions → 9:16 MP4 | you | TTS choice (Q4) |
+| 02 | Render tool `studio/tools/render.py` | DONE ✔ verified (first video rendered, ffprobe-checked) | Add scene types for other channels (scary, history, myth, AI) | you | — |
+| 03 | First video: true crime / Unabomber | DONE ✔ rendered, awaiting your review | You watch preview; 🔴 decide on posting once channel exists | me | FBI page check; channel account |
 | 03 | Channels ×5 (true-crime, scary-stories, history, mythology, ai-stories) | NOT STARTED | Create YouTube + TikTok accounts | me | Q2 |
 | 04 | Monetization | NOT STARTED | — | — | channels |
 | 05 | Analytics | NOT STARTED | Weekly numbers once uploads start | me | channels |

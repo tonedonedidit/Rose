@@ -466,13 +466,13 @@ def render(spec_path, out, check_only=False, stills=None):
     chunks = caption_chunks(words, spec.get("caption_words", 3))
     vign = make_vignette()
     rng = np.random.default_rng(1)
-    grains = [rng.normal(0, 7, (H // 2, W // 2, 1)).astype(np.float32) for _ in range(6)]
+    grains = [rng.normal(0, 4, (H // 2, W // 2, 1)).astype(np.float32) for _ in range(6)]
     grains = [np.repeat(np.repeat(g, 2, 0), 2, 1) for g in grains]
     base = Image.new("RGB", (W, H), (12, 11, 10))
     silent = os.path.join(tmp, "video.mp4")
     enc_cmd = (["ffmpeg", "-y", "-loglevel", "error", "-f", "rawvideo", "-pix_fmt", "rgb24",
                             "-s", f"{W}x{H}", "-r", str(FPS), "-i", "-", "-c:v", "libx264", "-preset",
-                            "medium", "-crf", "20", "-pix_fmt", "yuv420p", silent])
+                            "slow", "-crf", "27", "-tune", "grain", "-pix_fmt", "yuv420p", silent])
     nframes = int(math.ceil(total * FPS))
 
     def scene_frame(i, t):
@@ -526,7 +526,7 @@ def render(spec_path, out, check_only=False, stills=None):
     subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-i", silent, "-i", voice, "-i", mus,
                     "-filter_complex",
                     "[1:a]aresample=48000,volume=1.0[v];[2:a]volume=0.12[m];"
-                    "[v][m]amix=inputs=2:duration=first:normalize=0,loudnorm=I=-14:TP=-1.5:LRA=11[a]",
+                    "[v][m]amix=inputs=2:duration=first:normalize=0,loudnorm=I=-14:TP=-1.5:LRA=11,volume=2dB,alimiter=limit=0.89[a]",
                     "-map", "0:v", "-map", "[a]", "-c:v", "copy", "-c:a", "aac", "-b:a", "192k",
                     "-movflags", "+faststart", out], check=True)
     print(f"wrote {out}")

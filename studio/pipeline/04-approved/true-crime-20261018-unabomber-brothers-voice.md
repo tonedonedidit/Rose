@@ -116,6 +116,13 @@ True-crime rules: closed case (guilty plea) ✅ · no victims named, no minors n
 **Batch check (5 items, 2026-10-18):** structural repetition found across the batch. All 5 scripts share one skeleton: ~10-word hook → setup → re-hook at ~33–35s built on the same formula ("But that wasn't the plan" / "But that wasn't the cruelest part" / "But that wasn't the part that cracked the case" / "But that's not where the ticket ended" / "But on the seventh night…") → twist → final line that loops back to the opening line, all at 184–189 words / ~74s. They are on 5 different channels and none has prior uploads in 04–07, so the per-channel check (item 1) passes. But if every channel uses this template every day, each channel will look templated within ~10 uploads. Fix for the scriptwriter before the next batch: vary the re-hook wording and position (or drop it), vary the length (60–90s) and don't use the loop-back ending in every script.
 
 ## Production  (producer)
+- Spec: `studio/specs/true-crime-20261018-unabomber-brothers-voice.json` (13 scenes, voice am_michael @1.15, accent #E8A33D)
+- Visuals: procedural motion graphics only (silhouettes, name card, map from Natural Earth public-domain data). No photos, no stock, no AI faces → disclosure_synthetic stays false.
+- Music: original ffmpeg drone (no licence needed).
+- **RENDER: done 2026-10-18.** ffprobe: 1080×1920, 75.1s, H.264 + AAC; loudness -15.0 LUFS, true peak -1.1 dBTP.
+  - Upload file: `studio/output/unabomber-upload.mp4` (98 MB, gitignored)
+  - Phone preview: `studio/output/unabomber-preview-720p.mp4` (13 MB)
+- On-screen change vs script: the paraphrased offer is shown without quote marks ("His offer: publish it, and the bombing stops.").
 
 ## Package  (packager)
 

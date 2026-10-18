@@ -13,3 +13,4 @@
 | 2026-10-18 | Build the studio as 9 Claude Code agents with file-based pipeline (`studio/`) | Tony asked for an agent team from script to review to post; posting stays 🔴 human | Tony |
 | 2026-10-18 | Correction: 10 h/week review ≈ 28 videos/day at 3 min each (not 4/day as first reported) | Arithmetic error found and fixed in SIMULATION.md | Claude |
 | 2026-10-18 | Scriptwriter rules tightened: vary skeleton across batches; web-check invented names; quote sources exactly | Dry-run review: batch shared one skeleton (templated risk); "Hearthly" is a real app; 11 wording fixes needed in factual scripts | Claude |
+| 2026-10-18 | Free voice = Kokoro-82M (Apache-2.0) running locally; visuals = procedural motion graphics; music = original synth drone | $0 per video, no licence or copyright exposure; fits $200 budget | Claude (Tony asked for free voice) |
