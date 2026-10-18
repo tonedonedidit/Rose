@@ -41,3 +41,13 @@ Sources: air.io monetization timeline, outlierkit.com faceless demonetized, logi
 - **Channel A: Scary + AI stories** (original short fiction, e.g. AI/tech horror). Big stable demand + fastest-rising term; original fiction = no rights or defamation risk; cheapest to produce.
 - **Channel B: True crime** (highest demand, higher RPM). Needs sourced facts and care.
 - Finance parked: best RPM, weak YouTube search interest here, highest policy risk for AI narration.
+
+## Addendum 2026-10-18: educational candidates (Google Trends, YouTube search, US, 12 months, measured)
+| Term | 12-mo avg | First 3 mo | Last 3 mo |
+|---|---|---|---|
+| true crime (bridge) | 69.3 | 70.6 | 66.4 |
+| history documentary | 19.1 | 21.2 | 16.8 |
+| dark history | 3.6 | 4.5 | 2.8 |
+| science explained | 1.1 | 1.0 | 1.4 |
+| psychology facts | 1.0 | 1.0 | 0.9 |
+Best educational lane by search interest: **history**.
