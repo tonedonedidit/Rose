@@ -12,3 +12,4 @@
 | 2026-10-18 | Run 5 niches: true crime, scary stories, history, mythology, ai stories at 1/day each | Tony asked for 5; picked by YouTube search interest; 5/day fits review capacity and caps from the simulation | Tony (niches count) + Claude (data) |
 | 2026-10-18 | Build the studio as 9 Claude Code agents with file-based pipeline (`studio/`) | Tony asked for an agent team from script to review to post; posting stays 🔴 human | Tony |
 | 2026-10-18 | Correction: 10 h/week review ≈ 28 videos/day at 3 min each (not 4/day as first reported) | Arithmetic error found and fixed in SIMULATION.md | Claude |
+| 2026-10-18 | Scriptwriter rules tightened: vary skeleton across batches; web-check invented names; quote sources exactly | Dry-run review: batch shared one skeleton (templated risk); "Hearthly" is a real app; 11 wording fixes needed in factual scripts | Claude |

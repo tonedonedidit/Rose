@@ -1,9 +1,9 @@
 ---
 channel: scary-stories
 id: scary-stories-20261018-toll-booth-rules
-stage: script
+stage: approved
 rewrites: 0
-disclosure_synthetic: false
+disclosure_synthetic: true
 ---
 # Night shift rules for the toll booth: never answer the phone after 2 a.m.
 
@@ -60,8 +60,29 @@ My hand was already closed around it.
 **Word count:** 185 words (narration, counted with `wc -w`; ≈ 74s at 150 wpm)
 
 ## Fact check  (fact-checker — factual channels)
+Fiction channel, so there is no factual claims table. I checked the script for real-world claims.
+
+| Claim | Status | Note |
+|---|---|---|
+| Real-world claims | ✅ none | No real place, road, company, person or event is named. A toll booth with a landline and a cash register is a generic setting |
+| Originality (real-world check) | ✅ | The rules-list format is a genre convention. The specific rules, fog-car, coin and "rule seven in my handwriting" twist don't reproduce a known creepypasta/Reddit text as written. Compliance should still treat originality as a judgement call |
+
+**FACT PASS** (no factual claims; fiction)
 
 ## Compliance  (compliance-reviewer)
+1. ✅ Repetition (channel): no prior scary-stories items in 04–07. Uses the "rules list" rotation structure. Watch it: the rules-list format is heavily used across YouTube, so rotate away from it next time.
+2. ✅ Original value: an original micro-story with a twist in the final seconds (channel promise).
+3. ✅ Advertiser-friendly: no gore, no violence, faces never shown. Creepy, not shocking.
+4. ✅ Copyright: original text. Not a retelling of a known creepypasta or Reddit post, as far as review can tell. Music from Audio Library (log).
+5. ✅ Legal: fiction, with no real persons or places.
+6. ⚠️ → ✅ Disclosure: the visual plan uses "AI/stock rooms… family silhouettes… pale hand". If any shot is a photorealistic AI-generated scene (people or vehicle), synthetic disclosure must be ON. **Frontmatter changed to disclosure_synthetic: true** as the safe default. The producer may set it back to false only if every shot is real stock footage.
+7. ✅ Audience: not made for kids (channel hard rule).
+8. ✅ Sensitive advice: none.
+9. ✅ TikTok: ~74s planned (185 words), over 61s.
+
+**COMPLIANCE PASS**
+
+**Batch check (5 items, 2026-10-18):** structural repetition found across the batch. All 5 scripts share one skeleton: ~10-word hook → setup → re-hook at ~33–35s built on the same formula ("But that wasn't the plan" / "But that wasn't the cruelest part" / "But that wasn't the part that cracked the case" / "But that's not where the ticket ended" / "But on the seventh night…") → twist → final line that loops back to the opening line, all at 184–189 words / ~74s. They are on 5 different channels and none has prior uploads in 04–07, so the per-channel check (item 1) passes. But if every channel uses this template every day, each channel will look templated within ~10 uploads. Fix for the scriptwriter before the next batch: vary the re-hook wording and position (or drop it), vary the length (60–90s) and don't use the loop-back ending in every script.
 
 ## Production  (producer)
 
