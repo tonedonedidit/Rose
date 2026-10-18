@@ -1,0 +1,12 @@
+{
+  "_note": "Affiliate tags are placeholders until Tony signs up. Search links are used so no product IDs are invented.",
+  "amazon_tag": "{{AMAZON_ASSOCIATES_TAG}}",
+  "ai_note": "Narrated with an AI voice. Story researched and written by our team.",
+  "channels": {
+    "true-crime":    {"affiliate_query": "true crime books", "hashtags": ["#truecrime", "#coldcase"]},
+    "scary-stories": {"affiliate_query": "horror short story collections", "hashtags": ["#scarystories", "#horror"]},
+    "history":       {"affiliate_query": "history books", "hashtags": ["#history", "#historyfacts"]},
+    "mythology":     {"affiliate_query": "mythology books", "hashtags": ["#mythology", "#legends"]},
+    "ai-stories":    {"affiliate_query": "science fiction short stories", "hashtags": ["#aistories", "#scifi"]}
+  }
+}

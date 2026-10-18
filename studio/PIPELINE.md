@@ -10,7 +10,7 @@ One markdown file per video moves through these folders. The file *is* the recor
 ```
 
 ## Agents (`.claude/agents/`)
-showrunner (runs it) · trend-researcher · scriptwriter · fact-checker · compliance-reviewer · producer · packager · publisher · analyst
+showrunner (runs it) · monetizer (income kits, see INCOME.md) · trend-researcher · scriptwriter · fact-checker · compliance-reviewer · producer · packager · publisher · analyst
 
 ## Channels (5, from search data — see initiatives/01-shorts-test/niche-research.md)
 | Channel | Demand index (scary stories = 100) | Trend | Daily cap |
@@ -30,6 +30,5 @@ Cut on data: brain rot (−83%), reddit stories (reused-content risk), conspirac
 In a Claude Code session on this repo: "showrunner: run today's batch" (or "make 7 days of buffer for all channels").
 
 ## Known gaps (to build next)
-- `studio/tools/render.py`: script + TTS + visuals + captions → 9:16 MP4 (ffmpeg is installed; TTS engine TBD, free/local first).
 - Metrics intake: no YouTube/TikTok analytics connector; Tony pastes or exports weekly.
 - Scheduled runs: optional daily showrunner task (🟡, needs Tony's yes).
