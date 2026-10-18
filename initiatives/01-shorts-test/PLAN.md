@@ -29,6 +29,15 @@ Automate a step only after it has worked by hand twice.
 | Buffer | rest of $200 |
 Nothing bought without a 🔴 yes.
 
+## Guardrails from the simulation (see SIMULATION.md)
+- ≤3 uploads/day per channel; total volume = review capacity (~3 min human review per video)
+- Every video 61–75s (TikTok Creator Rewards needs >1 min)
+- Uploads scheduled in YouTube Studio in weekly batches; no API bulk upload until a channel proves itself
+- Free local voice + stock until a channel wins; then upgrade that channel only
+- True crime: sources in every description, ≤2/day
+- Music/stock: YouTube Audio Library or licensed only
+- Day 30: median views < 500 → change hook/format. Days 60 and 120: cut the weakest channel, move its slots to the best
+
 ## Done-when
 30 days, ≥40 uploads per channel, numbers logged weekly in METRICS.md, decision rules applied.
 

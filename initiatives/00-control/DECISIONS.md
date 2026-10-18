@@ -8,3 +8,4 @@
 | 2026-10-18 | Budget $200/mo; no face, no own voice | User facts | Tony |
 | 2026-10-18 | Cut "brain rot" niche | YouTube search interest fell ~83% in 12 months (48 → 8.2); lowest RPM; highest inauthentic-content risk | Claude (data) |
 | 2026-10-18 | Proposed test: Channel A Scary + AI stories, Channel B True crime | Highest/stable demand + fastest-rising term; see 01-shorts-test/niche-research.md | Claude (pending your confirm) |
+| 2026-10-18 | Recommend against 10 channels × 10/day; adopt guardrails in 01-shorts-test/PLAN.md | Simulation: $0 in 5/5 runs and still loses to the 3×2 plan at every per-video performance level (SIMULATION.md) | Claude (pending your confirm) |
