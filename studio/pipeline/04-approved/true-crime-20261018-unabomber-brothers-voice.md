@@ -4,6 +4,7 @@ id: true-crime-20261018-unabomber-brothers-voice
 stage: approved
 rewrites: 0
 disclosure_synthetic: false
+affiliate_query: unabomber book
 ---
 # The Unabomber was caught by the one thing he couldn't disguise: his voice
 
@@ -125,6 +126,12 @@ True-crime rules: closed case (guilty plea) ✅ · no victims named, no minors n
 - On-screen change vs script: the paraphrased offer is shown without quote marks ("His offer: publish it, and the bombing stops.").
 
 ## Package  (packager)
+- **YouTube title:** How the Unabomber Was Caught: His Brother Knew the Words
+- **Description:** For 17 years the FBI hunted the Unabomber, a bomber who left almost no trace. In 1995 his manifesto was published, and his brother David recognized the ideas and phrasing, a tip that led agents to a Montana cabin and, in 1998, a guilty plea.
+- **TikTok caption:** For 17 years, the FBI hunted a man almost nobody had seen. Then his brother read the manifesto. #truecrime #unabomber #fbi #caseclosed
+- **Cover text:** Caught by his own words
+- **Pinned comment:** If you recognized a family member's writing in the news, what would you have done?
+- **Alt titles:** The Unabomber's Manifesto Gave Him Away to One Reader | The 17-Year Unabomber Hunt Ended With His Brother's Tip
 
 ## Publish log  (publisher)
 - Scheduled:

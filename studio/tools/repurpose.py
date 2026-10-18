@@ -72,6 +72,13 @@ def affiliate_link(info):
     return f"https://www.amazon.com/s?k={urllib.parse.quote_plus(q)}&tag={CFG['amazon_tag']}"
 
 
+def with_tags(text, tags):
+    """Append hashtags the text doesn't already contain."""
+    have = {t.lower() for t in re.findall(r"#\w+", text)}
+    extra = [t for t in tags if t.lower() not in have]
+    return f"{text} {' '.join(extra)}".strip()
+
+
 def channel_videos(channel, n):
     items = []
     for stage in DONE_STAGES:
@@ -96,7 +103,7 @@ def cmd_package(item_id):
     pkg = info["package"]
     yt_title = field(pkg, "YouTube title") or info["title"][:60]
     tt_caption = field(pkg, "TikTok caption") or info["title"]
-    tags = " ".join(CFG["channels"].get(info["channel"], {}).get("hashtags", []))
+    tag_list = CFG["channels"].get(info["channel"], {}).get("hashtags", [])
     aff = affiliate_link(info)
     src_lines = "\n".join(f"- {u}" for u in info["sources"][:4])
     desc = f"{field(pkg, 'Description') or info['title']}\n\n"
@@ -104,16 +111,16 @@ def cmd_package(item_id):
         desc += f"Sources:\n{src_lines}\n\n"
     if aff:
         desc += f"Read more (affiliate link, we may earn a commission): {aff}\n\n"
-    desc += f"{CFG['ai_note']}\n\n#shorts {tags}"
+    desc += f"{CFG['ai_note']}\n\n" + with_tags("#shorts", tag_list)
     # same master file works for every vertical platform; thumbnail from the hook
     ff("-ss", "1.5", "-i", src, "-frames:v", "1", "-q:v", "2", os.path.join(dest, "thumbnail.jpg"))
     ff("-i", src, "-vn", "-ac", "1", "-b:a", "128k", os.path.join(dest, "audio.mp3"))
     platforms = [
         ("YouTube Shorts", dur <= 180, f"Title: {yt_title}\n\n{desc}"),
-        ("TikTok", True, f"{tt_caption} {tags} #fyp"),
-        ("Instagram Reels", dur <= 180, f"{tt_caption}\n\n{CFG['ai_note']}\n{tags}"),
+        ("TikTok", True, with_tags(tt_caption, tag_list + ["#fyp"])),
+        ("Instagram Reels", dur <= 180, f"{with_tags(tt_caption, tag_list)}\n\n{CFG['ai_note']}"),
         ("Facebook Reels", True, f"{tt_caption}\n\n{CFG['ai_note']}"),
-        ("Snapchat Spotlight", dur <= 60, f"{tt_caption} {tags}"),
+        ("Snapchat Spotlight", dur <= 60, with_tags(tt_caption, tag_list)),
     ]
     lines = [f"# Upload kit: {info['title']}", "",
              f"Video: `../{item_id}.mp4` ({dur:.1f}s, 1080x1920) · thumbnail.jpg · audio.mp3", "",
