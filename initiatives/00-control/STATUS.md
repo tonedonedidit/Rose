@@ -6,10 +6,10 @@ The AI Automation Studio plan (v2.1) is dropped — see DECISIONS.md. Active pro
 
 | # | Workstream | Status | Next action | Owner | Blocker |
 |---|---|---|---|---|---|
-| 01 | Niche research | DONE ✔ verified | Re-pull rising queries (rate-limited today) | you | — |
-| 02 | Content pipeline | NOT STARTED | Build local render script + first 10 scripts per channel | you | Q1, Q4 |
-| 03 | Channel A: Scary + AI stories | NOT STARTED | Create channel | me | Q2 |
-| 03 | Channel B: True crime | NOT STARTED | Create channel | me | Q2 |
+| 01 | Niche research | DONE ✔ verified | 5 niches picked from Trends data; re-check monthly | you | — |
+| 02 | Agent team (9 agents in `.claude/agents/`) | IN PROGRESS | Dry-run batch (1 video per channel) through script + review | you | — |
+| 02 | Render tool `studio/tools/render.py` | NOT STARTED | Build: TTS + visuals + captions → 9:16 MP4 | you | TTS choice (Q4) |
+| 03 | Channels ×5 (true-crime, scary-stories, history, mythology, ai-stories) | NOT STARTED | Create YouTube + TikTok accounts | me | Q2 |
 | 04 | Monetization | NOT STARTED | — | — | channels |
 | 05 | Analytics | NOT STARTED | Weekly numbers once uploads start | me | channels |
 

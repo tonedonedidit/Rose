@@ -51,3 +51,8 @@ Sources: air.io monetization timeline, outlierkit.com faceless demonetized, logi
 | science explained | 1.1 | 1.0 | 1.4 |
 | psychology facts | 1.0 | 1.0 | 0.9 |
 Best educational lane by search interest: **history**.
+
+## Addendum 2026-10-18: final 5 niches (Google Trends, YouTube search, US, 12 months, measured)
+Query 4 (bridge = scary stories): scary stories 69.6 · mythology 20.0 · conspiracy theories 11.9 · unsolved mysteries 10.1 · survival stories 1.5.
+Normalized to scary stories = 100 across all queries: true crime 134 · reddit stories 101 · scary stories 100 · history documentary 37 · mythology 29 · conspiracy theories 17 · unsolved mysteries 15 · ai stories 11 (rising) · survival stories 2.
+**Picked:** true crime, scary stories, history, mythology, ai stories. **Cut:** reddit stories (reused content), conspiracy (misinformation policy), unsolved mysteries (overlaps true crime), survival (no demand).

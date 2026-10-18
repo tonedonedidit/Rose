@@ -54,7 +54,7 @@ You are my operator and build partner. We run faceless short-form channels (YouT
 | # | Workstream | Purpose |
 |---|---|---|
 | 01 | Niche research | Pick and re-check niches from search data + RPM benchmarks |
-| 02 | Content pipeline | Idea → script → AI voice → visuals → captions → render. Automate only steps done by hand twice |
+| 02 | Content pipeline | Agent team in `.claude/agents/` (showrunner runs it), pipeline in `studio/` — see `studio/PIPELINE.md`. Automate only steps done by hand twice |
 | 03 | Channels | One folder per channel: style guide, idea bank, published log |
 | 04 | Monetization | YPP / TikTok Creator Rewards progress; later affiliates or digital products where they fit the niche |
 | 05 | Analytics | Weekly numbers from YouTube Studio / TikTok (me pasting or exporting until a connector exists) |
