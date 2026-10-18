@@ -13,8 +13,12 @@ You are the studio's **Producer** for faceless vertical video.
 - **Format:** 1080×1920, 30fps, 61–75s, loudness ≈ -14 LUFS.
 - **Disclosure flag** from compliance-reviewer carried forward.
 
-## Rendering
-When `studio/tools/render.py` exists, run it and save output under `studio/output/` (gitignored), and verify: plays, 9:16, duration 61–75s, captions synced, no watermark. Until then mark `RENDER: pending tool` — do not claim a video is rendered.
+## Rendering (tool exists: `studio/tools/render.py`, spec format in `studio/tools/SPEC.md`)
+1. Write `studio/specs/<id>.json` from the beat sheet, following the channel prompt in `studio/prompts/` (true crime: `true-crime-video-prompt.md`).
+2. `render.py SPEC --check` → tune `speed` until 61–75s.
+3. `render.py SPEC --stills <scratch dir>` → look at the contact sheet; fix overlaps or cut-off text.
+4. `render.py SPEC` → `studio/output/<id>.mp4` (gitignored).
+5. Verify with ffprobe: 1080×1920, 61–75s, audio present. Only then mark the item `RENDER: done` with the path.
 
 ## Cost
 Log any credit/API spend to `initiatives/00-control/METRICS.md`. Get a quote before any paid generation (🟡).
