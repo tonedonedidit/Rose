@@ -1,0 +1,598 @@
+<title>Force Shop Inventory</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* Layout: sticky header + tab bar, one view at a time; map and lists stack at phone width. Look matches the Gilbert rack map. */
+:root{
+ --bg:#0D1611;--panel:#13201A;--panel2:#1A2B21;--grid:#162820;--grid2:#1F3A2B;
+ --ink:#E3F0DC;--dim:#8EA894;--line:#2C4636;--lime:#8DC63F;--onlime:#0D1611;--sel:#FFE14D;
+ --warn:#E8A23A;--bad:#F07A66;--teal:#1E7A6A;
+ --font:"Chakra Petch","Segoe UI",system-ui,sans-serif;
+ color-scheme:dark;
+}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]){--bg:#EEF2EB;--panel:#FAFCF8;--panel2:#E6EDE2;--grid:#DFE7DA;--grid2:#C9D7C2;--ink:#14231A;--dim:#4F6857;--line:#BFCDB8;--lime:#3F7F0E;--onlime:#FFFFFF;--sel:#C79A00;--warn:#9A5B00;--bad:#B3261E;color-scheme:light}}
+:root[data-theme="light"]{--bg:#EEF2EB;--panel:#FAFCF8;--panel2:#E6EDE2;--grid:#DFE7DA;--grid2:#C9D7C2;--ink:#14231A;--dim:#4F6857;--line:#BFCDB8;--lime:#3F7F0E;--onlime:#FFFFFF;--sel:#C79A00;--warn:#9A5B00;--bad:#B3261E;color-scheme:light}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 16px/1.45 var(--font);font-variant-numeric:tabular-nums}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+.wrap{max-width:1400px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+header{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);border-bottom:2px solid var(--lime)}
+.hrow{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;padding-block:10px 6px}
+.brand{font-weight:700;letter-spacing:.04em;font-size:1.25rem;line-height:1.1}.brand .f{color:var(--lime)}
+.brand small{display:block;font-weight:500;letter-spacing:0;color:var(--dim);font-size:.8rem}
+.who{display:flex;align-items:center;gap:6px;font-size:.85rem;color:var(--dim)}
+.who input{width:130px}
+nav.tabs{display:flex;gap:4px;overflow-x:auto;padding-block:0 8px;scrollbar-width:thin}
+nav.tabs a{flex:none;font-weight:700;text-decoration:none;color:var(--ink);padding:8px 14px;border:2px solid var(--line);border-radius:3px;background:var(--panel)}
+nav.tabs a[aria-current="page"]{background:var(--lime);border-color:var(--lime);color:var(--onlime)}
+main{padding-block:14px 40px}
+h1{font-size:1.5rem;margin:0 0 4px;text-wrap:balance}
+h2{font-size:1.1rem;margin:0 0 8px;text-wrap:balance}
+p{margin:0 0 8px}
+.dim{color:var(--dim)}
+.small{font-size:.82rem}
+.card{border:1px solid var(--line);background:var(--panel);padding:12px;min-width:0}
+.card.hi{border:2px solid var(--lime)}
+.grid2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px}
+.gridmap{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(300px,1fr);gap:14px;align-items:start}
+@media (max-width:900px){.grid2,.gridmap{grid-template-columns:minmax(0,1fr)}}
+.stack{display:flex;flex-direction:column;gap:14px}
+input,select,textarea{font:500 1rem var(--font);color:var(--ink);background:var(--bg);border:2px solid var(--line);border-radius:3px;padding:8px 10px;min-width:0}
+input:focus-visible,select:focus-visible,textarea:focus-visible,button:focus-visible,a:focus-visible,.hit:focus-visible{outline:3px solid var(--sel);outline-offset:2px}
+label{display:flex;flex-direction:column;gap:3px;font-size:.82rem;font-weight:600;color:var(--dim)}
+button{font:700 1rem var(--font);padding:9px 16px;border:2px solid var(--lime);background:var(--panel);color:var(--ink);border-radius:3px;cursor:pointer;min-height:44px}
+button.go{background:var(--lime);color:var(--onlime)}
+button.ghost{border-color:var(--line)}
+button.danger{border-color:var(--bad);color:var(--bad)}
+button.sm{padding:5px 10px;font-size:.85rem;min-height:34px}
+button:disabled{opacity:.5;cursor:not-allowed}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:end}
+.row>label{flex:1 1 160px}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chips button{padding:6px 12px;font-size:.9rem;min-height:38px;border-color:var(--line)}
+.chips button[aria-pressed="true"]{background:var(--lime);border-color:var(--lime);color:var(--onlime)}
+.banner{border:2px dashed var(--warn);color:var(--ink);padding:8px 12px;margin-block:0 14px;font-size:.9rem;display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.banner b{color:var(--warn)}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:14px}
+.tile{border:1px solid var(--line);background:var(--panel);padding:10px 12px}
+.tile span{display:block;font-size:.75rem;color:var(--dim);text-transform:uppercase;letter-spacing:.06em}
+.tile b{font-size:1.7rem;line-height:1.2}
+.tile em{display:block;font-style:normal;font-size:.8rem;color:var(--dim)}
+.tile.alert b{color:var(--warn)}
+.tbl{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:.92rem}
+th{text-align:left;font-size:.72rem;text-transform:uppercase;letter-spacing:.06em;color:var(--dim);font-weight:600;border-bottom:2px solid var(--line);padding:6px 8px;white-space:nowrap}
+td{border-bottom:1px solid var(--line);padding:7px 8px;vertical-align:top}
+td.n,th.n{text-align:right}
+tr.click{cursor:pointer}tr.click:hover td{background:var(--panel2)}
+.pill{display:inline-block;font-size:.72rem;font-weight:700;padding:1px 7px;border-radius:2px;border:1.5px solid currentColor;white-space:nowrap}
+.pill.low{color:var(--warn)}.pill.out{color:var(--bad)}.pill.ok{color:var(--dim)}.pill.ph{color:var(--warn);border-style:dashed}
+.sw{display:inline-block;width:14px;height:14px;border:1px solid var(--line);vertical-align:-2px;margin-right:6px;border-radius:2px}
+.loc{font-weight:700;color:var(--lime);white-space:nowrap}
+.locs{display:flex;gap:4px 10px;flex-wrap:wrap}
+.search{display:flex;gap:8px}
+.search input{flex:1;font-size:1.2rem;padding:12px 14px;border-color:var(--lime)}
+.result{border-top:1px solid var(--line);padding:10px 0;display:flex;gap:10px;justify-content:space-between;align-items:start;flex-wrap:wrap}
+.result:first-child{border-top:0}
+.result .what{min-width:0;flex:1 1 260px}
+.result .what b{font-size:1.05rem}
+.big{font-size:1.35rem;font-weight:700}
+.acts{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px;margin-bottom:12px}
+.acts button{min-height:64px;line-height:1.15;border-color:var(--line)}
+.acts button small{display:block;font-weight:500;font-size:.75rem;color:var(--dim)}
+.acts button[aria-pressed="true"]{background:var(--lime);border-color:var(--lime);color:var(--onlime)}
+.acts button[aria-pressed="true"] small{color:var(--onlime)}
+.form{display:flex;flex-direction:column;gap:10px}
+.hint{font-size:.85rem;color:var(--dim);min-height:1.2em}
+.err{color:var(--bad);font-weight:600}
+.feed{list-style:none;margin:0;padding:0}
+.feed li{border-top:1px solid var(--line);padding:7px 0;display:flex;gap:8px;justify-content:space-between;align-items:baseline;flex-wrap:wrap;font-size:.9rem}
+.feed li:first-child{border-top:0}
+.feed .t{color:var(--dim);font-size:.78rem;white-space:nowrap}
+.tag{font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;padding:1px 6px;border-radius:2px;background:var(--panel2);color:var(--ink);margin-right:4px}
+.bars{display:flex;flex-direction:column;gap:6px}
+.bar{display:grid;grid-template-columns:minmax(110px,190px) minmax(0,1fr) 48px;gap:8px;align-items:center;font-size:.9rem}
+.bar .track{height:18px;position:relative}
+.bar .fill{position:absolute;inset:0 auto 0 0;background:var(--lime);border-radius:0 4px 4px 0;min-width:3px}
+.bar .v{text-align:right;font-weight:700}
+.empty{color:var(--dim);padding:14px 0;text-align:center}
+#map{overflow-x:auto}
+#map svg{display:block;width:100%;min-width:760px;height:auto}
+#map svg text{font-family:var(--font)}
+.hit{cursor:pointer}
+.hit:hover .cell{stroke:var(--sel);stroke-width:2}
+.hit.on .cell{stroke:var(--sel);stroke-width:4}
+.zone-o{fill:none;stroke:var(--dim);stroke-dasharray:6 5;stroke-width:1.2}
+.legend{display:flex;gap:6px 16px;flex-wrap:wrap;font-size:.8rem;color:var(--dim);margin-top:8px}
+.bins{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px}
+.bin{border:1.5px solid var(--line);padding:4px;font-size:.75rem;text-align:center;min-width:0;overflow-wrap:anywhere}
+.bin.full2{grid-column:span 2}
+.bin.has{border-color:var(--lime);background:var(--panel2)}
+.bin.on{outline:3px solid var(--sel)}
+.lvl{display:grid;grid-template-columns:56px minmax(0,1fr);gap:6px;align-items:center;margin-top:4px}
+.lvl b{font-size:.8rem;color:var(--lime)}
+textarea{width:100%;min-height:140px;font-size:.8rem;font-family:ui-monospace,Menlo,Consolas,monospace}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(16px + env(safe-area-inset-bottom,0px));background:var(--lime);color:var(--onlime);font-weight:700;padding:10px 16px;border-radius:3px;z-index:20;max-width:calc(100% - 32px)}
+.confirm{border:2px solid var(--bad);padding:10px;display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+details summary{cursor:pointer;font-weight:700;padding-block:4px}
+a{color:var(--lime)}
+@media (prefers-reduced-motion:no-preference){.toast{animation:up .2s ease-out}@keyframes up{from{transform:translate(-50%,10px);opacity:0}}}
+</style>
+
+<header><div class="wrap">
+ <div class="hrow">
+  <div class="brand"><span class="f">FORCE</span> SHOP INVENTORY<small>Boards · hardware · handles · cabinet pallets · misc</small></div>
+  <label class="who" for="who">Your name <input id="who" placeholder="e.g. Tony" autocomplete="name"></label>
+ </div>
+ <nav class="tabs" id="tabs" aria-label="Sections">
+  <a href="#find">Find</a><a href="#map">Map</a><a href="#log">Log activity</a><a href="#report">Daily report</a><a href="#items">Items</a><a href="#spots">Locations</a><a href="#backup">Backup</a>
+ </nav>
+</div></header>
+
+<main class="wrap">
+ <div id="banner"></div>
+ <section id="v-find" hidden></section>
+ <section id="v-map" hidden></section>
+ <section id="v-log" hidden></section>
+ <section id="v-report" hidden></section>
+ <section id="v-items" hidden></section>
+ <section id="v-spots" hidden></section>
+ <section id="v-backup" hidden></section>
+</main>
+<div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+
+<script>
+"use strict";
+/* ---------- constants ---------- */
+const KEY='force-inv-v1', WHO='force-inv-who', RACKMAP='https://claude.ai/artifact/6H58N7DEKwMkfmE9jZDW1d';
+const END=18, AISLES={A:1,B:5,C:5}; // first rack number per aisle, matches the Gilbert rack map
+const CATS={board:'Boards',hardware:'Hardware',handle:'Handles',pallet:'Cabinet pallets',misc:'Misc'};
+const ZONES=[
+ {id:'rackA',name:'Aisle A racks',kind:'rack',a:'A'},{id:'rackB',name:'Aisle B racks',kind:'rack',a:'B'},{id:'rackC',name:'Aisle C racks',kind:'rack',a:'C'},
+ {id:'bunks',name:'Board bunks',box:{x:340,y:70,w:300,h:220,cols:8}},
+ {id:'saw',name:'Saw & CNC staging',box:{x:340,y:340,w:300,h:70,cols:3}},
+ {id:'offcut',name:'Offcut rack',box:{x:340,y:450,w:300,h:56,cols:4}},
+ {id:'dock',name:'Receiving dock',box:{x:340,y:548,w:300,h:62,cols:2}},
+ {id:'hw',name:'Hardware cage',box:{x:680,y:70,w:290,h:200,cols:4}},
+ {id:'handles',name:'Handle wall',box:{x:680,y:310,w:290,h:96,cols:6}},
+ {id:'misc',name:'Misc floor',box:{x:680,y:446,w:290,h:164,cols:4}}
+];
+const ACTIONS={
+ receive:{name:'Receive',sub:'new stock in',cats:null,from:false,to:true},
+ move:{name:'Move',sub:'spot to spot',cats:null,from:true,to:true},
+ cut:{name:'Cut sheets',sub:'boards used today',cats:['board'],from:true,to:false,job:true},
+ pull:{name:'Pull for job',sub:'hardware, handles, misc',cats:['hardware','handle','misc'],from:true,to:false,job:true},
+ count:{name:'Count',sub:'fix a quantity',cats:null,from:false,to:false,at:true}
+};
+
+/* ---------- helpers ---------- */
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const ymd=d=>{d=new Date(d);return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')};
+const tm=t=>new Date(t).toLocaleTimeString([],{hour:'numeric',minute:'2-digit'});
+const dt=t=>new Date(t).toLocaleDateString([],{month:'short',day:'numeric'})+' '+tm(t);
+const fmt=n=>Number(n).toLocaleString();
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,7);
+const sget=k=>{try{return localStorage.getItem(k)}catch(e){return null}};
+const sset=(k,v)=>{try{localStorage.setItem(k,v);return true}catch(e){return false}};
+function lum(hex){const n=parseInt(hex.slice(1),16),c=[n>>16&255,n>>8&255,n&255].map(v=>{v/=255;return v<=.03928?v/12.92:Math.pow((v+.055)/1.055,2.4)});return .2126*c[0]+.7152*c[1]+.0722*c[2]}
+const textOn=hex=>lum(hex)>.25?'#111':'#fff';
+
+/* ---------- rack locations (generated, fixed) ---------- */
+function rackBins(a,r){const out=[];for(let L=1;L<=4;L++)(L===4?['a+b','c+d']:['a','b','c','d']).forEach(b=>out.push(`${a}-${L}${r}-${b}`));return out}
+const RACK_IDS=[];Object.keys(AISLES).forEach(a=>{for(let r=AISLES[a];r<=END;r++)RACK_IDS.push(...rackBins(a,r))});
+function parseRack(s){const m=String(s).trim().toUpperCase().replace(/\s/g,'').match(/^([ABC])-?([1-4])(\d{1,2})-?(A\+B|C\+D|[ABCD])$/);if(!m)return null;
+ const a=m[1],L=+m[2],r=+m[3];let b=m[4].toLowerCase();if(r<AISLES[a]||r>END)return null;
+ if(L===4&&b.length===1)b='ab'.includes(b)?'a+b':'c+d';if(L<4&&b.length>1)return null;return{a,L,r,b,id:`${a}-${L}${r}-${b}`}}
+
+/* ---------- state ---------- */
+let S=null, saveOK=true;
+function save(){saveOK=sset(KEY,JSON.stringify(S));banner()}
+function load(){const raw=sget(KEY);if(raw){try{S=JSON.parse(raw);if(S&&S.v===1)return}catch(e){}}S=sample();save()}
+const item=sku=>S.items.find(i=>i.sku===sku);
+const spot=id=>S.spots.find(l=>l.id===id);
+function normLoc(s){s=String(s||'').trim();if(!s)return null;const r=parseRack(s);if(r)return r.id;const u=s.toUpperCase();const l=S.spots.find(x=>x.id.toUpperCase()===u);return l?l.id:null}
+function zoneOf(id){const r=parseRack(id);if(r)return 'rack'+r.a;const l=spot(id);return l?l.zone:null}
+const zone=id=>ZONES.find(z=>z.id===id);
+const qtyAt=(sku,loc)=>(S.stock[sku]||{})[loc]||0;
+const total=sku=>Object.values(S.stock[sku]||{}).reduce((a,b)=>a+b,0);
+const locsOf=sku=>Object.entries(S.stock[sku]||{}).filter(([,q])=>q>0).sort((a,b)=>b[1]-a[1]);
+function contents(loc){const out=[];for(const sku in S.stock){const q=S.stock[sku][loc];if(q>0)out.push([sku,q])}return out.sort((a,b)=>b[1]-a[1])}
+function addQty(sku,loc,q){const m=S.stock[sku]??={};m[loc]=(m[loc]||0)+q;if(m[loc]<=0)delete m[loc]}
+function status(i){const t=total(i.sku);if(i.cat==='pallet')return t?'':'out';if(t<=0)return 'out';if(i.min&&t<=i.min)return 'low';return ''}
+const itemLabel=i=>i?`${i.name}`:'(deleted item)';
+const unit=(i,q)=>{if(!i)return '';const u=i.unit||'pcs';return q===1?u.replace(/s$/,''):u};
+
+/* ---------- sample data in placeholder spots ---------- */
+function rng(seed){return()=>{seed|=0;seed=seed+0x6D2B79F5|0;let t=Math.imul(seed^seed>>>15,1|seed);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+function sample(){
+ const spots=[];const add=(zone,ids,desc)=>ids.forEach(id=>spots.push({id,zone,desc:desc||'',ph:true}));
+ const seq=(p,n,w=2)=>Array.from({length:n},(_,i)=>p+String(i+1).padStart(w,'0'));
+ add('bunks',seq('BK-',16),'Board bunk');
+ add('saw',['SAW-1','CNC-1','CNC-2'],'Staging at machine');
+ add('offcut',seq('OC-',4,1),'Offcut cart');
+ add('dock',['DOCK-IN','DOCK-OUT'],'Dock floor');
+ const hw=[];for(let s=1;s<=4;s++)for(const l of 'ABCDE')hw.push(`HW-${s}${l}`);add('hw',hw,'Cage shelf');
+ add('handles',seq('HD-',12),'Handle bin');
+ add('misc',seq('FLR-',8),'Floor spot');
+ const items=[
+  {sku:'B-WHT-34',cat:'board',name:'White melamine 3/4"',color:'White',swatch:'#F1F1EC',spec:'49 x 97',unit:'sheets',min:60},
+  {sku:'B-WHT-14',cat:'board',name:'White melamine 1/4" (backs)',color:'White',swatch:'#E9E9E2',spec:'49 x 97',unit:'sheets',min:30},
+  {sku:'B-GRY-34',cat:'board',name:'Gray oak melamine 3/4"',color:'Gray oak',swatch:'#8E8A82',spec:'49 x 97',unit:'sheets',min:25},
+  {sku:'B-BLK-34',cat:'board',name:'Black matte melamine 3/4"',color:'Black matte',swatch:'#232323',spec:'49 x 97',unit:'sheets',min:20},
+  {sku:'B-MAP-34',cat:'board',name:'Natural maple plywood 3/4"',color:'Natural maple',swatch:'#D9B98A',spec:'48 x 96',unit:'sheets',min:15},
+  {sku:'B-WAL-34',cat:'board',name:'Walnut melamine 3/4"',color:'Walnut',swatch:'#6B4630',spec:'49 x 97',unit:'sheets',min:15},
+  {sku:'B-ESP-34',cat:'board',name:'Espresso melamine 3/4"',color:'Espresso',swatch:'#3B2A22',spec:'49 x 97',unit:'sheets',min:15},
+  {sku:'B-ALM-34',cat:'board',name:'Almond melamine 3/4"',color:'Almond',swatch:'#E6D9C2',spec:'49 x 97',unit:'sheets',min:10},
+  {sku:'H-HNG-110',cat:'hardware',name:'Soft-close hinge 110° full overlay',spec:'Clip-on',unit:'pcs',min:400},
+  {sku:'H-HNG-170',cat:'hardware',name:'Soft-close hinge 170° corner',spec:'Clip-on',unit:'pcs',min:60},
+  {sku:'H-PLT-0',cat:'hardware',name:'Hinge mounting plate 0 mm',spec:'',unit:'pcs',min:400},
+  {sku:'H-SLD-21',cat:'hardware',name:'Undermount drawer slide 21"',spec:'Soft-close',unit:'pairs',min:80},
+  {sku:'H-SLD-18',cat:'hardware',name:'Undermount drawer slide 18"',spec:'Soft-close',unit:'pairs',min:40},
+  {sku:'H-PIN-5',cat:'hardware',name:'Shelf pins 5 mm',spec:'Box of 100',unit:'boxes',min:10},
+  {sku:'H-LEG-4',cat:'hardware',name:'Leg leveler 4"',spec:'',unit:'pcs',min:200},
+  {sku:'H-SCR-CF',cat:'hardware',name:'Confirmat screws 7 x 50',spec:'Box of 500',unit:'boxes',min:8},
+  {sku:'P-BAR5-BLK',cat:'handle',name:'Bar pull 5" matte black',style:'Bar pull',finish:'Matte black',spec:'5" (128 mm CC)',unit:'pcs',min:150},
+  {sku:'P-BAR5-BN',cat:'handle',name:'Bar pull 5" brushed nickel',style:'Bar pull',finish:'Brushed nickel',spec:'5" (128 mm CC)',unit:'pcs',min:150},
+  {sku:'P-BAR8-BLK',cat:'handle',name:'Bar pull 8" matte black',style:'Bar pull',finish:'Matte black',spec:'8" (192 mm CC)',unit:'pcs',min:60},
+  {sku:'P-CUP3-BLK',cat:'handle',name:'Cup pull 3" matte black',style:'Cup pull',finish:'Matte black',spec:'3" CC',unit:'pcs',min:40},
+  {sku:'P-EDGE4-BRS',cat:'handle',name:'Edge pull 4" satin brass',style:'Edge pull',finish:'Satin brass',spec:'4"',unit:'pcs',min:40},
+  {sku:'P-KNOB-BLK',cat:'handle',name:'Knob 1-1/4" matte black',style:'Knob',finish:'Matte black',spec:'1-1/4"',unit:'pcs',min:80},
+  {sku:'P-KNOB-BN',cat:'handle',name:'Knob 1-1/4" brushed nickel',style:'Knob',finish:'Brushed nickel',spec:'1-1/4"',unit:'pcs',min:80},
+  {sku:'M-EB-WHT',cat:'misc',name:'Edge banding white 7/8"',spec:'Roll',unit:'rolls',min:6},
+  {sku:'M-EB-GRY',cat:'misc',name:'Edge banding gray oak 7/8"',spec:'Roll',unit:'rolls',min:3},
+  {sku:'M-TK-8',cat:'misc',name:'Toe kick 8 ft white',spec:'',unit:'pcs',min:20},
+  {sku:'M-CRN-8',cat:'misc',name:'Crown molding 8 ft white',spec:'',unit:'pcs',min:10},
+  {sku:'M-GLUE',cat:'misc',name:'Hot melt edgebander glue',spec:'Bag',unit:'bags',min:4},
+  {sku:'M-WRAP',cat:'misc',name:'Stretch wrap',spec:'Roll',unit:'rolls',min:4}
+ ];
+ const pallets=[['1182','Smith kitchen',3],['1190','Ortiz kitchen',2],['1194','Lee bath vanities',1],['1201','Mesa Ridge lot 14',4],['1203','Mesa Ridge lot 15',4],['1207','Patel laundry',1]];
+ pallets.forEach(([j,n,c])=>{for(let k=1;k<=c;k++)items.push({sku:`PAL-${j}-${k}`,cat:'pallet',name:`Job 24-${j} ${n}, pallet ${k} of ${c}`,job:'24-'+j,spec:'Boxed cabinets',unit:'pallets',min:0})});
+ items.forEach(i=>i.ph=true);
+ const stock={},put=(s,l,q)=>{(stock[s]??={})[l]=q};
+ [['B-WHT-34','BK-01',38],['B-WHT-34','BK-02',40],['B-WHT-34','SAW-1',12],['B-WHT-14','BK-03',44],['B-GRY-34','BK-04',27],['B-GRY-34','CNC-1',6],
+  ['B-BLK-34','BK-05',18],['B-MAP-34','BK-06',22],['B-WAL-34','BK-07',16],['B-ESP-34','BK-08',9],['B-ALM-34','BK-09',14],['B-WHT-34','BK-10',40],
+  ['B-WHT-34','OC-1',7],['B-GRY-34','OC-2',4],['B-BLK-34','DOCK-IN',30],
+  ['H-HNG-110','HW-1A',380],['H-HNG-110','HW-1B',200],['H-HNG-170','HW-1C',48],['H-PLT-0','HW-2A',520],['H-SLD-21','HW-3A',64],['H-SLD-21','HW-3B',40],['H-SLD-18','HW-3C',52],
+  ['H-PIN-5','HW-2C',14],['H-LEG-4','HW-4A',260],['H-SCR-CF','HW-2D',6],
+  ['P-BAR5-BLK','HD-01',210],['P-BAR5-BN','HD-02',96],['P-BAR8-BLK','HD-03',70],['P-CUP3-BLK','HD-04',36],['P-EDGE4-BRS','HD-05',55],['P-KNOB-BLK','HD-06',120],['P-KNOB-BN','HD-07',88],
+  ['M-EB-WHT','FLR-01',9],['M-EB-GRY','FLR-01',2],['M-TK-8','FLR-03',34],['M-CRN-8','FLR-04',12],['M-GLUE','FLR-02',5],['M-WRAP','FLR-02',3]
+ ].forEach(a=>put(...a));
+ const racked=['A-15-c','A-15-d','A-16-c','B-16-c','B-16-d','B-17-c','B-17-d','A-28-c','A-28-a','C-17-c','C-17-d','A-37-c','A-37-d','C-212-c','A-44-c+d'];
+ items.filter(i=>i.cat==='pallet').forEach((i,k)=>put(i.sku,racked[k],1));
+ // a week of example activity so the daily report has something to show
+ const log=[],R=rng(1022),now=Date.now(),day=864e5,ppl=['Sample: Saw crew','Sample: Assembly','Sample: Shipping'];
+ const boards=items.filter(i=>i.cat==='board'),pulls=items.filter(i=>i.cat==='hardware'||i.cat==='handle');
+ for(let d=6;d>=0;d--){
+  const base=new Date(now-d*day);base.setHours(6,30,0,0);const span=d===0?Math.max(6e4,Math.min(now-base,8*36e5)):8*36e5;
+  const at=()=>new Date(Math.min(now-6e4,base.getTime()+R()*span)).toISOString();
+  const job='24-'+(1180+Math.floor(R()*30));
+  boards.forEach(b=>{if(R()<.65){log.push({id:uid(),t:at(),type:'cut',sku:b.sku,qty:1+Math.floor(R()*(b.sku==='B-WHT-34'?24:8)),from:Object.keys(stock[b.sku]||{})[0]||'BK-01',job,who:ppl[0],ex:true})}});
+  pulls.forEach(p=>{if(R()<.5){const q=p.unit==='pairs'?2+Math.floor(R()*14):4+Math.floor(R()*40);log.push({id:uid(),t:at(),type:'pull',sku:p.sku,qty:q,from:Object.keys(stock[p.sku]||{})[0],job,who:ppl[1],ex:true})}});
+  if(R()<.4)log.push({id:uid(),t:at(),type:'receive',sku:'B-WHT-34',qty:40,to:'BK-10',who:ppl[2],note:'Truck delivery',ex:true});
+ }
+ log.push({id:uid(),t:new Date(now-2*day).toISOString(),type:'move',sku:'PAL-1207-1',qty:1,from:'DOCK-OUT',to:'A-44-c+d',who:ppl[2],ex:true});
+ log.sort((a,b)=>a.t<b.t?1:-1);
+ return{v:1,sample:true,created:new Date().toISOString(),spots,items,stock,log};
+}
+
+/* ---------- activity ---------- */
+function apply(e,sign=1){const q=e.qty*sign;
+ if(e.type==='receive')addQty(e.sku,e.to,q);
+ else if(e.type==='move'){addQty(e.sku,e.from,-q);addQty(e.sku,e.to,q)}
+ else if(e.type==='cut'||e.type==='pull')addQty(e.sku,e.from,-q);
+ else if(e.type==='count'){const m=S.stock[e.sku]??={};const v=sign>0?e.qty:e.prev;if(v>0)m[e.at]=v;else delete m[e.at]}}
+function describe(e){const i=item(e.sku),u=unit(i,e.qty),n=esc(itemLabel(i));
+ switch(e.type){
+  case 'receive':return `<span class="tag">In</span>${fmt(e.qty)} ${u} ${n} → <span class="loc">${esc(e.to)}</span>`;
+  case 'move':return `<span class="tag">Move</span>${fmt(e.qty)} ${u} ${n} <span class="loc">${esc(e.from)}</span> → <span class="loc">${esc(e.to)}</span>`;
+  case 'cut':return `<span class="tag">Cut</span>${fmt(e.qty)} ${u} ${n} from <span class="loc">${esc(e.from)}</span>${e.job?' · job '+esc(e.job):''}`;
+  case 'pull':return `<span class="tag">Pull</span>${fmt(e.qty)} ${u} ${n} from <span class="loc">${esc(e.from)}</span>${e.job?' · job '+esc(e.job):''}`;
+  case 'count':{const d=e.qty-e.prev;return `<span class="tag">Count</span>${n} at <span class="loc">${esc(e.at)}</span>: ${fmt(e.prev)} → ${fmt(e.qty)} (${d>=0?'+':''}${fmt(d)})`}
+ }return ''}
+
+/* ---------- UI chrome ---------- */
+let toastT=0;function toast(msg){const t=$('#toast');t.textContent=msg;t.hidden=false;clearTimeout(toastT);toastT=setTimeout(()=>t.hidden=true,3200)}
+function banner(){const b=$('#banner');let h='';
+ if(!saveOK)h+=`<div class="banner"><span><b>Not saving on this device.</b> This browser is blocking storage, so changes disappear when the page closes. Use Backup to copy your data out.</span></div>`;
+ if(S&&S.sample)h+=`<div class="banner"><span><b>Sample data in placeholder spots.</b> Every item, quantity and location here is made up so you can try the system. Rename spots and items to match the floor, then start fresh from Backup.</span><a href="#backup">Go to Backup</a></div>`;
+ b.innerHTML=h}
+const who=$('#who');who.value=sget(WHO)||'';who.addEventListener('input',()=>sset(WHO,who.value.trim()));
+
+/* ---------- views ---------- */
+const VIEWS=['find','map','log','report','items','spots','backup'];
+let view='find';
+function route(){let v=(location.hash||'#find').slice(1);if(!VIEWS.includes(v))v='find';view=v;
+ VIEWS.forEach(k=>$('#v-'+k).hidden=k!==v);document.querySelectorAll('#tabs a').forEach(a=>a.setAttribute('aria-current',a.getAttribute('href')==='#'+v?'page':'false'));render()}
+function render(){({find:rFind,map:rMap,log:rLog,report:rReport,items:rItems,spots:rSpots,backup:rBackup})[view]()}
+addEventListener('hashchange',route);
+function go(v){if(location.hash==='#'+v)route();else location.hash=v}
+
+/* ---------- Find ---------- */
+let findQ='';
+function todaySums(){const d=ymd(Date.now());let cut=0,hw=0,hd=0;S.log.forEach(e=>{if(ymd(e.t)!==d)return;const i=item(e.sku);if(!i)return;
+ if(e.type==='cut')cut+=e.qty;if(e.type==='pull'&&i.cat==='hardware')hw+=e.qty;if(e.type==='pull'&&i.cat==='handle')hd+=e.qty});return{cut,hw,hd}}
+function locLinks(sku,max=6){const l=locsOf(sku);if(!l.length)return '<span class="dim">none on hand</span>';
+ return `<span class="locs">${l.slice(0,max).map(([loc,q])=>`<a class="loc" href="#map" data-loc="${esc(loc)}">${esc(loc)}</a><span>${fmt(q)}</span>`).join('')}${l.length>max?`<span class="dim">+${l.length-max} more</span>`:''}</span>`}
+function rFind(){
+ const el=$('#v-find');
+ el.innerHTML=`<div class="search" role="search"><input id="q" type="search" placeholder="Find a board color, handle, job #, or spot like BK-04 or A-15-c" aria-label="Search inventory" value="${esc(findQ)}" autocomplete="off"></div>
+  <p class="dim small" style="margin-top:6px">Type anything: <b>white</b>, <b>black pull</b>, <b>1182</b>, <b>HW-3A</b>, <b>A-16-c</b>.</p><div id="fr"></div>`;
+ const q=$('#q');q.addEventListener('input',()=>{findQ=q.value;results()});results();
+ if(matchMedia('(min-width:700px)').matches)q.focus();
+}
+function results(){
+ const out=$('#fr'),q=findQ.trim().toLowerCase();
+ if(!q){out.innerHTML=findHome();return}
+ const words=q.split(/\s+/);
+ const its=S.items.filter(i=>{const hay=[i.sku,i.name,i.color,i.finish,i.style,i.spec,i.job,CATS[i.cat]].join(' ').toLowerCase();return words.every(w=>hay.includes(w))});
+ const loc=normLoc(findQ);const lmatch=loc?[loc]:S.spots.filter(l=>(l.id+' '+l.desc).toLowerCase().includes(q)).map(l=>l.id).slice(0,8);
+ let h='';
+ if(lmatch.length)h+=`<div class="card" style="margin-top:12px"><h2>Locations</h2>${lmatch.map(id=>{const c=contents(id);return `<div class="result"><div class="what"><span class="loc big">${esc(id)}</span> <span class="dim">${esc(zone(zoneOf(id))?.name||'')}</span><div>${c.length?c.map(([s,n])=>`${fmt(n)} ${unit(item(s),n)} ${esc(itemLabel(item(s)))}`).join('<br>'):'<span class="dim">Empty</span>'}</div></div><button class="sm ghost" data-show="${esc(id)}">Show on map</button></div>`}).join('')}</div>`;
+ if(its.length)h+=`<div class="card" style="margin-top:12px"><h2>Items (${its.length})</h2>${its.slice(0,40).map(i=>{const st=status(i);return `<div class="result"><div class="what">${i.swatch?`<span class="sw" style="background:${i.swatch}"></span>`:''}<b>${esc(i.name)}</b> <span class="dim small">${esc(i.sku)}</span>${st?` <span class="pill ${st}">${st==='low'?'Low':'Out'}</span>`:''}<div class="small" style="margin-top:3px">${locLinks(i.sku)}</div></div><div class="big">${fmt(total(i.sku))} <span class="dim small">${esc(i.unit)}</span></div></div>`}).join('')}</div>`;
+ if(!h)h=`<p class="empty">Nothing matches “${esc(findQ)}”. Check the spelling, or add it under Items.</p>`;
+ out.innerHTML=h;
+}
+function findHome(){
+ const t=todaySums(),sheets=S.items.filter(i=>i.cat==='board').reduce((a,i)=>a+total(i.sku),0);
+ const pal=S.items.filter(i=>i.cat==='pallet'&&total(i.sku)).length;
+ const low=S.items.filter(i=>i.cat!=='pallet'&&status(i));
+ let h=`<div class="tiles" style="margin-top:12px">
+  <div class="tile"><span>Sheets on hand</span><b>${fmt(sheets)}</b><em>${S.items.filter(i=>i.cat==='board').length} colors / thicknesses</em></div>
+  <div class="tile"><span>Sheets cut today</span><b>${fmt(t.cut)}</b><em><a href="#report">daily report</a></em></div>
+  <div class="tile"><span>Hardware pulled today</span><b>${fmt(t.hw)}</b><em>pcs, pairs, boxes</em></div>
+  <div class="tile"><span>Handles pulled today</span><b>${fmt(t.hd)}</b><em>pcs</em></div>
+  <div class="tile"><span>Cabinet pallets racked</span><b>${fmt(pal)}</b><em>aisles A, B, C</em></div>
+  <div class="tile ${low.length?'alert':''}"><span>Low or out</span><b>${low.length}</b><em>items at or under minimum</em></div></div>
+  <div class="grid2"><div class="card"><h2>Boards by color</h2><div class="tbl"><table><thead><tr><th>Board</th><th class="n">On hand</th><th>Where</th></tr></thead><tbody>
+  ${S.items.filter(i=>i.cat==='board').map(i=>`<tr><td><span class="sw" style="background:${i.swatch||'transparent'}"></span>${esc(i.name)}</td><td class="n"><b>${fmt(total(i.sku))}</b></td><td class="small">${locLinks(i.sku,4)}</td></tr>`).join('')}
+  </tbody></table></div></div>
+  <div class="card"><h2>Needs reorder</h2>${low.length?`<div class="tbl"><table><thead><tr><th>Item</th><th class="n">On hand</th><th class="n">Min</th></tr></thead><tbody>${low.map(i=>`<tr><td>${esc(i.name)} <span class="pill ${status(i)}">${status(i)==='low'?'Low':'Out'}</span></td><td class="n">${fmt(total(i.sku))}</td><td class="n dim">${fmt(i.min)}</td></tr>`).join('')}</tbody></table></div>`:'<p class="empty">Everything is above its minimum.</p>'}</div></div>`;
+ return h}
+document.addEventListener('click',e=>{const a=e.target.closest('[data-loc],[data-show]');if(!a)return;e.preventDefault();sel=a.dataset.loc||a.dataset.show;selRack=null;const r=parseRack(sel);if(r)selRack={a:r.a,r:r.r};go('map')});
+
+/* ---------- Map ---------- */
+let sel=null,selRack=null;
+const NS='http://www.w3.org/2000/svg';
+function rMap(){
+ const el=$('#v-map');
+ el.innerHTML=`<div class="gridmap"><div class="card hi"><h1>Warehouse map</h1><p class="dim small">North is up. Dashed zones are <b>placeholder positions</b> until we measure the real floor. Board bunks show the color stored there. Tap any spot. On a phone, swipe the map sideways.</p><div id="map"></div>
+  <div class="legend"><span>Rack shade = how many bins hold a pallet</span><span>Number on a spot = units stored</span><span><a href="${RACKMAP}" target="_blank" rel="noopener">Open the 3D rack map</a></span></div></div>
+  <div class="card" id="mp" aria-live="polite"></div></div>`;
+ drawMap();panel();
+}
+function drawMap(){
+ const W=1000,H=640,s=[];
+ s.push(`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Aerial map of the warehouse with racks, bunks, hardware cage and floor spots">`);
+ s.push(`<rect x="8" y="8" width="${W-16}" height="${H-16}" fill="var(--bg)" stroke="var(--lime)" stroke-width="2"/>`);
+ s.push(`<text x="${W-20}" y="34" text-anchor="end" font-size="14" font-weight="700" fill="var(--lime)">N ↑</text>`);
+ // racks: C, B (8 in gap), walkway, A — from the rack map
+ const AX={C:34,B:100,A:220},RW=60,y0=60,RH=30;
+ for(const a of ['C','B','A']){
+  s.push(`<text x="${AX[a]+RW/2}" y="${y0-12}" text-anchor="middle" font-size="14" font-weight="700" fill="var(--lime)">Aisle ${a}</text>`);
+  for(let r=AISLES[a];r<=END;r++){const bins=rackBins(a,r),used=bins.filter(b=>contents(b).length).length,y=y0+(END-r)*RH,on=selRack&&selRack.a===a&&selRack.r===r;
+   const op=used?(.3+.7*used/bins.length):0;
+   s.push(`<g class="hit${on?' on':''}" tabindex="0" role="button" data-rack="${a}${r}" aria-label="Rack ${a} ${r}, ${used} of ${bins.length} bins in use"><rect class="cell" x="${AX[a]}" y="${y}" width="${RW}" height="${RH-3}" fill="var(--panel2)" stroke="var(--line)"/>${used?`<rect x="${AX[a]}" y="${y}" width="${RW}" height="${RH-3}" fill="var(--lime)" opacity="${op.toFixed(2)}" pointer-events="none"/>`:''}<text x="${AX[a]+RW/2}" y="${y+RH/2+3}" text-anchor="middle" font-size="12" font-weight="600" fill="${used&&op>.6?'var(--onlime)':'var(--ink)'}" pointer-events="none">${a}${r}${used?' · '+used:''}</text></g>`)}
+ }
+ s.push(`<text x="190" y="${y0+9*RH}" text-anchor="middle" font-size="11" fill="var(--dim)" transform="rotate(-90 190 ${y0+9*RH})">10 ft walkway</text>`);
+ for(const z of ZONES.filter(z=>z.box)){
+  const b=z.box,list=S.spots.filter(l=>l.zone===z.id),cols=Math.min(b.cols,Math.max(1,list.length)),rows=Math.max(1,Math.ceil(list.length/cols)),g=5,cw=(b.w-g*(cols+1))/cols,ch=(b.h-g*(rows+1))/rows;
+  s.push(`<rect class="zone-o" x="${b.x}" y="${b.y}" width="${b.w}" height="${b.h}"/><text x="${b.x}" y="${b.y-8}" font-size="13" font-weight="700" fill="var(--ink)">${esc(z.name)}</text><text x="${b.x+b.w}" y="${b.y-8}" text-anchor="end" font-size="10" fill="var(--dim)">placeholder</text>`);
+  list.forEach((l,k)=>{const x=b.x+g+(k%cols)*(cw+g),y=b.y+g+Math.floor(k/cols)*(ch+g),c=contents(l.id),q=c.reduce((a,x)=>a+x[1],0),top=c[0]&&item(c[0][0]),on=sel===l.id;
+   let fill='var(--panel2)',tc='var(--ink)';if(top&&top.swatch){fill=top.swatch;tc=textOn(top.swatch)}else if(q){fill='var(--lime)';tc='var(--onlime)'}
+   const fs=Math.max(9,Math.min(13,cw/5.2));
+   s.push(`<g class="hit${on?' on':''}" tabindex="0" role="button" data-spot="${esc(l.id)}" aria-label="${esc(l.id)}${top?', '+esc(top.name)+', '+q:', empty'}"><rect class="cell" x="${x}" y="${y}" width="${cw}" height="${ch}" rx="2" style="fill:${fill}" stroke="var(--line)"/><text x="${x+cw/2}" y="${y+ch/2-(q?2:-4)}" text-anchor="middle" font-size="${fs}" font-weight="700" fill="${tc}" pointer-events="none">${esc(l.id)}</text>${q?`<text x="${x+cw/2}" y="${y+ch/2+fs}" text-anchor="middle" font-size="${fs-1}" fill="${tc}" pointer-events="none">${fmt(q)}</text>`:''}</g>`)});
+ }
+ s.push('</svg>');
+ const m=$('#map');m.innerHTML=s.join('');
+ m.querySelectorAll('.hit').forEach(g=>{const f=()=>{if(g.dataset.spot){sel=g.dataset.spot;selRack=null}else{const a=g.dataset.rack[0],r=+g.dataset.rack.slice(1);selRack={a,r};sel=null}drawMap();panel();if(matchMedia('(max-width:900px)').matches)$('#mp').scrollIntoView({behavior:'smooth',block:'start'})};
+  g.addEventListener('click',f);g.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();f()}})});
+}
+function contentsList(id){const c=contents(id);return c.length?`<ul class="feed">${c.map(([s,n])=>{const i=item(s);return `<li><span>${i&&i.swatch?`<span class="sw" style="background:${i.swatch}"></span>`:''}${esc(itemLabel(i))}</span><b>${fmt(n)} ${unit(i,n)}</b></li>`}).join('')}</ul>`:'<p class="dim">Empty</p>'}
+function panel(){
+ const p=$('#mp');
+ if(selRack){const{a,r}=selRack;let h=`<h2>Rack ${a}-${r}</h2><p class="dim small">c, d in front · a, b behind · level 4 holds double pallets.</p>`;
+  for(let L=4;L>=1;L--){h+=`<div class="lvl"><b>Level ${L}</b><div class="bins">`;
+   (L===4?['a+b','c+d']:['a','b','c','d']).forEach(b=>{const id=`${a}-${L}${r}-${b}`,c=contents(id);h+=`<div class="bin${c.length?' has':''}${sel===id?' on':''}${L===4?' full2':''}"><b>${id}</b><br>${c.length?c.map(([s])=>esc(item(s)?.job?'Job '+item(s).job:itemLabel(item(s)))).join(', '):'<span class="dim">empty</span>'}</div>`});h+='</div></div>'}
+  const filled=rackBins(a,r).filter(b=>contents(b).length);
+  if(filled.length)h+=`<h2 style="margin-top:12px">What's in this rack</h2>${filled.map(b=>`<p><span class="loc">${b}</span> ${contents(b).map(([s])=>esc(itemLabel(item(s)))).join(', ')}</p>`).join('')}`;
+  h+=`<div class="row" style="margin-top:8px"><a href="${RACKMAP}" target="_blank" rel="noopener">See rack ${a}-${r} in 3D</a></div>`;
+  p.innerHTML=h;return}
+ if(sel){const l=spot(sel);const z=zone(zoneOf(sel));
+  p.innerHTML=`<h2><span class="loc">${esc(sel)}</span></h2><p class="dim small">${esc(z?.name||'')}${l?.desc?' · '+esc(l.desc):''}${l?.ph?' · <span class="pill ph">placeholder spot</span>':''}</p>${contentsList(sel)}
+  <div class="row" style="margin-top:10px"><button class="sm" data-act="move" data-from="${esc(sel)}">Move from here</button><button class="sm ghost" data-act="count" data-at="${esc(sel)}">Count this spot</button></div>`;return}
+ // default: zone summary
+ p.innerHTML=`<h2>Zones</h2><ul class="feed">${ZONES.map(z=>{const ids=z.kind==='rack'?RACK_IDS.filter(i=>i[0]===z.a):S.spots.filter(l=>l.zone===z.id).map(l=>l.id);const used=ids.filter(i=>contents(i).length).length;return `<li><span>${esc(z.name)}</span><span class="dim">${used} of ${ids.length} spots in use</span></li>`}).join('')}</ul><p class="dim small" style="margin-top:8px">Tap a rack or spot on the map to see what's there.</p>`;
+}
+document.addEventListener('click',e=>{const b=e.target.closest('[data-act]');if(!b)return;act=b.dataset.act;pre={from:b.dataset.from||'',at:b.dataset.at||''};form={};go('log')});
+
+/* ---------- Log activity ---------- */
+let act='cut',pre={},form={},lastErr='';
+function itemOptions(cats,selSku){const groups=Object.keys(CATS).filter(c=>!cats||cats.includes(c));
+ return `<option value="">Choose item…</option>`+groups.map(c=>`<optgroup label="${CATS[c]}">${S.items.filter(i=>i.cat===c).map(i=>`<option value="${esc(i.sku)}"${i.sku===selSku?' selected':''}>${esc(i.name)} (${fmt(total(i.sku))})</option>`).join('')}</optgroup>`).join('')}
+function allLocsDatalist(){return `<datalist id="dl-locs">${S.spots.map(l=>`<option value="${esc(l.id)}">${esc(zone(l.zone)?.name||'')}</option>`).join('')}${RACK_IDS.map(i=>`<option value="${i}"></option>`).join('')}</datalist>`}
+function rLog(){
+ const A=ACTIONS[act],el=$('#v-log');
+ // preselect the item if we came from a spot with exactly one thing in it
+ if((pre.from||pre.at)&&!form.sku){const c=contents(pre.from||pre.at);if(c.length)form.sku=c[0][0]}
+ if(pre.at&&!form.at)form.at=pre.at;
+ el.innerHTML=`<div class="grid2"><div class="card hi"><h1>Log activity</h1><p class="dim small">Every time something comes in, moves, gets cut or gets pulled, log it here. That keeps counts right and the daily report true.</p>
+  <div class="acts" role="group" aria-label="What happened">${Object.entries(ACTIONS).map(([k,a])=>`<button type="button" data-a="${k}" aria-pressed="${k===act}">${a.name}<small>${a.sub}</small></button>`).join('')}</div>
+  <form class="form" id="lf" novalidate>
+   <label for="f-sku">Item<select id="f-sku" required>${itemOptions(A.cats,form.sku)}</select></label>
+   ${A.from?`<label for="f-from">Take from<select id="f-from"></select></label>`:''}
+   ${A.at?`<label for="f-at">Spot counted<input id="f-at" list="dl-locs" placeholder="e.g. BK-04 or A-15-c" value="${esc(form.at||'')}" autocomplete="off"></label>`:''}
+   <div class="row"><label for="f-qty">${A.at?'Counted quantity':'Quantity'}<input id="f-qty" type="number" inputmode="numeric" min="0" step="1" value="${esc(form.qty||'')}"></label>
+   ${A.to?`<label for="f-to">Put at<input id="f-to" list="dl-locs" placeholder="e.g. BK-04 or A-15-c" value="${esc(form.to||'')}" autocomplete="off"></label>`:''}
+   ${A.job?`<label for="f-job">Job #<input id="f-job" placeholder="24-1182" value="${esc(form.job||'')}"></label>`:''}</div>
+   <label for="f-note">Note (optional)<input id="f-note" value="${esc(form.note||'')}" placeholder="${act==='count'?'Why it was off':'Anything worth knowing'}"></label>
+   <div class="hint" id="f-hint"></div>
+   <div class="row"><button class="go" type="submit">Log ${A.name.toLowerCase()}</button></div>
+  </form>${allLocsDatalist()}</div>
+  <div class="card"><h2>Recent activity</h2><ul class="feed" id="feed"></ul></div></div>`;
+ el.querySelectorAll('.acts button').forEach(b=>b.onclick=()=>{keepForm();act=b.dataset.a;pre={};rLog()});
+ const fs=$('#f-sku');fs.onchange=()=>{form.sku=fs.value;fillFrom();hint()};
+ ['f-qty','f-to','f-at','f-job','f-note'].forEach(id=>{const i=document.getElementById(id);if(i)i.addEventListener('input',()=>{keepForm();hint()})});
+ $('#lf').addEventListener('submit',submit);
+ fillFrom();hint();feed();
+}
+function keepForm(){const v=id=>{const i=document.getElementById(id);return i?i.value:undefined};
+ form={sku:v('f-sku')??form.sku,from:v('f-from')??form.from,qty:v('f-qty')??form.qty,to:v('f-to')??form.to,at:v('f-at')??form.at,job:v('f-job')??form.job,note:v('f-note')??form.note}}
+function fillFrom(){const f=$('#f-from');if(!f)return;const sku=$('#f-sku').value,l=sku?locsOf(sku):[];
+ const want=pre.from||form.from;
+ f.innerHTML=sku?(l.length?l.map(([loc,q])=>`<option value="${esc(loc)}"${loc===want?' selected':''}>${esc(loc)}: ${fmt(q)} on hand</option>`).join(''):'<option value="">None on hand anywhere</option>'):'<option value="">Choose an item first</option>';
+ f.onchange=()=>{keepForm();hint()}}
+function hint(){const h=$('#f-hint');if(!h)return;keepForm();const i=item(form.sku);
+ if(lastErr){h.innerHTML=`<span class="err">${esc(lastErr)}</span>`;lastErr='';return}
+ if(!i){h.textContent='';return}
+ if(act==='count'){const l=normLoc(form.at);h.textContent=l?`System shows ${fmt(qtyAt(i.sku,l))} ${i.unit} at ${l}.`:`${i.name}: ${fmt(total(i.sku))} ${i.unit} total.`;return}
+ if(ACTIONS[act].from&&form.from){h.textContent=`${fmt(qtyAt(i.sku,form.from))} ${i.unit} at ${form.from}. After this: ${fmt(qtyAt(i.sku,form.from)-(+form.qty||0))}.`;return}
+ h.textContent=`${i.name}: ${fmt(total(i.sku))} ${i.unit} on hand.`}
+function submit(ev){ev.preventDefault();keepForm();const A=ACTIONS[act],i=item(form.sku),q=Math.floor(+form.qty);
+ const fail=m=>{lastErr=m;hint()};
+ if(!i)return fail('Choose an item.');
+ if(!(q>=0)||(act!=='count'&&q<=0)||form.qty==='')return fail('Enter a quantity.');
+ const e={id:uid(),t:new Date().toISOString(),type:act,sku:i.sku,qty:q,who:who.value.trim()||'Unnamed',note:form.note?.trim()||undefined};
+ if(A.job&&form.job?.trim())e.job=form.job.trim();
+ if(A.from){if(!form.from)return fail(`There is no ${i.name} on hand to take. Log a Receive or a Count first.`);const have=qtyAt(i.sku,form.from);if(q>have)return fail(`Only ${fmt(have)} at ${form.from}. Count the spot if the system is wrong.`);e.from=form.from}
+ if(A.to){const to=normLoc(form.to);if(!to)return fail(`“${form.to||''}” isn't a known spot. Use a rack bin like A-15-c, or add the spot under Locations.`);if(to===e.from)return fail('From and to are the same spot.');e.to=to}
+ if(A.at){const at=normLoc(form.at);if(!at)return fail(`“${form.at||''}” isn't a known spot.`);e.at=at;e.prev=qtyAt(i.sku,at);if(e.prev===q)return fail(`Count matches the system (${fmt(q)}). Nothing to change.`)}
+ apply(e);S.log.unshift(e);save();
+ {const d=document.createElement('div');d.innerHTML=describe(e).replace(/<\/span>/,' </span>');toast('Logged: '+d.textContent)}
+ const keep={sku:act==='cut'||act==='pull'?'':form.sku,job:form.job};form=keep;pre={};rLog();
+}
+function feed(){const f=$('#feed');const L=S.log.slice(0,25);
+ f.innerHTML=L.length?L.map((e,k)=>`<li><span>${describe(e)}${e.note?` <span class="dim">· ${esc(e.note)}</span>`:''}</span><span class="t">${dt(e.t)} · ${esc(e.who||'')}${k===0&&!e.ex?` <button class="sm ghost" id="undo">Undo</button>`:''}</span></li>`).join(''):'<li class="dim">Nothing logged yet.</li>';
+ const u=$('#undo');if(u)u.onclick=()=>{const e=S.log[0];apply(e,-1);S.log.shift();save();toast('Undone');rLog()}}
+
+/* ---------- Daily report ---------- */
+let repDay=ymd(Date.now());
+function rReport(){
+ const el=$('#v-report'),L=S.log.filter(e=>ymd(e.t)===repDay);
+ const sum=(type,cat,key)=>{const m=new Map();L.forEach(e=>{if(e.type!==type)return;const i=item(e.sku);if(!i||(cat&&i.cat!==cat))return;const k=key(i);const o=m.get(k)||{k,q:0,i,jobs:new Set()};o.q+=e.qty;if(e.job)o.jobs.add(e.job);m.set(k,o)});return[...m.values()].sort((a,b)=>b.q-a.q)};
+ const cutColor=sum('cut','board',i=>i.color||i.name),cutBoard=sum('cut','board',i=>i.sku);
+ const hw=sum('pull','hardware',i=>i.sku),hd=sum('pull','handle',i=>i.sku),hdStyle=sum('pull','handle',i=>`${i.style||'Handle'}, ${i.finish||''}`),misc=sum('pull','misc',i=>i.sku);
+ const rec=L.filter(e=>e.type==='receive'),mov=L.filter(e=>e.type==='move'),cnt=L.filter(e=>e.type==='count');
+ const ppl=new Map();L.forEach(e=>ppl.set(e.who||'Unnamed',(ppl.get(e.who||'Unnamed')||0)+1));
+ const totalCut=cutColor.reduce((a,o)=>a+o.q,0);
+ const bars=(rows,sw)=>{if(!rows.length)return '<p class="empty">None logged.</p>';const mx=Math.max(...rows.map(r=>r.q));
+  return `<div class="bars">${rows.map(r=>`<div class="bar" title="${esc(r.k)}: ${r.q}"><span>${sw&&r.i.swatch?`<span class="sw" style="background:${r.i.swatch}"></span>`:''}${esc(r.k)}</span><span class="track"><span class="fill" style="width:${(r.q/mx*100).toFixed(1)}%"></span></span><span class="v">${fmt(r.q)}</span></div>`).join('')}</div>`};
+ const table=(rows)=>rows.length?`<div class="tbl"><table><thead><tr><th>Item</th><th class="n">Qty</th><th>Jobs</th><th class="n">Left</th></tr></thead><tbody>${rows.map(r=>`<tr><td>${esc(r.i.name)}</td><td class="n"><b>${fmt(r.q)}</b> <span class="dim small">${esc(r.i.unit)}</span></td><td class="small">${[...r.jobs].map(esc).join(', ')||'<span class="dim">none</span>'}</td><td class="n">${fmt(total(r.i.sku))}${status(r.i)?` <span class="pill ${status(r.i)}">${status(r.i)==='low'?'Low':'Out'}</span>`:''}</td></tr>`).join('')}</tbody></table></div>`:'<p class="empty">None logged.</p>';
+ const isToday=repDay===ymd(Date.now());
+ el.innerHTML=`<div class="row" style="justify-content:space-between;margin-bottom:12px"><div><h1>${isToday?'End of day':'Day report'}: ${new Date(repDay+'T12:00').toLocaleDateString([],{weekday:'long',month:'long',day:'numeric'})}</h1><p class="dim small">${L.length} entries logged${L.some(e=>e.ex)?' · includes sample entries':''}</p></div>
+  <div class="row"><label for="rd">Day<input id="rd" type="date" value="${repDay}"></label><button id="cp">Copy report text</button></div></div>
+  <div class="tiles"><div class="tile"><span>Sheets cut</span><b>${fmt(totalCut)}</b><em>${cutColor.length} colors</em></div>
+   <div class="tile"><span>Hardware pulled</span><b>${fmt(hw.reduce((a,o)=>a+o.q,0))}</b><em>${hw.length} items</em></div>
+   <div class="tile"><span>Handles pulled</span><b>${fmt(hd.reduce((a,o)=>a+o.q,0))}</b><em>${hd.length} kinds</em></div>
+   <div class="tile"><span>Received</span><b>${rec.length}</b><em>deliveries logged</em></div>
+   <div class="tile ${cnt.length?'alert':''}"><span>Count fixes</span><b>${cnt.length}</b><em>spots corrected</em></div></div>
+  <div class="grid2">
+   <div class="card"><h2>Sheets cut by color</h2>${bars(cutColor,true)}
+    ${cutBoard.length>cutColor.length?`<details style="margin-top:8px"><summary>By board and thickness</summary>${bars(cutBoard.map(r=>({...r,k:r.i.name})),true)}</details>`:''}</div>
+   <div class="card"><h2>Handles by style and finish</h2>${bars(hdStyle,false)}</div>
+   <div class="card"><h2>Hardware pulled</h2>${table(hw)}</div>
+   <div class="card"><h2>Handles pulled</h2>${table(hd)}</div>
+   ${misc.length?`<div class="card"><h2>Misc pulled</h2>${table(misc)}</div>`:''}
+   <div class="card"><h2>Received, moved, counted</h2>${rec.length+mov.length+cnt.length?`<ul class="feed">${[...rec,...mov,...cnt].map(e=>`<li><span>${describe(e)}</span><span class="t">${tm(e.t)} · ${esc(e.who||'')}</span></li>`).join('')}</ul>`:'<p class="empty">None logged.</p>'}</div>
+   <div class="card"><h2>Who logged</h2>${ppl.size?`<ul class="feed">${[...ppl].map(([p,n])=>`<li><span>${esc(p)}</span><b>${n} entries</b></li>`).join('')}</ul>`:'<p class="empty">No one yet.</p>'}</div>
+  </div><textarea id="rt" aria-label="Report text" hidden readonly></textarea>`;
+ $('#rd').onchange=e=>{repDay=e.target.value||ymd(Date.now());rReport()};
+ $('#cp').onclick=()=>{const lines=[`FORCE SHOP INVENTORY: ${repDay}`,'',`Sheets cut: ${totalCut}`,...cutColor.map(r=>`  ${r.k}: ${r.q}`),'',`Hardware pulled:`,...hw.map(r=>`  ${r.i.name}: ${r.q} ${r.i.unit}${r.jobs.size?' (jobs '+[...r.jobs].join(', ')+')':''}`),'',`Handles pulled:`,...hd.map(r=>`  ${r.i.name}: ${r.q}`),...(misc.length?['','Misc pulled:',...misc.map(r=>`  ${r.i.name}: ${r.q} ${r.i.unit}`)]:[]),'',`Received: ${rec.length} · Moves: ${mov.length} · Count fixes: ${cnt.length}`];
+  copyText(lines.join('\n'),$('#rt'))};
+}
+function copyText(txt,ta){const fb=()=>{ta.hidden=false;ta.value=txt;ta.focus();ta.select();toast('Select all and copy the text below')};
+ try{navigator.clipboard.writeText(txt).then(()=>toast('Copied. Paste it into a text or email.'),fb)}catch(e){fb()}}
+
+/* ---------- Items ---------- */
+let itemCat='all',itemQ='',editSku=null,delAsk=null;
+function rItems(){
+ const el=$('#v-items');
+ const list=S.items.filter(i=>(itemCat==='all'||i.cat===itemCat)&&(!itemQ||[i.sku,i.name,i.color,i.finish,i.job].join(' ').toLowerCase().includes(itemQ.toLowerCase())));
+ el.innerHTML=`<div class="row" style="justify-content:space-between;margin-bottom:10px"><h1>Items</h1><button class="go" id="newItem">Add item</button></div>
+  <div class="row" style="margin-bottom:10px"><div class="chips" role="group" aria-label="Category">${[['all','All'],...Object.entries(CATS)].map(([k,n])=>`<button data-c="${k}" aria-pressed="${k===itemCat}">${n}</button>`).join('')}</div>
+  <label for="iq" style="flex:1 1 200px">Filter<input id="iq" type="search" value="${esc(itemQ)}" placeholder="Name, SKU, color, job"></label></div>
+  <div id="ied"></div>
+  <div class="card tbl"><table><thead><tr><th>Item</th><th>SKU</th><th class="n">On hand</th><th class="n">Min</th><th>Locations</th></tr></thead><tbody>
+  ${list.map(i=>{const st=status(i);return `<tr class="click" data-sku="${esc(i.sku)}" tabindex="0"><td>${i.swatch?`<span class="sw" style="background:${i.swatch}"></span>`:''}${esc(i.name)} ${st?`<span class="pill ${st}">${st==='low'?'Low':'Out'}</span>`:''}${i.ph?' <span class="pill ph">sample</span>':''}</td><td class="small dim">${esc(i.sku)}</td><td class="n"><b>${fmt(total(i.sku))}</b> <span class="dim small">${esc(i.unit)}</span></td><td class="n dim">${i.min?fmt(i.min):''}</td><td class="small">${locLinks(i.sku,4)}</td></tr>`}).join('')||'<tr><td colspan="5" class="empty">No items match.</td></tr>'}
+  </tbody></table></div>`;
+ el.querySelectorAll('.chips button').forEach(b=>b.onclick=()=>{itemCat=b.dataset.c;rItems()});
+ const iq=$('#iq');iq.oninput=()=>{itemQ=iq.value;const p=iq.selectionStart;rItems();const n=$('#iq');n.focus();n.setSelectionRange(p,p)};
+ el.querySelectorAll('tr.click').forEach(r=>{const f=e=>{if(e.target.closest('a'))return;editSku=r.dataset.sku;delAsk=null;editor()};r.onclick=f;r.onkeydown=e=>{if(e.key==='Enter')f(e)}});
+ $('#newItem').onclick=()=>{editSku='';delAsk=null;editor()};
+ if(editSku!==null)editor();
+}
+function editor(){const box=$('#ied');const i=editSku?item(editSku):{cat:itemCat==='all'?'board':itemCat,unit:''};if(!i){editSku=null;box.innerHTML='';return}
+ const f=(id,lab,val,ph='')=>`<label for="${id}">${lab}<input id="${id}" value="${esc(val??'')}" placeholder="${esc(ph)}"></label>`;
+ box.innerHTML=`<form class="card hi form" id="ief" style="margin-bottom:14px" novalidate><h2>${editSku?'Edit '+esc(i.name):'New item'}</h2>
+  <div class="row"><label for="e-cat">Category<select id="e-cat">${Object.entries(CATS).map(([k,n])=>`<option value="${k}"${k===i.cat?' selected':''}>${n}</option>`).join('')}</select></label>
+  ${f('e-sku','SKU / code',i.sku,'B-WHT-34')}${f('e-name','Name',i.name,'White melamine 3/4"')}</div>
+  <div class="row">${f('e-color','Color (boards)',i.color,'White')}<label for="e-sw">Swatch<input id="e-sw" type="color" value="${i.swatch||'#cccccc'}"></label>${f('e-style','Style (handles)',i.style,'Bar pull')}${f('e-finish','Finish (handles)',i.finish,'Matte black')}</div>
+  <div class="row">${f('e-spec','Size / spec',i.spec,'49 x 97')}${f('e-unit','Unit',i.unit,'sheets, pcs, pairs, boxes')}<label for="e-min">Reorder at<input id="e-min" type="number" min="0" value="${esc(i.min??'')}"></label>${f('e-job','Job # (pallets)',i.job,'24-1182')}</div>
+  <div class="hint" id="e-err"></div>
+  <div class="row"><button class="go" type="submit">Save item</button><button type="button" class="ghost" id="e-x">Cancel</button>${editSku?`<button type="button" class="danger" id="e-del">Delete item</button>`:''}</div><div id="e-conf"></div></form>`;
+ $('#e-x').onclick=()=>{editSku=null;box.innerHTML=''};
+ $('#ief').onsubmit=ev=>{ev.preventDefault();const v=id=>$('#'+id).value.trim(),sku=v('e-sku').toUpperCase(),name=v('e-name');
+  if(!sku||!name){$('#e-err').innerHTML='<span class="err">SKU and name are required.</span>';return}
+  if(sku!==editSku&&item(sku)){$('#e-err').innerHTML='<span class="err">That SKU is already used.</span>';return}
+  const cat=v('e-cat'),n={...i,sku,cat,name,spec:v('e-spec'),unit:v('e-unit')||(cat==='board'?'sheets':cat==='pallet'?'pallets':'pcs'),min:+v('e-min')||0,ph:false};
+  if(cat==='board'){n.color=v('e-color')||name;n.swatch=$('#e-sw').value}else{delete n.color;delete n.swatch}
+  if(cat==='handle'){n.style=v('e-style');n.finish=v('e-finish')}if(cat==='pallet')n.job=v('e-job');
+  if(editSku){if(sku!==editSku){S.stock[sku]=S.stock[editSku]||{};delete S.stock[editSku];S.log.forEach(e=>{if(e.sku===editSku)e.sku=sku})}Object.assign(S.items.find(x=>x.sku===editSku),n)}else S.items.push(n);
+  save();toast('Saved '+name);editSku=null;rItems()};
+ const d=$('#e-del');if(d)d.onclick=()=>{const t=total(i.sku);$('#e-conf').innerHTML=t?`<p class="err" style="margin-top:8px">${fmt(t)} ${esc(i.unit)} still on hand. Count each spot to 0 or pull them first.</p>`:`<div class="confirm" style="margin-top:8px"><span>Delete ${esc(i.name)}? Its history stays in the log.</span><button type="button" class="danger sm" id="e-yes">Delete</button></div>`;
+  const y=$('#e-yes');if(y)y.onclick=()=>{S.items=S.items.filter(x=>x.sku!==i.sku);delete S.stock[i.sku];save();editSku=null;toast('Deleted');rItems()}};
+}
+
+/* ---------- Locations ---------- */
+let spotMsg='';
+function rSpots(){
+ const el=$('#v-spots');
+ el.innerHTML=`<h1>Locations</h1><p class="dim">Every spot something can live. Rack bins in aisles A, B and C come from the rack map and are fixed. The other zones are placeholders: rename, add or remove spots so they match the floor.</p>
+  <form class="card hi form" id="sf" style="margin-block:12px" novalidate><h2>Add a spot</h2><div class="row">
+   <label for="s-zone">Zone<select id="s-zone">${ZONES.filter(z=>z.box).map(z=>`<option value="${z.id}">${esc(z.name)}</option>`).join('')}</select></label>
+   <label for="s-id">Spot code<input id="s-id" placeholder="BK-17" autocomplete="off"></label><label for="s-desc">Description<input id="s-desc" placeholder="North wall, 2nd bunk"></label><button class="go" type="submit">Add spot</button></div><div class="hint">${spotMsg}</div></form>
+  <div class="grid2">${ZONES.map(z=>{
+   if(z.kind==='rack'){const ids=RACK_IDS.filter(i=>i[0]===z.a),used=ids.filter(i=>contents(i).length);return `<div class="card"><h2>${esc(z.name)}</h2><p class="dim small">${ids.length} bins, racks ${AISLES[z.a]}–${END}. ${used.length} in use.</p>${used.map(i=>`<p class="small"><a class="loc" href="#map" data-loc="${i}">${i}</a> ${contents(i).map(([s])=>esc(itemLabel(item(s)))).join(', ')}</p>`).join('')}</div>`}
+   const list=S.spots.filter(l=>l.zone===z.id);
+   return `<div class="card"><h2>${esc(z.name)} <span class="pill ph">placeholder zone</span></h2><div class="tbl"><table><thead><tr><th>Spot</th><th>Holds</th><th></th></tr></thead><tbody>${list.map(l=>{const c=contents(l.id);return `<tr><td><a class="loc" href="#map" data-loc="${esc(l.id)}">${esc(l.id)}</a><div class="dim small">${esc(l.desc)}</div></td><td class="small">${c.length?c.map(([s,n])=>`${fmt(n)} ${esc(itemLabel(item(s)))}`).join('<br>'):'<span class="dim">empty</span>'}</td><td class="n">${c.length?'':`<button class="sm ghost" data-rm="${esc(l.id)}" aria-label="Remove ${esc(l.id)}">Remove</button>`}</td></tr>`}).join('')||'<tr><td colspan="3" class="dim">No spots yet.</td></tr>'}</tbody></table></div></div>`}).join('')}</div>`;
+ spotMsg='';
+ $('#sf').onsubmit=e=>{e.preventDefault();const id=$('#s-id').value.trim().toUpperCase(),z=$('#s-zone').value;
+  if(!/^[A-Z0-9][A-Z0-9+\-]{0,15}$/.test(id)){spotMsg='<span class="err">Use letters, numbers and dashes, like BK-17.</span>';return rSpots()}
+  if(parseRack(id)||spot(id)){spotMsg='<span class="err">That code is already a spot.</span>';return rSpots()}
+  S.spots.push({id,zone:z,desc:$('#s-desc').value.trim()});save();spotMsg=`Added ${esc(id)}.`;rSpots()};
+ el.querySelectorAll('[data-rm]').forEach(b=>b.onclick=()=>{S.spots=S.spots.filter(l=>l.id!==b.dataset.rm);save();toast('Removed '+b.dataset.rm);rSpots()});
+}
+
+/* ---------- Backup ---------- */
+let bkAsk='';
+function csv(){const rows=[['sku','item','category','location','zone','qty','unit']];
+ S.items.forEach(i=>locsOf(i.sku).forEach(([l,q])=>rows.push([i.sku,i.name,CATS[i.cat],l,zone(zoneOf(l))?.name||'',q,i.unit])));
+ return rows.map(r=>r.map(v=>/[",\n]/.test(String(v))?`"${String(v).replace(/"/g,'""')}"`:v).join(',')).join('\n')}
+function download(name,txt,type){try{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([txt],{type}));a.download=name;document.body.appendChild(a);a.click();a.remove()}catch(e){}}
+function rBackup(){
+ const el=$('#v-backup');
+ el.innerHTML=`<h1>Backup and reset</h1><p class="dim">Your data lives only in this browser on this device. Copy a backup at the end of each day and keep it somewhere safe, like an email to yourself or a shared drive. To move to another device, paste a backup there.</p>
+ <div class="grid2" style="margin-top:12px">
+  <div class="card stack"><h2>Save a backup</h2><div class="row"><button id="b-copy">Copy backup</button><button class="ghost" id="b-dl">Download .json</button><button class="ghost" id="b-csv">Copy stock as CSV</button></div>
+   <p class="dim small">Download works when this file is opened straight from a computer. Inside the Claude app, use Copy instead.</p><textarea id="b-out" readonly hidden aria-label="Backup text"></textarea></div>
+  <div class="card stack"><h2>Restore a backup</h2><label for="b-in">Paste backup text<textarea id="b-in" placeholder='{"v":1, ...}'></textarea></label>
+   <div class="row"><label for="b-file">Or open a .json file<input id="b-file" type="file" accept=".json,application/json"></label><button class="go" id="b-load">Restore</button></div><div class="hint" id="b-msg"></div></div>
+  <div class="card stack"><h2>Start fresh</h2><p class="small">Clears all items, stock and history but keeps the location list, so you can enter real counts. Do this once the spots match the floor.</p>
+   <div class="row"><button class="danger" id="b-fresh">Start fresh</button><button class="ghost" id="b-sample">Reload sample data</button></div><div id="b-conf"></div></div>
+  <div class="card"><h2>What's stored</h2><ul class="feed"><li><span>Items</span><b>${S.items.length}</b></li><li><span>Locations</span><b>${S.spots.length+RACK_IDS.length}</b></li><li><span>Log entries</span><b>${S.log.length}</b></li><li><span>Saving on this device</span><b>${saveOK?'Yes':'No'}</b></li></ul></div>
+ </div>`;
+ const json=()=>JSON.stringify(S);
+ $('#b-copy').onclick=()=>copyText(json(),$('#b-out'));
+ $('#b-dl').onclick=()=>download(`force-inventory-${ymd(Date.now())}.json`,json(),'application/json');
+ $('#b-csv').onclick=()=>copyText(csv(),$('#b-out'));
+ $('#b-file').onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>$('#b-in').value=r.result;r.readAsText(f)};
+ $('#b-load').onclick=()=>{try{const d=JSON.parse($('#b-in').value);if(!d||d.v!==1||!Array.isArray(d.items)||!d.stock)throw 0;S=d;save();toast('Backup restored');go('find')}catch(e){$('#b-msg').innerHTML='<span class="err">That text is not a Force inventory backup. Paste the whole thing, starting with {"v":1.</span>'}};
+ const ask=(kind,msg,fn)=>{$('#b-conf').innerHTML=`<div class="confirm" style="margin-top:8px"><span>${msg}</span><button class="danger sm" id="b-yes">Yes, ${kind}</button><button class="ghost sm" id="b-no">Cancel</button></div>`;$('#b-yes').onclick=fn;$('#b-no').onclick=()=>$('#b-conf').innerHTML=''};
+ $('#b-fresh').onclick=()=>ask('clear it','This erases every item, quantity and log entry on this device. Copy a backup first if you might want it.',()=>{S={v:1,sample:false,created:new Date().toISOString(),spots:S.spots.map(l=>({...l})),items:[],stock:{},log:[]};save();toast('Cleared. Add your items next.');go('items')});
+ $('#b-sample').onclick=()=>ask('reload','This replaces everything on this device with the sample data.',()=>{S=sample();save();toast('Sample data loaded');go('find')});
+}
+
+/* ---------- boot ---------- */
+load();banner();route();
+</script>
