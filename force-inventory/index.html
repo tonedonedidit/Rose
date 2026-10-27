@@ -207,12 +207,12 @@ const ZONES=[
  {id:'C',name:'Aisle C',kind:'rack',deep:1,fx:-8.05,nd:-1,first:5,last:18,purpose:()=>'Cabinet pallets only',rule:i=>i.cat!=='pallet'?'Aisles A, B and C hold cabinet pallets only.':null},
  {id:'B',name:'Aisle B',kind:'rack',deep:1,fx:-3.05,nd:1,first:5,last:18,purpose:()=>'Cabinet pallets only',rule:i=>i.cat!=='pallet'?'Aisles A, B and C hold cabinet pallets only.':null},
  {id:'A',name:'Aisle A',kind:'rack',deep:1,fx:0,nd:-1,first:1,last:18,purpose:()=>'Cabinet pallets only',rule:i=>i.cat!=='pallet'?'Aisles A, B and C hold cabinet pallets only.':null},
- {id:'R0',name:'Rack 0',kind:'rack',deep:0,fx:8.9,nd:1,z0:-11,first:1,last:3,ph:1,
+ {id:'R0',name:'Rack 0',kind:'rack',deep:0,fx:9.4,nd:1,z0:-11,first:1,last:3,ph:1,
   purpose:L=>L===4?'Cardboard only':'Scribe molding, misc, random pallets, drop-off overflow',
   rule:(i,L)=>L===4&&!isCard(i)?'The top level of Rack 0 is cardboard only.':null},
- {id:'R1',name:'Rack 1',kind:'rack',deep:0,fx:13.4,nd:1,z0:-17.5,first:1,last:1,ph:1,purpose:()=>'Excess handles (overstock)',rule:i=>i.cat!=='handle'?'Rack 1 holds excess handles only.':null},
+ {id:'R1',name:'Rack 1',kind:'rack',deep:0,fx:6.8,nd:-1,z0:-11,first:1,last:1,ph:1,purpose:()=>'Excess handles (overstock)',rule:i=>i.cat!=='handle'?'Rack 1 holds excess handles only.':null},
  {id:'CL1',name:'Cantilever 1',kind:'cant',x:12.8,z0:-8.5,cols:3,rows:8,ph:1,purpose:()=>'Boards not in the main run: remakes, one-off jobs',rule:i=>i.cat!=='board'?'Cantilevers hold boards only.':null},
- {id:'CL2',name:'Cantilever 2',kind:'cant',x:27,z0:-1.5,cols:3,rows:8,ph:1,purpose:()=>'Boards (on the sketch, details to confirm)',rule:i=>i.cat!=='board'?'Cantilevers hold boards only.':null},
+ {id:'CL2',name:'Back cantilever',kind:'cant',x:27,z0:-3,cols:1,rows:8,ph:1,purpose:()=>'Boards (single column on the back wall)',rule:i=>i.cat!=='board'?'Cantilevers hold boards only.':null},
  {id:'BK',name:'Bunks',kind:'bunk',x0:17.2,z0:-7.5,ph:1},
  {id:'HR',name:'Office hardware rack',kind:'shelf',x:14.9,z0:-41,bays:2,shelves:5,ph:1,purpose:()=>'Screws, nails and other small hardware',rule:i=>i.cat!=='fastener'?'The office hardware rack is for screws and nails.':null},
  {id:'VR',name:'Not on a shelf',kind:'virtual'}
@@ -238,7 +238,7 @@ ZONES.forEach(z=>{
   for(let c=1;c<=z.cols;c++)for(let r=1;r<=z.rows;r++)
    addLoc({id:`${z.id}-${c}-${r}`,z:z.id,L:r,bay:c,purpose:z.purpose(),geo:{x:z.x+.7,y:.3+(r-1)*.5,z:z.z0-(c-.5)*2.5,w:1.2,h:.4,d:2.3,nx:1,nz:0,ax:z.x+3.2}});
  }else if(z.kind==='bunk'){
-  for(let b=1;b<=4;b++)['F','B'].forEach(s=>addLoc({id:`BK${b}-${s}`,z:'BK',bunk:b,side:s,purpose:BUNK[b][s],geo:{x:z.x0+(b-1)*2.4,y:.15,z:s==='F'?z.z0-1.3:z.z0-3.8,w:1.3,h:1.4,d:2.45,nx:0,nz:1}}));
+  for(let b=1;b<=4;b++)['F','B'].forEach(s=>addLoc({id:`BK${b}-${s}`,z:'BK',bunk:b,side:s,purpose:BUNK[b][s],geo:{x:z.x0+(b-1)*2.4,y:.15,z:s==='F'?z.z0-1.3:z.z0-3.8,w:1.3,h:2.6,d:2.45,nx:0,nz:1}}));
  }else if(z.kind==='shelf'){
   for(let b=1;b<=z.bays;b++)for(let s=1;s<=z.shelves;s++)
    addLoc({id:`HR-${s}${b}`,z:'HR',L:s,bay:b,purpose:z.purpose(),geo:{x:z.x-.3,y:.1+(s-1)*.45,z:z.z0-(b-.5)*1.2,w:.55,h:.36,d:1.1,nx:1,nz:0,ax:z.x+2.4}});
@@ -509,6 +509,7 @@ function init3D(){
   if(z.kind==='bunk')for(let b=1;b<=4;b++)box('dark',1.5,.14,5.3,z.x0+(b-1)*2.4,.07,z.z0-2.55);
   if(z.kind==='shelf'){const bx=z.x-.6;for(let k=0;k<=z.bays;k++){const zb=z.z0-k*1.2;box('up',.06,2.4,.06,z.x,1.2,zb);box('up',.06,2.4,.06,bx,1.2,zb)}for(let s=1;s<=z.shelves;s++)box('deck',.6,.03,z.bays*1.2,z.x-.3,.1+(s-1)*.45-.02,z.z0-z.bays*.6)}
  });
+ box('wall',.2,3.2,46,4.6,1.6,-30);box('wall',.2,3.2,5,4.6,1.6,.5); // dividing wall, opening at z -2 to -7 (position approximate)
  const O=OFFICE,ow=O.x1-O.x0,od=O.z0-O.z1;
  box('wall',ow,2.6,.12,(O.x0+O.x1)/2,1.3,O.z0);box('wall',ow,2.6,.12,(O.x0+O.x1)/2,1.3,O.z1);box('wall',.12,2.6,od,O.x0,1.3,(O.z0+O.z1)/2);box('wall',.12,2.6,od,O.x1,1.3,(O.z0+O.z1)/2);
  const mats={up:new T.MeshStandardMaterial({color:0x1E7A6A}),beam:new T.MeshStandardMaterial({color:0xD9531E}),deck:new T.MeshStandardMaterial({color:0x8a9094,transparent:true,opacity:.35}),dark:new T.MeshStandardMaterial({color:0x50463a}),wall:new T.MeshStandardMaterial({color:0xc8d1cb,transparent:true,opacity:.4})};
@@ -520,7 +521,9 @@ function init3D(){
  scene.add(sm,hm);
  const sign=(t,x,y,z,w)=>{const s=sprite(T,t,'#8DC63F','#0D1611',w||4);s.position.set(x,y,z);scene.add(s)};
  [['D',-12.3],['C',-6.85],['B',-4.25],['A',1.2]].forEach(([a,x])=>{const t=(a==='D'?'RACK ':'AISLE ')+a;sign(t,x,8.4,1.8,3.6);sign(t,x,8.4,-52,3.6)});
- sign('RACK 0',8.3,6.4,-15.2,3);sign('RACK 1',12.8,6.4,-18.9,3);sign('CANTILEVER 1',13.4,5.4,-12.3,4.4);sign('CANTILEVER 2',27.6,5.4,-5.3,4.4);
+ sign('RACK 0',8.8,6.4,-15.2,3);sign('RACK 1',7.4,7.4,-12.4,3);sign('CANTILEVER 1',13.4,5.4,-12.3,4.4);sign('BACK CANTILEVER',27.6,5.4,-4.3,4.8);
+ const zs2=(t,x,y,z,w)=>{const s=sprite(T,t,'#13201A','#8DC63F',w);s.position.set(x,y,z);scene.add(s)};
+ zs2('WAREHOUSE 2: PALLET RACKING',-5.5,11,-26,10);zs2('SHOP SIDE',17,9,-26,6);zs2('OPENING',4.6,3.8,-4.5,2.6);
  for(let b=1;b<=4;b++)sign('BUNK '+b,17.2+(b-1)*2.4,2.6,-6,2.4);
  sign('OFFICE',10,3.6,-41.5,3);sign('HW RACK',15.4,3.2,-42.2,2.8);
  const selBox=new T.LineSegments(new T.EdgesGeometry(cube),new T.LineBasicMaterial({color:0xFFE14D}));selBox.visible=false;scene.add(selBox);
@@ -545,7 +548,7 @@ function init3D(){
  refresh();look([30,46,24],[4,0,-22]);
  return{ren,size,refresh,focus,fly,mark,render};
 }
-const PRESETS={all:['Whole floor',[30,46,24],[4,0,-22]],D:['Rack D',[-9.6,3.4,5],[-11.6,1.2,-14]],ABC:['Aisles A–C',[-1,32,14],[-5,0,-25]],R01:['Racks 0 and 1',[19,10,-6],[10,2,-16]],CL:['Cantilever',[21,9,-3],[13,2,-12]],BK:['Bunks',[21,11,4],[20.8,0,-10]],HR:['Office rack',[21,5,-36],[14.6,1.2,-42.2]]};
+const PRESETS={all:['Whole floor',[30,46,24],[4,0,-22]],D:['Rack D',[-9.6,3.4,5],[-11.6,1.2,-14]],ABC:['Aisles A–C',[-1,32,14],[-5,0,-25]],R01:['Racks 0 and 1',[8.2,5.5,-1],[8.1,2,-15]],CL:['Cantilever',[21,9,-3],[13,2,-12]],BK:['Bunks',[21,11,4],[20.8,0,-10]],HR:['Office rack',[21,5,-36],[14.6,1.2,-42.2]]};
 function refresh3D(){if(W3)W3.refresh()}
 function vMap(){
  const el=$('#v-map');
@@ -553,7 +556,7 @@ function vMap(){
   <div class="views" role="group" aria-label="Jump to">${Object.entries(PRESETS).map(([k,v])=>`<button class="sm ghost" data-pv="${k}">${v[0]}</button>`).join('')}</div>
   <div id="stage"></div>
   <div class="legend">${['ok','uncounted','wrong','recount','emptyok','empty'].map(s=>`<span><i style="background:${hex(COL[s])}"></i>${STLABEL[s]}</span>`).join('')}</div>
-  <p class="dim small" style="margin-top:6px">Drag to turn, scroll or pinch to zoom, right-drag to pan. Tap any box to open that spot. Aisles A, B and C match the rack map. Rack D, Racks 0 and 1, the cantilevers, the bunks and the office are placed from the sketch and will be corrected from photos. <a href="${RACKMAP}" target="_blank" rel="noopener">Original rack map</a></p></div>
+  <p class="dim small" style="margin-top:6px">Drag to turn, scroll or pinch to zoom, right-drag to pan. Tap any box to open that spot. Aisles A, B and C match the rack map. Rack D sits west of Aisle C on the same side. The opening in the dividing wall leads to the shop side, where Rack 0, Rack 1 (behind Rack 0), Cantilever 1, the back cantilever and Bunks 1–4 are. Those positions come from the sketch and your walkthrough video, so they're close but not measured. <a href="${RACKMAP}" target="_blank" rel="noopener">Original rack map</a></p></div>
   <div class="card" id="mp" aria-live="polite"></div></div>`;
  const st=$('#stage');
  if(!W3)W3=init3D();
