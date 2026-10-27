@@ -141,6 +141,32 @@ textarea{width:100%;min-height:130px;font-size:.8rem;font-family:ui-monospace,Me
 .confirm{border:2px solid var(--bad);padding:10px;display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:8px}
 details summary{cursor:pointer;font-weight:700;padding-block:4px}
 a{color:var(--lime)}
+#stage{position:relative}
+.olay{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+.olay .lb{position:absolute;transform:translate(-50%,-100%);pointer-events:auto;font:700 .78rem var(--font);padding:4px 9px;border-radius:2px;border:0;min-height:30px;background:#8DC63F;color:#0D1611;white-space:nowrap;cursor:pointer;box-shadow:0 2px 6px rgba(0,0,0,.35)}
+.olay .lb.area{background:rgba(13,22,17,.72);color:#E3F0DC;pointer-events:none;font-size:.7rem;letter-spacing:.08em;min-height:0;box-shadow:none}
+.olay .lb.bay{background:rgba(13,22,17,.85);color:#B6E07A;font-size:.72rem;min-height:26px}
+.olay .lb.other{background:rgba(141,198,63,.55);font-size:.7rem;min-height:26px}
+.olay .lb.sel{background:#FFE14D;color:#111;font-size:.95rem;pointer-events:none}
+.crumb{position:absolute;left:8px;top:8px;display:flex;gap:6px;align-items:center;flex-wrap:wrap;color:#E3F0DC;font-weight:700;max-width:calc(100% - 16px)}
+.stagebar{position:absolute;left:8px;right:8px;bottom:8px;display:flex;gap:6px;justify-content:center;flex-wrap:wrap}
+#stage .crumb button,#stage .stagebar button{background:rgba(13,22,17,.85);color:#E3F0DC;border-color:#8DC63F}
+#stage .crumb button.go,#stage .stagebar button.go{background:#8DC63F;color:#0D1611}
+.hintb{background:rgba(13,22,17,.8);color:#E3F0DC;padding:6px 10px;border-radius:2px;font-size:.85rem}
+.zlist{display:flex;flex-direction:column;gap:6px}
+.zbtn{display:flex;flex-direction:column;align-items:flex-start;gap:2px;text-align:left;border-color:var(--line);font-weight:500}
+.zbtn:hover{border-color:var(--lime)}
+.spotcard{border:2px solid var(--sel);padding:10px;background:var(--panel2)}
+.elev{display:flex;flex-direction:column;gap:12px;max-height:52vh;overflow:auto;padding-right:4px}
+.bay h3{font-size:.85rem;margin:0 0 4px;display:flex;justify-content:space-between;align-items:center;gap:8px}
+.lvrow{display:grid;gap:3px;margin-bottom:3px}
+.sp{min-height:40px;padding:3px 4px;font:600 .72rem var(--font);border:1.5px solid var(--line);background:var(--bg);color:var(--ink);border-radius:2px;line-height:1.15;display:flex;flex-direction:column;align-items:center;justify-content:center;min-width:0}
+.sp span{font-weight:500;color:var(--dim);overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.sp[data-st="ok"]{border-color:var(--lime);background:color-mix(in srgb,var(--lime) 22%,var(--bg))}
+.sp[data-st="uncounted"]{border-color:var(--warn);background:color-mix(in srgb,var(--warn) 20%,var(--bg))}
+.sp[data-st="wrong"]{border-color:var(--bad);background:color-mix(in srgb,var(--bad) 22%,var(--bg))}
+.sp[data-st="recount"]{border-color:var(--mag);background:color-mix(in srgb,var(--mag) 22%,var(--bg))}
+.sp[aria-current="true"]{outline:3px solid var(--sel);outline-offset:1px}
 .kv{display:grid;grid-template-columns:auto minmax(0,1fr);gap:2px 12px;font-size:.88rem}.kv dt{color:var(--dim)}.kv dd{margin:0}
 @media (prefers-reduced-motion:no-preference){.toast{animation:up .2s ease-out}@keyframes up{from{transform:translate(-50%,10px);opacity:0}}}
 @media print{header,#banner,.noprint,#toast,body::before{display:none!important}body{background:#fff}main{padding:0}.labels{grid-template-columns:repeat(3,1fr);gap:6px}.wrap{padding:0}}
@@ -186,7 +212,7 @@ a{color:var(--lime)}
    ========================================================= */
 const RACKMAP='https://claude.ai/artifact/6H58N7DEKwMkfmE9jZDW1d';
 const P=2.8, LY=[.15,1.85,3.55,5.25];          // rack bay width, beam heights
-const OFFICE={x0:6,x1:14,z0:-38,z1:-45};
+const OFFICE={x0:6,x1:13,z0:-38,z1:-46};
 const CATS={board:['Boards','sheets'],hardware:['Hardware','pcs'],fastener:['Screws & nails','boxes'],handle:['Handles','pcs'],packaging:['Packaging','rolls'],molding:['Molding','pcs'],pallet:['Cabinet pallets','pallets'],misc:['Misc','pcs']};
 const THK=['3/4"','6mm','1/4"','1/2"','5/8"','Other'];
 const isWhite=i=>/white/i.test(i.color||'');
@@ -200,51 +226,64 @@ function bunkRule(i,b,s){
  if(b===2)return s==='B'?(isWhite(i)?null:'The back half of Bunk 2 is white.'):(isWhite(i)?'The front half of Bunk 2 is colored.':null);
  return isWhite(i)?'Bunk 3 is colored 3/4" only.':null;
 }
+const GR=0x2E8B6E,OR=0xD9531E,GY=0x3B434B;
+const shelfRule=i=>['board','pallet','molding'].includes(i.cat)?'The office racks hold small hardware, screws, nails and handles.':null;
+const palletRule=i=>i.cat!=='pallet'?'Aisles A, B and C hold cabinet pallets only.':null;
 const ZONES=[
- {id:'D',name:'Rack D',kind:'rack',deep:1,fx:-11.1,nd:1,first:1,last:18,
+ {id:'D',name:'Rack D',kind:'rack',deep:1,fx:-11.1,nd:1,first:1,last:18,levels:4,ly:LY,bw:P,up:GR,beam:OR,
   purpose:L=>L===1?'Installer hardware: drawer and cabinet members, hinges':'Upper levels: use not decided yet',
   rule:(i,L)=>L===1&&i.cat!=='hardware'?'Rack D level 1 is installer hardware only.':null},
- {id:'C',name:'Aisle C',kind:'rack',deep:1,fx:-8.05,nd:-1,first:5,last:18,purpose:()=>'Cabinet pallets only',rule:i=>i.cat!=='pallet'?'Aisles A, B and C hold cabinet pallets only.':null},
- {id:'B',name:'Aisle B',kind:'rack',deep:1,fx:-3.05,nd:1,first:5,last:18,purpose:()=>'Cabinet pallets only',rule:i=>i.cat!=='pallet'?'Aisles A, B and C hold cabinet pallets only.':null},
- {id:'A',name:'Aisle A',kind:'rack',deep:1,fx:0,nd:-1,first:1,last:18,purpose:()=>'Cabinet pallets only',rule:i=>i.cat!=='pallet'?'Aisles A, B and C hold cabinet pallets only.':null},
- {id:'R0',name:'Rack 0',kind:'rack',deep:0,fx:9.4,nd:1,z0:-11,first:1,last:3,ph:1,
+ {id:'C',name:'Aisle C',kind:'rack',deep:1,fx:-8.05,nd:-1,first:5,last:18,levels:4,ly:LY,bw:P,up:GR,beam:OR,purpose:()=>'Cabinet pallets only',rule:palletRule},
+ {id:'B',name:'Aisle B',kind:'rack',deep:1,fx:-3.05,nd:1,first:5,last:18,levels:4,ly:LY,bw:P,up:GR,beam:OR,purpose:()=>'Cabinet pallets only',rule:palletRule},
+ {id:'A',name:'Aisle A',kind:'rack',deep:1,fx:0,nd:-1,first:1,last:18,levels:4,ly:LY,bw:P,up:GR,beam:OR,purpose:()=>'Cabinet pallets only',rule:palletRule},
+ {id:'R0',name:'Rack 0',kind:'rack',deep:0,depth:1.1,fx:7.6,nd:1,z0:-8,first:1,last:5,levels:4,ly:[.15,1.45,2.65,3.85],bw:2.75,up:GY,beam:0xE0622A,wire:1,ph:1,
   purpose:L=>L===4?'Cardboard only':'Scribe molding, misc, random pallets, drop-off overflow',
   rule:(i,L)=>L===4&&!isCard(i)?'The top level of Rack 0 is cardboard only.':null},
- {id:'R1',name:'Rack 1',kind:'rack',deep:0,fx:6.8,nd:-1,z0:-11,first:1,last:1,ph:1,purpose:()=>'Excess handles (overstock)',rule:i=>i.cat!=='handle'?'Rack 1 holds excess handles only.':null},
- {id:'CL1',name:'Cantilever 1',kind:'cant',x:12.8,z0:-8.5,cols:3,rows:8,ph:1,purpose:()=>'Boards not in the main run: remakes, one-off jobs',rule:i=>i.cat!=='board'?'Cantilevers hold boards only.':null},
- {id:'CL2',name:'Back cantilever',kind:'cant',x:27,z0:-3,cols:1,rows:8,ph:1,purpose:()=>'Boards (single column on the back wall)',rule:i=>i.cat!=='board'?'Cantilevers hold boards only.':null},
- {id:'BK',name:'Bunks',kind:'bunk',x0:17.2,z0:-7.5,ph:1},
- {id:'HR',name:'Office hardware rack',kind:'shelf',x:14.9,z0:-41,bays:2,shelves:5,ph:1,purpose:()=>'Screws, nails and other small hardware',rule:i=>i.cat!=='fastener'?'The office hardware rack is for screws and nails.':null},
+ {id:'R1',name:'Rack 1',kind:'rack',deep:0,depth:1.1,fx:11.9,nd:-1,z0:-16.1,first:1,last:1,levels:5,ly:[.15,1.05,1.95,2.85,3.75],bw:2.45,up:GY,beam:GY,wire:1,ph:1,purpose:()=>'Excess handles (overstock)',rule:i=>i.cat!=='handle'?'Rack 1 holds excess handles only.':null},
+ {id:'CL1',name:'Cantilever 1',kind:'cant',axis:'z',sx:13,sz:-8,dir:-1,cols:3,rows:8,bl:2.6,arm:1.3,base:.25,rh:.5,ph:1,purpose:()=>'Boards not in the main run: remakes, one-off jobs',rule:i=>i.cat!=='board'?'Cantilevers hold boards only.':null},
+ {id:'CL2',name:'Back cantilever',kind:'cant',axis:'x',sx:18,sz:-45.6,dir:1,cols:1,rows:6,bl:2.6,arm:1.3,base:.25,rh:.62,ph:1,purpose:()=>'Boards (single column on the back wall)',rule:i=>i.cat!=='board'?'Cantilevers hold boards only.':null},
+ {id:'BK',name:'Bunks',kind:'bunk',x0:13.3,z0:-8,ph:1},
+ {id:'HR1',name:'Office rack 1',kind:'shelf',axis:'x',sx:6.3,sz:-37.9,dir:1,bays:3,bw:1.2,shelves:5,sh:.42,depth:.6,ph:1,purpose:()=>'Screws, nails and small hardware',rule:shelfRule},
+ {id:'HR2',name:'Office rack 2',kind:'shelf',axis:'z',sx:13.1,sz:-39,dir:1,bays:2,bw:1.8,shelves:5,sh:.42,depth:.6,ph:1,purpose:()=>'Handles, screws and small hardware',rule:shelfRule},
  {id:'VR',name:'Not on a shelf',kind:'virtual'}
 ];
 const zone=id=>ZONES.find(z=>z.id===id);
+/* each structure is a straight run: O = start point, a = along the run, n = toward the aisle side */
+function frameOf(z){
+ if(z.kind==='rack')return{O:[z.fx,0,z.z0||0],a:[0,0,-1],n:[z.nd,0,0]};
+ if(z.kind==='bunk')return{O:[z.x0,0,z.z0],a:[0,0,-1],n:[1,0,0]};
+ return z.axis==='x'?{O:[z.sx,0,z.sz],a:[1,0,0],n:[0,0,z.dir]}:{O:[z.sx,0,z.sz],a:[0,0,-1],n:[z.dir,0,0]}}
+const at=(f,s,t)=>[f.O[0]+f.a[0]*s+f.n[0]*t,f.O[2]+f.a[2]*s+f.n[2]*t];
+const dims=(f,sa,sn)=>[Math.abs(f.a[0])*sa+Math.abs(f.n[0])*sn,Math.abs(f.a[2])*sa+Math.abs(f.n[2])*sn];
 
 /* ---------- every location, generated ---------- */
 const LOCS=[],LOC={},KEYS={};
 const key=s=>String(s||'').toUpperCase().replace(/[^A-Z0-9+]/g,'');
 function addLoc(o){LOCS.push(o);LOC[o.id]=o;KEYS[key(o.id)]=o.id}
 ZONES.forEach(z=>{
- if(z.kind==='rack'){
-  for(let r=z.first;r<=z.last;r++)for(let L=1;L<=4;L++){
-   const zc=(z.z0||0)-(r-.5)*P,bins=z.deep?(L===4?['a+b','c+d']:['a','b','c','d']):['c','d'];
+ if(z.kind==='virtual'){
+  addLoc({id:'RECEIVING',z:'VR',purpose:'Just came in, not put away yet'});
+  addLoc({id:'FLOOR',z:'VR',purpose:'Sitting on the floor, needs a home'});return}
+ const f=frameOf(z),G=(s,t,y,sa,sn,h)=>{const[x,zz]=at(f,s,t),[w,d]=dims(f,sa,sn);return{x,y,z:zz,w,d,h,sa,sn,a:f.a,n:f.n}};
+ if(z.kind==='rack'){const D=z.deep?2.4:z.depth,bwi=z.bw-.1;
+  for(let r=z.first;r<=z.last;r++)for(let L=1;L<=z.levels;L++){
+   const s=(r-.5)*z.bw,y=z.ly[L-1]+.02,h=L<z.levels?Math.min(1.25,z.ly[L]-z.ly[L-1]-.2):1.25;
+   const bins=z.deep?(L===4?['a+b','c+d']:['a','b','c','d']):['c','d'];
    bins.forEach(b=>{
-    const back=b[0]==='a'||b[0]==='b',dbl=b.length>1,x=z.fx-z.nd*(back?1.8:.6);
-    const zz=dbl?zc:(b==='c'||b==='a')?zc+z.nd*2.7/4:zc-z.nd*2.7/4;
+    const back=b[0]==='a'||b[0]==='b',dbl=b.length>1,t=z.deep?(back?-1.8:-.6):-D/2;
+    const so=dbl?0:((b==='c'||b==='a')?-1:1)*z.nd*bwi/4;
     const id=`${z.id}-${L}${r}-${b}`;
-    addLoc({id,z:z.id,L,bay:r,bin:b,purpose:z.purpose(L),geo:{x,y:LY[L-1]+.02,z:zz,w:1.1,h:1.25,d:dbl?2.5:1.2,nx:z.nd,nz:0,ax:z.fx+z.nd*2.2}});
-    if(dbl)b.split('+').forEach(s=>KEYS[key(`${z.id}-${L}${r}-${s}`)]=id);
+    addLoc({id,z:z.id,L,bay:r,bin:b,purpose:z.purpose(L),geo:G(s+so,t,y,dbl?bwi-.15:bwi/2-.1,z.deep?1.1:D-.06,h)});
+    if(dbl)b.split('+').forEach(c=>KEYS[key(`${z.id}-${L}${r}-${c}`)]=id);
    })}
  }else if(z.kind==='cant'){
   for(let c=1;c<=z.cols;c++)for(let r=1;r<=z.rows;r++)
-   addLoc({id:`${z.id}-${c}-${r}`,z:z.id,L:r,bay:c,purpose:z.purpose(),geo:{x:z.x+.7,y:.3+(r-1)*.5,z:z.z0-(c-.5)*2.5,w:1.2,h:.4,d:2.3,nx:1,nz:0,ax:z.x+3.2}});
+   addLoc({id:`${z.id}-${c}-${r}`,z:z.id,L:r,bay:c,purpose:z.purpose(),geo:G((c-.5)*z.bl,z.arm/2+.12,z.base+(r-1)*z.rh+.06,z.bl-.15,1.25,z.rh-.12)});
  }else if(z.kind==='bunk'){
-  for(let b=1;b<=4;b++)['F','B'].forEach(s=>addLoc({id:`BK${b}-${s}`,z:'BK',bunk:b,side:s,purpose:BUNK[b][s],geo:{x:z.x0+(b-1)*2.4,y:.15,z:s==='F'?z.z0-1.3:z.z0-3.8,w:1.3,h:2.6,d:2.45,nx:0,nz:1}}));
+  for(let b=1;b<=4;b++)['B','F'].forEach(s=>addLoc({id:`BK${b}-${s}`,z:'BK',bunk:b,bay:b,side:s,purpose:BUNK[b][s],geo:G((b-.5)*2.7,s==='B'?.68:2.0,.02,2.5,1.27,3.6)}));
  }else if(z.kind==='shelf'){
   for(let b=1;b<=z.bays;b++)for(let s=1;s<=z.shelves;s++)
-   addLoc({id:`HR-${s}${b}`,z:'HR',L:s,bay:b,purpose:z.purpose(),geo:{x:z.x-.3,y:.1+(s-1)*.45,z:z.z0-(b-.5)*1.2,w:.55,h:.36,d:1.1,nx:1,nz:0,ax:z.x+2.4}});
- }else{
-  addLoc({id:'RECEIVING',z:'VR',purpose:'Just came in, not put away yet'});
-  addLoc({id:'FLOOR',z:'VR',purpose:'Sitting on the floor, needs a home'});
+   addLoc({id:`${z.id}-${s}${b}`,z:z.id,L:s,bay:b,purpose:z.purpose(),geo:G((b-.5)*z.bw,z.depth/2,.1+(s-1)*z.sh+.03,z.bw-.08,z.depth-.04,z.sh-.08)});
  }
 });
 const PHYS=LOCS.filter(l=>l.geo);
@@ -338,7 +377,7 @@ function saveCount(loc,newLines){const old=lines(loc),t=new Date().toISOString()
  S.meta[loc]={counted:t,by:who};save()}
 function suggest(i){
  const have=onHand(i.sku).locs.map(x=>x[0]).filter(l=>LOC[l]?.geo&&!ruleFor(l,i));if(have.length)return{loc:have[0],why:'already stored here'};
- const PREF={board:['BK','CL1','CL2'],hardware:['D'],fastener:['HR'],handle:['R1'],pallet:['A','B','C'],packaging:['R0'],molding:['R0'],misc:['R0']};
+ const PREF={board:['BK','CL1','CL2'],hardware:['D'],fastener:['HR1','HR2'],handle:['R1'],pallet:['A','B','C'],packaging:['R0'],molding:['R0'],misc:['R0']};
  let cand=PHYS.filter(l=>(PREF[i.cat]||[]).includes(l.z)&&!lines(l.id).length&&!ruleFor(l.id,i));
  cand.sort((a,b)=>(PREF[i.cat]||[]).indexOf(a.z)-(PREF[i.cat]||[]).indexOf(b.z));
  if(isCard(i))cand=cand.filter(l=>l.L===4).concat(cand.filter(l=>l.L!==4));
@@ -368,9 +407,9 @@ function demo(){
  const dl1=[['D-11-c','43-150-16-WT-DR',86],['D-11-d','43-150-16-WT-DL',91],['D-12-c','43-150-16-WT-CL',64],['D-12-d','43-150-16-WT-CR',22],['D-13-c','43-150-21-WT-DR',48],['D-13-d','43-150-21-WT-DL',50],['D-14-c','H-HNG-110',640],['D-14-d','H-HNG-110H',180],['D-15-c','H-HNG-170',36],['D-15-d','H-PLT-0',720]];
  dl1.forEach(([l,s,q],k)=>{put(l,s,q);cnt(l,k%3)});
  put('D-21-c','H-HNG-110',1200);cnt('D-21-c',9);
- const fs=[['FS-CONF','Confirmat screws 7 x 50',['HR-11',6]],['FS-PAN','Pan head screws #8 x 5/8"',['HR-12',11]],['FS-BRAD','Brad nails 18 ga 1-1/4"',['HR-21',4]],['FS-PIN','Pin nails 23 ga 1"',['HR-22',7]]];
+ const fs=[['FS-CONF','Confirmat screws 7 x 50',['HR1-11',6]],['FS-PAN','Pan head screws #8 x 5/8"',['HR1-12',11]],['FS-BRAD','Brad nails 18 ga 1-1/4"',['HR1-21',4]],['FS-PIN','Pin nails 23 ga 1"',['HR1-22',7]]];
  fs.forEach(([s,n,[l,q]])=>{add({sku:s,cat:'fastener',name:n,min:5});put(l,s,q);cnt(l)});
- put('HR-31','FS-SCREW',null);put('HR-41','FS-NAIL',null);
+ put('HR1-31','FS-SCREW',null);put('HR1-41','FS-NAIL',null);put('HR2-41','P-BAR5-SS',80);put('HR2-31','P-KNOB-SS',60);put('HR2-21','P-BAR5-BLK',120);['HR2-41','HR2-31','HR2-21'].forEach(l=>cnt(l));
  const hd=[['P-BAR5-BLK','Bar pull 5" matte black','Bar pull','Matte black',400],['P-BAR5-SS','Bar pull 5" stainless','Bar pull','Stainless',300],['P-BAR8-BLK','Bar pull 8" matte black','Bar pull','Matte black',120],['P-KNOB-SS','Knob 1-1/4" stainless','Knob','Stainless',150]];
  hd.forEach(([s,n,st,f,q],k)=>{add({sku:s,cat:'handle',name:n,style:st,finish:f,min:100});const l=`R1-${k%3+1}1-${k%2?'d':'c'}`;put(l,s,q);cnt(l)});
  put('D-11-a','P-KNOB-SS',24);cnt('D-11-a',2); // a wrong-spot example
@@ -482,107 +521,218 @@ function results(){const out=$('#fr');if(!out)return;const q=findQ.trim().toLowe
  out.innerHTML=h||`<p class="empty">Nothing matches “${esc(findQ)}”. Check the spelling, or add it under Items.</p>`}
 
 /* ---------- 3D map ---------- */
-let W3=null,cmode='status';
+let W3=null,showStatus=false,mode3='aerial',tourTok=0,touring=false;
 const COL={ok:0x8DC63F,uncounted:0xE8A23A,wrong:0xE5604D,recount:0xD45AB0,empty:0x56645C,emptyok:0x9DB0A3};
 const hex=n=>'#'+n.toString(16).padStart(6,'0');
-function fillH(l,ls){const g=l.geo;if(!ls.length)return .04;
- if(l.z==='BK'||l.z.startsWith('CL')){let h=0,u=false;ls.forEach(x=>{const i=item(x.sku);if(x.qty==null)u=true;else h+=x.qty*(i&&i.thk==='6mm'?.007:.019)});if(u)h=Math.max(h,l.z==='BK'?.5:.2);return Math.min(g.h,Math.max(.06,h))}
- return g.h}
-function colorFor(l,ls){if(cmode==='board'&&ls.length){const i=item(ls[0].sku);if(i&&i.swatch)return parseInt(i.swatch.slice(1),16)}return COL[locStatus(l.id)]}
-function sprite(T,text,bg,fg,w){const cv=document.createElement('canvas');cv.width=512;cv.height=128;const g=cv.getContext('2d');g.fillStyle=bg;g.fillRect(0,0,512,128);g.fillStyle=fg;g.font='700 64px "Chakra Petch",Arial';g.textAlign='center';g.textBaseline='middle';g.fillText(text,256,68);
- const s=new T.Sprite(new T.SpriteMaterial({map:new T.CanvasTexture(cv),depthTest:false}));s.scale.set(w,w/4,1);s.renderOrder=5;return s}
+const AREAS=[['WAREHOUSE 2 · PALLET RACKING',-5.2,.3,-27],['SHOP SIDE',18,.3,-30],['OFFICE',9.5,3.1,-42],['OPENING',4.6,2.2,-4.5],['PRODUCTION FLOOR',24,.3,-12]];
+const AER={p:[9,44,20],t:[7,0,-23],fov:48};
+const ZI={};
+function zoneInfo(id){if(ZI[id])return ZI[id];const ls=PHYS.filter(l=>l.z===id),mn=[1e9,1e9,1e9],mx=[-1e9,-1e9,-1e9];
+ ls.forEach(l=>{const g=l.geo;mn[0]=Math.min(mn[0],g.x-g.w/2);mx[0]=Math.max(mx[0],g.x+g.w/2);mn[1]=Math.min(mn[1],g.y);mx[1]=Math.max(mx[1],g.y+g.h);mn[2]=Math.min(mn[2],g.z-g.d/2);mx[2]=Math.max(mx[2],g.z+g.d/2)});
+ const g=ls[0].geo;return ZI[id]={mn,mx,c:[(mn[0]+mx[0])/2,(mn[1]+mx[1])/2,(mn[2]+mx[2])/2],a:g.a,n:g.n,L:Math.max(mx[0]-mn[0],mx[2]-mn[2])}}
+const add3=(p,v,k)=>[p[0]+v[0]*k,p[1]+v[1]*k,p[2]+v[2]*k];
+function zonePose(id){const Z=zoneInfo(id),d=Math.min(30,Math.max(7.5,Z.L*.62)),H=Z.mx[1],t=[Z.c[0],Math.min(H*.45,2.4),Z.c[2]];
+ const p=add3(add3(t,Z.n,d),Z.a,Z.L*.2);p[1]=t[1]+Math.max(H*.85,d*(Z.L>30?.8:.45));return{p,t,fov:48}}
+function spotPose(id){const g=LOC[id].geo,deep=zone(LOC[id].z).deep,t=[g.x,g.y+g.h/2,g.z];const p=add3(add3(t,g.n,deep?2.6:3.8),g.a,1.4);p[1]=LOC[id].z==='BK'?Math.max(g.y+4.6,t[1]+2):t[1]+.8;return{p,t,fov:50}}
+function bayPose(zid,bay){const ls=PHYS.filter(l=>l.z===zid&&l.bay===bay);let c=[0,0,0],H=0;ls.forEach(l=>{c=add3(c,[l.geo.x,0,l.geo.z],1/ls.length);H=Math.max(H,l.geo.y+l.geo.h)});
+ const g=ls[0].geo,deep=zone(zid).deep,t=[c[0],H*.45,c[2]];const p=add3(add3(t,g.n,deep?2.7:Math.max(4.5,H*1.1)),g.a,deep?3.4:1.6);p[1]=H*.55+1;return{p,t,fov:54}}
+function makeTextures(T){
+ const R=rng(5),tx=(w,h,draw)=>{const c=document.createElement('canvas');c.width=w;c.height=h;draw(c.getContext('2d'),w,h);const t=new T.CanvasTexture(c);t.anisotropy=4;return t};
+ const wire=tx(64,64,(g,w,h)=>{g.strokeStyle='#A7B0B5';g.lineWidth=3;for(let i=0;i<=64;i+=16){g.beginPath();g.moveTo(i,0);g.lineTo(i,h);g.stroke();g.beginPath();g.moveTo(0,i);g.lineTo(w,i);g.stroke()}});
+ wire.wrapS=wire.wrapT=T.RepeatWrapping;wire.repeat.set(10,6);
+ return{wire,
+  wrap:tx(256,256,(g,w,h)=>{g.fillStyle='#C9A47A';g.fillRect(0,0,w,h);for(let y=0;y<h;y+=64)for(let x=0;x<w;x+=86){g.fillStyle=['#C29A6E','#D2B088','#BF9468'][Math.floor(R()*3)];g.fillRect(x+2,y+2,82,60)}g.fillStyle='rgba(255,255,255,.22)';g.fillRect(0,0,w,h);g.strokeStyle='rgba(255,255,255,.55)';g.lineWidth=2;for(let i=0;i<7;i++){g.beginPath();g.moveTo(0,R()*h);g.lineTo(w,R()*h);g.stroke()}}),
+  boxes:tx(256,256,(g,w,h)=>{g.fillStyle='#8E6F4C';g.fillRect(0,0,w,h);for(let y=0;y<h;y+=42)for(let x=0;x<w;x+=52){g.fillStyle=R()<.4?'#ECEBE6':['#C49A6C','#B98E60','#D0A878'][Math.floor(R()*3)];g.fillRect(x+2,y+2,48,38);if(R()<.5){g.fillStyle='rgba(0,0,0,.28)';g.fillRect(x+8,y+12,20,6)}}}),
+  edge:tx(64,64,(g,w,h)=>{g.fillStyle='#CDAE7E';g.fillRect(0,0,w,h);for(let y=0;y<h;y+=4){g.fillStyle=y%8?'#B8955F':'#E1C99B';g.fillRect(0,y,w,1)}}),
+  unit:tx(512,256,(g,w,h)=>{g.fillStyle='#CFAE80';g.fillRect(0,0,w,h);g.fillStyle='#1E2A4F';g.fillRect(14,20,210,46);g.fillStyle='#FFFFFF';g.font='700 30px Arial';g.fillText('PRISM  TFL',26,54);g.fillStyle='#4C9A5B';[140,270,400].forEach(x=>g.fillRect(x,0,8,h));g.fillStyle='#FFFFFF';g.fillRect(440,150,52,42)}),
+  card:tx(64,64,(g,w,h)=>{g.fillStyle='#B98F5E';g.fillRect(0,0,w,h);for(let y=0;y<h;y+=3){g.fillStyle=y%6?'#A47C4E':'#C9A26F';g.fillRect(0,y,w,1)}}),
+  rolls:tx(128,128,(g,w,h)=>{g.fillStyle='#CFCFCF';g.fillRect(0,0,w,h);for(let y=0;y<h;y+=32)for(let x=0;x<w;x+=32){g.fillStyle='#F4F4F4';g.beginPath();g.arc(x+16,y+16,14,0,7);g.fill();g.fillStyle='#9A9A9A';g.beginPath();g.arc(x+16,y+16,4,0,7);g.fill()}})}}
 function init3D(){
  if(!window.THREE)return null;const T=THREE;
- const css=v=>getComputedStyle(document.documentElement).getPropertyValue(v).trim()||'#13201A';
  const ren=new T.WebGLRenderer({antialias:true});ren.setPixelRatio(Math.min(devicePixelRatio,2));
- const scene=new T.Scene();scene.background=new T.Color(css('--panel2'));
+ const scene=new T.Scene();scene.background=new T.Color(0x16211B);scene.fog=new T.Fog(0x16211B,95,230);
  const cam=new T.PerspectiveCamera(45,1,.1,600);
- scene.add(new T.HemisphereLight(0xffffff,0x445544,.95));const dl=new T.DirectionalLight(0xffffff,.5);dl.position.set(20,40,15);scene.add(dl);
- const fl=new T.Mesh(new T.PlaneGeometry(64,66),new T.MeshStandardMaterial({color:0x33413a}));fl.rotation.x=-Math.PI/2;fl.position.set(8,0,-22);scene.add(fl);
- const gr=new T.GridHelper(66,33,0x4a5f52,0x4a5f52);gr.position.set(8,.01,-22);scene.add(gr);
- const parts={up:[],beam:[],deck:[],dark:[],wall:[]},box=(k,w,h,d,x,y,z)=>parts[k].push([w,h,d,x,y,z]);
- ZONES.forEach(z=>{
-  if(z.kind==='rack'){const D=z.deep?2.4:1.2,bx=z.fx-z.nd*D,mid=z.fx-z.nd*D/2,zc=r=>(z.z0||0)-(r-.5)*P;
-   for(let k=z.first-1;k<=z.last;k++){const zb=(z.z0||0)-k*P;box('up',.1,7.2,.1,z.fx,3.6,zb);box('up',.1,7.2,.1,bx,3.6,zb)}
-   for(let r=z.first;r<=z.last;r++)for(let L=1;L<=4;L++){const y=LY[L-1];box('beam',.08,.14,2.7,z.fx,y-.07,zc(r));box('beam',.08,.14,2.7,bx,y-.07,zc(r));box('deck',D,.02,2.7,mid,y,zc(r))}}
-  if(z.kind==='cant')for(let c=1;c<=z.cols;c++){const zc=z.z0-(c-.5)*2.5;box('up',.25,4.4,.25,z.x,2.2,zc);box('dark',1.8,.16,.45,z.x+.2,.08,zc);for(let r=1;r<=z.rows;r++)box('beam',1.4,.08,.14,z.x+.7,.3+(r-1)*.5-.05,zc)}
-  if(z.kind==='bunk')for(let b=1;b<=4;b++)box('dark',1.5,.14,5.3,z.x0+(b-1)*2.4,.07,z.z0-2.55);
-  if(z.kind==='shelf'){const bx=z.x-.6;for(let k=0;k<=z.bays;k++){const zb=z.z0-k*1.2;box('up',.06,2.4,.06,z.x,1.2,zb);box('up',.06,2.4,.06,bx,1.2,zb)}for(let s=1;s<=z.shelves;s++)box('deck',.6,.03,z.bays*1.2,z.x-.3,.1+(s-1)*.45-.02,z.z0-z.bays*.6)}
+ scene.add(new T.HemisphereLight(0xffffff,0x3a3f3c,.85));const dl=new T.DirectionalLight(0xffffff,.55);dl.position.set(25,50,20);scene.add(dl);const dl2=new T.DirectionalLight(0xffffff,.22);dl2.position.set(-30,20,-40);scene.add(dl2);
+ const TX=makeTextures(T),mats={};
+ const M=k=>{if(mats[k])return mats[k];let m;
+  if(k[0]==='c')m=new T.MeshStandardMaterial({color:+k.slice(1),roughness:.7,metalness:.15});
+  else if(k==='wire')m=new T.MeshStandardMaterial({map:TX.wire,transparent:true,alphaTest:.3,side:T.DoubleSide});
+  else if(k==='deck')m=new T.MeshStandardMaterial({color:0x8a9094,transparent:true,opacity:.3});
+  else if(k==='wallT')m=new T.MeshStandardMaterial({color:0xD9D6CE,transparent:true,opacity:.3,depthWrite:false});
+  else if(k==='glass')m=new T.MeshStandardMaterial({color:0xCFE3EA,transparent:true,opacity:.3,depthWrite:false});
+  else if(k==='top')m=new T.MeshStandardMaterial({color:0xffffff,roughness:.55});
+  else m=new T.MeshStandardMaterial({map:TX[k],roughness:.85});
+  return mats[k]=m};
+ const cube=new T.BoxGeometry(1,1,1),o=new T.Object3D();
+ const build=(parts,group)=>{for(const[k,L]of parts){if(!L.length)continue;const im=new T.InstancedMesh(cube,M(k),L.length);
+  L.forEach((b,i)=>{o.position.set(b[3],b[4],b[5]);o.scale.set(b[0],b[1],b[2]);o.updateMatrix();im.setMatrixAt(i,o.matrix);if(b[6]!=null)im.setColorAt(i,new T.Color(b[6]))});group.add(im)}};
+ const parts=new Map(),part=(k,x,y,z,w,h,d)=>{(parts.get(k)||parts.set(k,[]).get(k)).push([w,h,d,x,y,z])};
+ const partF=(k,f,s,t,y,sa,sn,h)=>{const[x,z]=at(f,s,t),[w,d]=dims(f,sa,sn);part(k,x,y+h/2,z,w,h,d)};
+ // buildings: warehouse 2 (racks A–D) and the shop side, joined by an opening in the wall
+ const floor=(x0,x1,z0,z1,c)=>{const m=new T.Mesh(new T.PlaneGeometry(x1-x0,z0-z1),new T.MeshStandardMaterial({color:c,roughness:.95}));m.rotation.x=-Math.PI/2;m.position.set((x0+x1)/2,0,(z0+z1)/2);scene.add(m)};
+ floor(-15,4.6,4,-53,0x3D4743);floor(4.6,31,4,-47,0x46504B);
+ const wall=(x0,z0,x1,z1,h=1.8)=>part('wallT',(x0+x1)/2,h/2,(z0+z1)/2,Math.max(.15,Math.abs(x1-x0)),h,Math.max(.15,Math.abs(z1-z0)));
+ wall(-15,4,4.6,4);wall(-15,-53,4.6,-53);wall(-15,4,-15,-53);wall(4.6,4,4.6,-2);wall(4.6,-7,4.6,-53);wall(4.6,4,31,4);wall(4.6,-47,31,-47);wall(31,4,31,-47);
+ [[22.6,-46.9],[26.6,-46.9]].forEach(([x,z])=>part('c0xC8CCCF',x,1.9,z,3,3.8,.08));
+ const O=OFFICE;[[O.x0,O.z0,O.x1,O.z0],[O.x0,O.z1,O.x1,O.z1],[O.x0,O.z0,O.x0,O.z1],[O.x1,O.z0,O.x1,O.z1]].forEach(([a,b,c,d])=>part('glass',(a+c)/2,1.4,(b+d)/2,Math.max(.12,Math.abs(c-a)),2.8,Math.max(.12,Math.abs(d-b))));
+ ZONES.forEach(z=>{if(z.kind==='virtual')return;const f=frameOf(z);
+  if(z.kind==='rack'){const D=z.deep?2.4:z.depth,top=z.ly[z.levels-1]+1.45,u='c'+z.up,bm='c'+z.beam;
+   for(let k=z.first-1;k<=z.last;k++){const s=k*z.bw;partF(u,f,s,0,0,.1,.1,top);partF(u,f,s,-D,0,.1,.1,top);for(let y=.7;y<top;y+=1.5)partF(u,f,s,-D/2,y,.04,D,.04)}
+   for(let r=z.first;r<=z.last;r++)for(let L=1;L<=z.levels;L++){const s=(r-.5)*z.bw,y=z.ly[L-1];
+    partF(bm,f,s,0,y-.14,z.bw-.1,.08,.14);partF(bm,f,s,-D,y-.14,z.bw-.1,.08,.14);partF(z.wire?'wire':'deck',f,s,-D/2,y-.02,z.bw-.12,D-.04,.02)}}
+  if(z.kind==='cant'){const top=z.base+z.rows*z.rh+.3;
+   for(let k=0;k<=z.cols*2;k++){const s=k*z.bl/2;partF('c0x2E7D3A',f,s,-.12,0,.22,.25,top);partF('c0x2E7D3A',f,s,.55,0,.25,1.45,.16);
+    for(let r=1;r<=z.rows;r++)partF('c0xD9531E',f,s,z.arm/2,z.base+(r-1)*z.rh-.1,.09,z.arm,.1)}
+   for(let c=0;c<z.cols*2;c++){const s=(c+.5)*z.bl/2;[top*.35,top*.72].forEach(y=>partF('c0xD9531E',f,s,-.22,y,z.bl/2-.22,.06,.07))}}
+  if(z.kind==='bunk')for(let b=1;b<=4;b++){const s=(b-.5)*2.7;partF('c0xE8C22A',f,s-1.33,1.34,0,.06,2.66,.012);partF('c0xE8C22A',f,s+1.33,1.34,0,.06,2.66,.012);partF('c0xE8C22A',f,s,.02,0,2.66,.06,.012);partF('c0xE8C22A',f,s,2.68,0,2.66,.06,.012)}
+  if(z.kind==='shelf'){const top=.1+z.shelves*z.sh+.1;
+   for(let k=0;k<=z.bays;k++){const s=k*z.bw;partF('c0x1C1E21',f,s,.03,0,.05,.05,top);partF('c0x1C1E21',f,s,z.depth-.03,0,.05,.05,top)}
+   for(let b=1;b<=z.bays;b++)for(let s=1;s<=z.shelves;s++){const y=.1+(s-1)*z.sh;partF('c0xC9AE84',f,(b-.5)*z.bw,z.depth/2,y,z.bw-.06,z.depth-.02,.025);partF('c0x1C1E21',f,(b-.5)*z.bw,z.depth-.01,y-.05,z.bw-.06,.03,.06)}}
  });
- box('wall',.2,3.2,46,4.6,1.6,-30);box('wall',.2,3.2,5,4.6,1.6,.5); // dividing wall, opening at z -2 to -7 (position approximate)
- const O=OFFICE,ow=O.x1-O.x0,od=O.z0-O.z1;
- box('wall',ow,2.6,.12,(O.x0+O.x1)/2,1.3,O.z0);box('wall',ow,2.6,.12,(O.x0+O.x1)/2,1.3,O.z1);box('wall',.12,2.6,od,O.x0,1.3,(O.z0+O.z1)/2);box('wall',.12,2.6,od,O.x1,1.3,(O.z0+O.z1)/2);
- const mats={up:new T.MeshStandardMaterial({color:0x1E7A6A}),beam:new T.MeshStandardMaterial({color:0xD9531E}),deck:new T.MeshStandardMaterial({color:0x8a9094,transparent:true,opacity:.35}),dark:new T.MeshStandardMaterial({color:0x50463a}),wall:new T.MeshStandardMaterial({color:0xc8d1cb,transparent:true,opacity:.4})};
- const o=new T.Object3D(),cube=new T.BoxGeometry(1,1,1);
- for(const k in parts){const L=parts[k];const im=new T.InstancedMesh(cube,mats[k],L.length);L.forEach((b,i)=>{o.position.set(b[3],b[4],b[5]);o.scale.set(b[0],b[1],b[2]);o.updateMatrix();im.setMatrixAt(i,o.matrix)});scene.add(im)}
- const sm=new T.InstancedMesh(cube,new T.MeshStandardMaterial({color:0xffffff}),PHYS.length);
+ const statics=new T.Group();build(parts,statics);scene.add(statics);
+ const sm=new T.InstancedMesh(cube,new T.MeshStandardMaterial({color:0xffffff,transparent:true,opacity:.6,depthWrite:false}),PHYS.length);
  const hm=new T.InstancedMesh(cube,new T.MeshBasicMaterial({visible:false}),PHYS.length);
  PHYS.forEach((l,i)=>{const g=l.geo;o.position.set(g.x,g.y+g.h/2,g.z);o.scale.set(g.w,g.h,g.d);o.updateMatrix();hm.setMatrixAt(i,o.matrix)});
  scene.add(sm,hm);
- const sign=(t,x,y,z,w)=>{const s=sprite(T,t,'#8DC63F','#0D1611',w||4);s.position.set(x,y,z);scene.add(s)};
- [['D',-12.3],['C',-6.85],['B',-4.25],['A',1.2]].forEach(([a,x])=>{const t=(a==='D'?'RACK ':'AISLE ')+a;sign(t,x,8.4,1.8,3.6);sign(t,x,8.4,-52,3.6)});
- sign('RACK 0',8.8,6.4,-15.2,3);sign('RACK 1',7.4,7.4,-12.4,3);sign('CANTILEVER 1',13.4,5.4,-12.3,4.4);sign('BACK CANTILEVER',27.6,5.4,-4.3,4.8);
- const zs2=(t,x,y,z,w)=>{const s=sprite(T,t,'#13201A','#8DC63F',w);s.position.set(x,y,z);scene.add(s)};
- zs2('WAREHOUSE 2: PALLET RACKING',-5.5,11,-26,10);zs2('SHOP SIDE',17,9,-26,6);zs2('OPENING',4.6,3.8,-4.5,2.6);
- for(let b=1;b<=4;b++)sign('BUNK '+b,17.2+(b-1)*2.4,2.6,-6,2.4);
- sign('OFFICE',10,3.6,-41.5,3);sign('HW RACK',15.4,3.2,-42.2,2.8);
- const selBox=new T.LineSegments(new T.EdgesGeometry(cube),new T.LineBasicMaterial({color:0xFFE14D}));selBox.visible=false;scene.add(selBox);
- let selTag=null,ctrl=null;
- if(T.OrbitControls){ctrl=new T.OrbitControls(cam,ren.domElement);ctrl.maxPolarAngle=Math.PI*.48;ctrl.minDistance=3;ctrl.maxDistance=140;ctrl.addEventListener('change',()=>render())}
- const tgt=new T.Vector3();
- let raf=0;function render(){cancelAnimationFrame(raf);raf=requestAnimationFrame(()=>ren.render(scene,cam))}
- function look(p,t){cam.position.set(...p);tgt.set(...t);if(ctrl){ctrl.target.copy(tgt);ctrl.update()}cam.lookAt(tgt);render()}
- let anim=0;function fly(p,t){const p0=cam.position.clone(),t0=(ctrl?ctrl.target:tgt).clone(),p1=new T.Vector3(...p),t1=new T.Vector3(...t),st=performance.now(),dur=matchMedia('(prefers-reduced-motion: reduce)').matches?1:900;
-  cancelAnimationFrame(anim);(function step(n){const k=Math.min(1,(n-st)/dur),e=k<.5?4*k*k*k:1-Math.pow(-2*k+2,3)/2;cam.position.lerpVectors(p0,p1,e);const tt=t0.clone().lerp(t1,e);if(ctrl){ctrl.target.copy(tt);ctrl.update()}else{tgt.copy(tt);cam.lookAt(tt)}render();if(k<1)anim=requestAnimationFrame(step)})(st)}
- function mark(){if(selTag){scene.remove(selTag);selTag=null}const l=selLoc&&LOC[selLoc];if(!l||!l.geo){selBox.visible=false;return}const g=l.geo;selBox.visible=true;selBox.position.set(g.x,g.y+g.h/2,g.z);selBox.scale.set(g.w+.12,g.h+.12,g.d+.12);
-  selTag=sprite(T,l.id,'#FFE14D','#111111',2.6);selTag.position.set(g.x,g.y+g.h+.9,g.z);scene.add(selTag)}
- function refresh(){PHYS.forEach((l,i)=>{const g=l.geo,ls=lines(l.id),h=fillH(l,ls);o.position.set(g.x,g.y+h/2,g.z);o.scale.set(g.w*.94,h,g.d*.94);o.updateMatrix();sm.setMatrixAt(i,o.matrix);sm.setColorAt(i,new T.Color(colorFor(l,ls)))});
-  sm.instanceMatrix.needsUpdate=true;if(sm.instanceColor)sm.instanceColor.needsUpdate=true;mark();render()}
- function focus(id){const l=LOC[id];if(!l||!l.geo)return;const g=l.geo,cy=g.y+g.h/2;fly(g.nz?[g.x+1.5,cy+4,g.z+7]:[g.ax,cy+1.8,g.z+6],[g.x,cy,g.z])}
+ const zoneHits=[];ZONES.forEach(z=>{if(z.kind==='virtual')return;const Z=zoneInfo(z.id),m=new T.Mesh(cube,new T.MeshBasicMaterial({visible:false}));
+  m.position.set(...Z.c);m.scale.set(Z.mx[0]-Z.mn[0]+.8,Z.mx[1]-Z.mn[1]+1,Z.mx[2]-Z.mn[2]+.8);m.userData.z=z.id;scene.add(m);zoneHits.push(m)});
+ // what is actually stored, drawn like the real thing
+ let content=new T.Group();scene.add(content);
+ function buildContent(){scene.remove(content);content.children.forEach(m=>m.dispose&&m.dispose());content=new T.Group();
+  const cp=new Map(),put=(k,x,y,z,w,h,d,col)=>{(cp.get(k)||cp.set(k,[]).get(k)).push([w,h,d,x,y,z,col])};
+  PHYS.forEach(l=>{const ls=lines(l.id);if(!ls.length)return;const g=l.geo,zn=zone(l.z),rack=zn.kind==='rack',n=ls.length,sa=g.sa/n;
+   ls.forEach((x,k)=>{const i=item(x.sku)||{cat:'misc'},so=(k-(n-1)/2)*sa,cx=g.x+g.a[0]*so,cz=g.z+g.a[2]*so;
+    const B=(kind,y,h,sh,col)=>put(kind,cx,y+h/2,cz,(Math.abs(g.a[0])*sa+Math.abs(g.n[0])*g.sn)*sh,h,(Math.abs(g.a[2])*sa+Math.abs(g.n[2])*g.sn)*sh,col);
+    let y=g.y;const pal=()=>{B('c0x2B7FD0',y,.14,.95);y+=.14};
+    if(i.cat==='board'){
+     if(zn.kind==='bunk'){const u=x.qty==null?2:Math.max(1,Math.min(4,Math.ceil(x.qty/(i.thk==='6mm'?90:45))));for(let j=0;j<u;j++){B('c0xB08A5A',y,.1,.98);y+=.1;B('unit',y,.78,.98);y+=.78}}
+     else{const h=x.qty==null?.18:Math.max(.03,Math.min(g.h-.05,x.qty*(i.thk==='6mm'?.007:.019)));B('edge',y,h,.98);B('top',y+h,.012,.98,i.swatch?parseInt(i.swatch.slice(1),16):0xD8D2C4)}}
+    else if(i.cat==='pallet'){pal();B('wrap',y,Math.min(g.h-.2,1.05),.92)}
+    else if(i.cat==='packaging'){if(rack)pal();B(isCard(i)?'card':'rolls',y,Math.min(g.h-.2,isCard(i)?.55:.8),.92)}
+    else if(i.cat==='molding'){if(rack)pal();B('card',y,Math.min(g.h-.2,.3),.95)}
+    else{if(rack)pal();B('boxes',y,zn.kind==='shelf'?g.h*.8:Math.min(g.h-.2,.8),.9)}
+   })});
+  build(cp,content);scene.add(content)}
+ const selBox=new T.LineSegments(new T.EdgesGeometry(cube),new T.LineBasicMaterial({color:0xFFE14D}));
+ const beam=new T.Mesh(new T.CylinderGeometry(.07,.07,1,8),new T.MeshBasicMaterial({color:0xFFE14D,transparent:true,opacity:.55}));scene.add(selBox,beam);
+ function mark(){const l=selLoc&&LOC[selLoc];selBox.visible=beam.visible=!!(l&&l.geo);if(!selBox.visible)return;const g=l.geo;
+  selBox.position.set(g.x,g.y+g.h/2,g.z);selBox.scale.set(g.w+.1,g.h+.1,g.d+.1);const top=g.y+g.h,bh=Math.max(1,12-top);beam.position.set(g.x,top+bh/2,g.z);beam.scale.set(1,bh,1)}
+ function refresh(){buildContent();
+  PHYS.forEach((l,i)=>{const g=l.geo,h=lines(l.id).length?Math.min(g.h,1.3):.05;o.position.set(g.x,g.y+h/2,g.z);o.scale.set(g.w*.97,h,g.d*.97);o.updateMatrix();sm.setMatrixAt(i,o.matrix);sm.setColorAt(i,new T.Color(COL[locStatus(l.id)]))});
+  sm.instanceMatrix.needsUpdate=true;if(sm.instanceColor)sm.instanceColor.needsUpdate=true;sm.visible=showStatus;mark();render()}
+ // HTML labels that ride on the 3D scene
+ const olay=document.createElement('div');olay.className='olay';let labs=[];const tmp=new T.Vector3();
+ function setLabels(list){olay.innerHTML='';labs=list.map(L=>{const e=document.createElement(L.click?'button':'span');e.className='lb '+(L.cls||'');e.textContent=L.text;
+  if(L.click){e.type='button';e.onclick=ev=>{ev.stopPropagation();L.click()}}olay.appendChild(e);return{e,v:new T.Vector3(...L.pos)}});render()}
+ function placeLabels(){const w=ren.domElement.clientWidth,h=ren.domElement.clientHeight;labs.forEach(L=>{tmp.copy(L.v).project(cam);const vis=tmp.z<1&&tmp.z>-1&&Math.abs(tmp.x)<1.05&&Math.abs(tmp.y)<1.05;
+  L.e.style.display=vis?'':'none';if(vis){L.e.style.left=((tmp.x+1)/2*w)+'px';L.e.style.top=((1-tmp.y)/2*h)+'px'}})}
+ let ctrl=null;if(T.OrbitControls){ctrl=new T.OrbitControls(cam,ren.domElement);ctrl.maxPolarAngle=Math.PI*.49;ctrl.minDistance=1.5;ctrl.maxDistance=160;ctrl.addEventListener('change',()=>render());ctrl.addEventListener('start',()=>stopTour())}
+ let raf=0;function render(){cancelAnimationFrame(raf);raf=requestAnimationFrame(()=>{ren.render(scene,cam);placeLabels()})}
+ function look(p,t){cam.position.set(...p);if(ctrl){ctrl.target.set(...t);ctrl.update()}cam.lookAt(...t);render()}
+ let anim=0;
+ // keyframed glide: rise along a curve, ease in and out, with a slight zoom punch mid-flight
+ function fly(p,t,fov=48,dur){return new Promise(res=>{const p0=cam.position.clone(),t0=ctrl?ctrl.target.clone():new T.Vector3(...t),f0=cam.fov,P1=new T.Vector3(...p),T1=new T.Vector3(...t),dist=p0.distanceTo(P1);
+  const lift=Math.min(16,dist*.28),curve=dist>4?new T.CatmullRomCurve3([p0,p0.clone().lerp(P1,.33).add(new T.Vector3(0,lift,0)),p0.clone().lerp(P1,.7).add(new T.Vector3(0,lift*.55,0)),P1],false,'centripetal'):null;
+  const D=matchMedia('(prefers-reduced-motion: reduce)').matches?1:(dur||Math.min(2600,1000+dist*40)),st=performance.now();if(ctrl)ctrl.enabled=false;cancelAnimationFrame(anim);
+  (function step(now){const k=Math.min(1,(now-st)/D),e=k<.5?4*k*k*k:1-Math.pow(-2*k+2,3)/2;
+   if(curve)cam.position.copy(curve.getPoint(e));else cam.position.lerpVectors(p0,P1,e);
+   const tt=t0.clone().lerp(T1,e);cam.fov=f0+(fov-f0)*e-(dist>4?5*Math.sin(Math.PI*e):0);cam.updateProjectionMatrix();if(ctrl)ctrl.target.copy(tt);cam.lookAt(tt);render();
+   if(k<1)anim=requestAnimationFrame(step);else{if(ctrl){ctrl.enabled=true;ctrl.update()}res()}})(st)})}
  function size(){const st=ren.domElement.parentElement;if(!st)return;ren.setSize(st.clientWidth,st.clientHeight);cam.aspect=st.clientWidth/Math.max(1,st.clientHeight);cam.updateProjectionMatrix();render()}
  const rc=new T.Raycaster(),v2=new T.Vector2();let down=null;
  ren.domElement.addEventListener('pointerdown',e=>down=[e.clientX,e.clientY]);
  ren.domElement.addEventListener('pointerup',e=>{if(!down||Math.hypot(e.clientX-down[0],e.clientY-down[1])>6)return;const r=ren.domElement.getBoundingClientRect();v2.set((e.clientX-r.left)/r.width*2-1,-(e.clientY-r.top)/r.height*2+1);rc.setFromCamera(v2,cam);
-  const h=rc.intersectObject(hm)[0];if(h&&h.instanceId!=null){selLoc=PHYS[h.instanceId].id;mark();render();mapPanel()}});
+  const cur=selLoc&&LOC[selLoc]?.geo?LOC[selLoc].z:mode3;
+  if(cur==='aerial'){const zh=rc.intersectObjects(zoneHits)[0];if(zh){enterZone(zh.object.userData.z);return}}
+  const h=rc.intersectObject(hm)[0];if(h&&h.instanceId!=null){selectSpot(PHYS[h.instanceId].id);return}
+  const zh=rc.intersectObjects(zoneHits)[0];if(zh&&zh.object.userData.z!==cur)enterZone(zh.object.userData.z)});
  addEventListener('resize',size);
- refresh();look([30,46,24],[4,0,-22]);
- return{ren,size,refresh,focus,fly,mark,render};
+ refresh();look([70,120,120],AER.t);
+ return{ren,olay,size,refresh,fly,mark,render,setLabels,setStatus:v=>{sm.visible=v;render()}};
 }
-const PRESETS={all:['Whole floor',[30,46,24],[4,0,-22]],D:['Rack D',[-9.6,3.4,5],[-11.6,1.2,-14]],ABC:['Aisles A–C',[-1,32,14],[-5,0,-25]],R01:['Racks 0 and 1',[8.2,5.5,-1],[8.1,2,-15]],CL:['Cantilever',[21,9,-3],[13,2,-12]],BK:['Bunks',[21,11,4],[20.8,0,-10]],HR:['Office rack',[21,5,-36],[14.6,1.2,-42.2]]};
-function refresh3D(){if(W3)W3.refresh()}
+function refresh3D(){if(W3){W3.refresh();if(view==='map')labelsFor()}}
+const curZone=()=>selLoc&&LOC[selLoc]?.geo?LOC[selLoc].z:mode3;
+function bayName(zid,b){const k=zone(zid).kind;return k==='bunk'?'Bunk '+b:k==='cant'?'Column '+b:k==='shelf'?'Bay '+b:zid+' bay '+b}
+function bayCenter(zid,b){const ls=PHYS.filter(l=>l.z===zid&&l.bay===b);let x=0,z=0,H=0;ls.forEach(l=>{x+=l.geo.x/ls.length;z+=l.geo.z/ls.length;H=Math.max(H,l.geo.y+l.geo.h)});return[x,H+.35,z]}
+function labelsFor(){if(!W3)return;const L=[],zs=ZONES.filter(z=>z.kind!=='virtual'),zid=curZone();
+ if(zid==='aerial'){zs.forEach(z=>{const Z=zoneInfo(z.id);L.push({text:z.name,pos:[Z.c[0],Z.mx[1]+1.2,Z.c[2]],click:()=>enterZone(z.id)})});AREAS.forEach(a=>L.push({text:a[0],pos:[a[1],a[2],a[3]],cls:'area'}))}
+ else{[...new Set(PHYS.filter(l=>l.z===zid).map(l=>l.bay))].forEach(b=>L.push({text:bayName(zid,b),pos:bayCenter(zid,b),cls:'bay',click:()=>flyBay(zid,b)}));
+  zs.filter(z=>z.id!==zid).forEach(z=>{const Q=zoneInfo(z.id);L.push({text:z.name,pos:[Q.c[0],Q.mx[1]+1.2,Q.c[2]],cls:'other',click:()=>enterZone(z.id)})})}
+ if(selLoc&&LOC[selLoc]?.geo){const g=LOC[selLoc].geo;L.push({text:selLoc,pos:[g.x,g.y+g.h+.3,g.z],cls:'sel'})}
+ W3.setLabels(L)}
+function stopTour(){tourTok++;if(touring){touring=false;stageUI()}}
+function enterZone(id){stopTour();mode3=id;selLoc=null;if(W3){W3.mark();const q=zonePose(id);W3.fly(q.p,q.t,q.fov);labelsFor()}stageUI();mapPanel()}
+function selectSpot(id){stopTour();selLoc=id;if(LOC[id]?.geo)mode3=LOC[id].z;if(W3){W3.mark();if(LOC[id]?.geo){const q=spotPose(id);W3.fly(q.p,q.t,q.fov)}labelsFor()}stageUI();mapPanel()}
+function goAerial(){stopTour();mode3='aerial';selLoc=null;if(W3){W3.mark();W3.fly(AER.p,AER.t,AER.fov);labelsFor()}stageUI();mapPanel()}
+function flyBay(zid,b){stopTour();mode3=zid;selLoc=null;if(W3){W3.mark();const q=bayPose(zid,b);W3.fly(q.p,q.t,q.fov);labelsFor()}stageUI();mapPanel()}
+function stepSpot(d){const zid=curZone();if(zid==='aerial')return;const ls=PHYS.filter(l=>l.z===zid);let k=ls.findIndex(l=>l.id===selLoc);k=k<0?(d>0?0:ls.length-1):(k+d+ls.length)%ls.length;selectSpot(ls[k].id)}
+async function tour(){const zid=curZone();if(zid==='aerial'||!W3)return;const my=++tourTok;touring=true;selLoc=null;mode3=zid;W3.mark();labelsFor();stageUI();mapPanel();
+ for(const b of [...new Set(PHYS.filter(l=>l.z===zid).map(l=>l.bay))]){if(my!==tourTok)return;const q=bayPose(zid,b);await W3.fly(q.p,q.t,q.fov,1400);if(my!==tourTok)return;await new Promise(r=>setTimeout(r,1200))}
+ if(my===tourTok){touring=false;stageUI()}}
+function stageUI(){const st=$('#stage');if(!st||!W3)return;let c=st.querySelector('.crumb'),b=st.querySelector('.stagebar');
+ if(!c){c=document.createElement('div');c.className='crumb';b=document.createElement('div');b.className='stagebar';st.append(c,b)}
+ const zid=curZone();
+ c.innerHTML=`<button type="button" class="sm ${zid==='aerial'?'go':''}" data-nav="aerial">Aerial</button>${zid!=='aerial'?`<span aria-hidden="true">›</span><button type="button" class="sm ${selLoc?'':'go'}" data-nav="zone">${esc(zone(zid).name)}</button>`:''}${selLoc&&zid!=='aerial'?`<span aria-hidden="true">›</span><button type="button" class="sm go" data-nav="spot">${esc(selLoc)}</button>`:''}`;
+ b.innerHTML=zid==='aerial'?'<span class="hintb">Tap a rack, cantilever or bunk to fly in</span>':`<button type="button" class="sm" data-nav="prev">◀ Prev spot</button><button type="button" class="sm ${touring?'go':''}" data-nav="tour">${touring?'Stop tour':'Tour every bay'}</button><button type="button" class="sm" data-nav="next">Next spot ▶</button>`}
+function legend(){const lg=$('#lg');if(!lg)return;
+ lg.innerHTML=showStatus?['ok','uncounted','wrong','recount','emptyok','empty'].map(s=>`<span><i style="background:${hex(COL[s])}"></i>${STLABEL[s]}</span>`).join(''):
+ `<span><i style="background:#C9A47A;outline:2px solid #2B7FD0"></i>Cabinet pallet</span><span><i style="background:#CFAE80"></i>Banded board unit</span><span><i style="background:#CDAE7E"></i>Loose boards (top shows color)</span><span><i style="background:#D0A878"></i>Hardware and handle boxes</span><span><i style="background:#FFE14D"></i>Selected spot</span>`}
 function vMap(){
  const el=$('#v-map');
- el.innerHTML=`<div class="gsplit"><div class="card hi"><div class="row" style="justify-content:space-between;align-items:center;margin-bottom:6px"><h1>3D map</h1><div class="chips" role="group" aria-label="Color by"><button data-cm="status" aria-pressed="${cmode==='status'}">Color by status</button><button data-cm="board" aria-pressed="${cmode==='board'}">Color by board color</button></div></div>
-  <div class="views" role="group" aria-label="Jump to">${Object.entries(PRESETS).map(([k,v])=>`<button class="sm ghost" data-pv="${k}">${v[0]}</button>`).join('')}</div>
-  <div id="stage"></div>
-  <div class="legend">${['ok','uncounted','wrong','recount','emptyok','empty'].map(s=>`<span><i style="background:${hex(COL[s])}"></i>${STLABEL[s]}</span>`).join('')}</div>
-  <p class="dim small" style="margin-top:6px">Drag to turn, scroll or pinch to zoom, right-drag to pan. Tap any box to open that spot. Aisles A, B and C match the rack map. Rack D sits west of Aisle C on the same side. The opening in the dividing wall leads to the shop side, where Rack 0, Rack 1 (behind Rack 0), Cantilever 1, the back cantilever and Bunks 1–4 are. Those positions come from the sketch and your walkthrough video, so they're close but not measured. <a href="${RACKMAP}" target="_blank" rel="noopener">Original rack map</a></p></div>
+ el.innerHTML=`<div class="gsplit"><div class="card hi"><div class="row" style="justify-content:space-between;align-items:center;margin-bottom:6px"><h1>3D map</h1><div class="chips" role="group" aria-label="View"><button data-sv="0" aria-pressed="${!showStatus}">Real view</button><button data-sv="1" aria-pressed="${showStatus}">Status colors</button></div></div>
+  <div class="views" role="group" aria-label="Fly to">${[['aerial','Aerial'],...ZONES.filter(z=>z.kind!=='virtual').map(z=>[z.id,z.name])].map(([k,n])=>`<button class="sm ghost" data-fz="${k}">${esc(n)}</button>`).join('')}</div>
+  <div id="stage" tabindex="0" aria-label="3D warehouse. Arrow keys step through spots, Escape goes back to the aerial view."></div>
+  <div class="legend" id="lg"></div>
+  <p class="dim small" style="margin-top:6px">Tap a rack, cantilever or bunk (or its name) to glide down to it. Tap any spot, or use the spot map beside the view, to zoom in on it. Arrow keys step spot by spot. Drag to look around, scroll or pinch to zoom. Aisles A–C match the <a href="${RACKMAP}" target="_blank" rel="noopener">rack map</a>. The shop side is built from your photos and video and is not tape-measured yet.</p></div>
   <div class="card" id="mp" aria-live="polite"></div></div>`;
- const st=$('#stage');
- if(!W3)W3=init3D();
+ const st=$('#stage'),first=!W3;if(!W3)W3=init3D();
  if(!W3)st.innerHTML='<p class="stagemsg">The 3D view needs an internet connection to load. Everything else works without it.</p>';
- else{st.appendChild(W3.ren.domElement);W3.size();W3.refresh();if(selLoc)W3.focus(selLoc)}
- $$('[data-pv]').forEach(b=>b.onclick=()=>{const p=PRESETS[b.dataset.pv];if(W3)W3.fly(p[1],p[2])});
- $$('[data-cm]').forEach(b=>b.onclick=()=>{cmode=b.dataset.cm;$$('[data-cm]').forEach(x=>x.setAttribute('aria-pressed',x===b));refresh3D()});
+ else{st.append(W3.ren.domElement,W3.olay);W3.size();W3.refresh();
+  if(selLoc&&LOC[selLoc]?.geo)selectSpot(selLoc);else{labelsFor();if(first)W3.fly(AER.p,AER.t,AER.fov,2600)}}
+ stageUI();legend();
+ $$('[data-fz]').forEach(b=>b.onclick=()=>b.dataset.fz==='aerial'?goAerial():enterZone(b.dataset.fz));
+ $$('[data-sv]').forEach(b=>b.onclick=()=>{showStatus=b.dataset.sv==='1';$$('[data-sv]').forEach(x=>x.setAttribute('aria-pressed',x===b));if(W3)W3.setStatus(showStatus);legend()});
+ st.addEventListener('keydown',e=>{if(e.key==='ArrowRight'||e.key==='ArrowDown'){e.preventDefault();stepSpot(1)}else if(e.key==='ArrowLeft'||e.key==='ArrowUp'){e.preventDefault();stepSpot(-1)}else if(e.key==='Escape')goAerial()});
+ st.addEventListener('click',e=>{const b=e.target.closest('[data-nav]');if(!b)return;const k=b.dataset.nav;({aerial:goAerial,zone:()=>enterZone(curZone()),spot:()=>selectSpot(selLoc),prev:()=>stepSpot(-1),next:()=>stepSpot(1),tour:()=>touring?stopTour():tour()})[k]()});
  mapPanel();
 }
-function mapPanel(){const p=$('#mp');if(!p)return;
- if(selLoc&&LOC[selLoc]){const l=LOC[selLoc],z=zone(l.z),m=S.meta[selLoc]||{},ls=lines(selLoc),st=locStatus(selLoc);
-  const issues=ls.map(x=>ruleFor(selLoc,item(x.sku))).filter(Boolean);
-  const pos=!l.L?'':l.z.startsWith('CL')?`column ${l.bay}, row ${l.L}`:l.z==='HR'?`shelf ${l.L}, bay ${l.bay}`:`level ${l.L}, bay ${l.bay}${l.bin?', bin '+l.bin:''}`;
-  p.innerHTML=`<div class="row" style="justify-content:space-between;align-items:center"><h2 style="margin:0"><span class="loc big">${esc(selLoc)}</span></h2>${pill(st)}</div>
-   <dl class="kv" style="margin:8px 0"><dt>Zone</dt><dd>${esc(z.name)}${z.ph?' <span class="pill ph">placed from sketch</span>':''}</dd><dt>Meant for</dt><dd>${esc(l.purpose)}</dd>${pos?`<dt>Position</dt><dd>${pos}</dd>`:''}<dt>Last counted</dt><dd>${m.counted?`${ago(m.counted)} by ${esc(m.by)}`:'never'}</dd></dl>
+function chip(l){const st=locStatus(l.id),ls=lines(l.id),k=zone(l.z).kind;
+ const lab=k==='bunk'?(l.side==='B'?'Back':'Front'):k==='cant'?'Row '+l.L:k==='shelf'?'Shelf '+l.L:`${l.L}-${l.bin}`,q=ls.map(x=>x.qty==null?'?':fmt(x.qty)).join('+');
+ return `<button type="button" class="sp" data-st="${st}" data-sp="${l.id}" aria-current="${l.id===selLoc}" title="${esc(l.id)}: ${esc(ls.map(x=>item(x.sku)?.name||x.sku).join(', ')||'nothing recorded')}"><b>${esc(lab)}</b><span>${q||'–'}</span></button>`}
+function elevation(zid){const z=zone(zid);
+ return [...new Set(PHYS.filter(l=>l.z===zid).map(l=>l.bay))].map(b=>{const ls=PHYS.filter(l=>l.z===zid&&l.bay===b);
+  const rows=z.kind==='bunk'?[ls]:[...new Set(ls.map(l=>l.L))].sort((a,c)=>c-a).map(L=>ls.filter(l=>l.L===L));
+  return `<div class="bay"><h3><span>${esc(bayName(zid,b))}</span><button type="button" class="sm ghost" data-bay="${b}">View in 3D</button></h3>${rows.map(r=>`<div class="lvrow" style="grid-template-columns:repeat(${r.length},minmax(0,1fr))">${r.map(chip).join('')}</div>`).join('')}</div>`}).join('')}
+function mapPanel(){const p=$('#mp');if(!p)return;const zid=curZone();
+ if(zid==='aerial'){const zs=ZONES.filter(z=>z.kind!=='virtual');
+  p.innerHTML=`<h2>Where to?</h2><p class="dim small">Pick a zone to glide down to it.</p><div class="zlist">${zs.map(z=>{const ls=PHYS.filter(l=>l.z===z.id),used=ls.filter(l=>lines(l.id).length).length,c=ls.filter(l=>S.meta[l.id]?.counted).length;
+   return `<button type="button" class="zbtn" data-zn="${z.id}"><b>${esc(z.name)}</b><span class="dim small">${esc(z.kind==='bunk'?'1: white 2S · 2: white back, colored front · 3: colored · 4: 6 mm':z.purpose(1))}</span><span class="small">${used} in use · ${c}/${ls.length} counted</span></button>`}).join('')}</div>`;
+  $$('[data-zn]').forEach(b=>b.onclick=()=>enterZone(b.dataset.zn));return}
+ const z=zone(zid),ls=PHYS.filter(l=>l.z===zid),c=ls.filter(l=>S.meta[l.id]?.counted).length,used=ls.filter(l=>lines(l.id).length).length;
+ let h='';
+ if(selLoc&&LOC[selLoc]){const l=LOC[selLoc],m=S.meta[selLoc]||{},sl=lines(selLoc),st=locStatus(selLoc),issues=sl.map(x=>ruleFor(selLoc,item(x.sku))).filter(Boolean);
+  const pos=!l.L?'':z.kind==='cant'?`column ${l.bay}, row ${l.L}`:z.kind==='shelf'?`shelf ${l.L}, bay ${l.bay}`:z.kind==='bunk'?`bunk ${l.bunk}, ${l.side==='B'?'back':'front'}`:`level ${l.L}, bay ${l.bay}${l.bin?', bin '+l.bin:''}`;
+  h+=`<div class="spotcard"><div class="row" style="justify-content:space-between;align-items:center"><h2 style="margin:0"><span class="loc big">${esc(selLoc)}</span></h2>${pill(st)}</div>
+   <dl class="kv" style="margin:8px 0"><dt>Meant for</dt><dd>${esc(l.purpose)}</dd>${pos?`<dt>Position</dt><dd>${pos}</dd>`:''}<dt>Last counted</dt><dd>${m.counted?`${ago(m.counted)} by ${esc(m.by)}`:'never'}</dd></dl>
    ${issues.map(x=>`<p class="err">${esc(x)}</p>`).join('')}${m.recount?'<p class="warnt">Someone took more than the system showed. Count this spot.</p>':''}
-   ${ls.length?`<ul class="feed">${ls.map(x=>{const i=item(x.sku);return `<li><span>${i&&i.swatch?`<span class="sw" style="background:${esc(i.swatch)}"></span>`:''}${esc(i?i.name:x.sku)}<br><span class="dim small">${esc(x.sku)}</span></span><b>${x.qty==null?'<span class="warnt">not counted</span>':fmt(x.qty)+' '+esc(unit(i,x.qty))}</b></li>`}).join('')}</ul>`:'<p class="dim">Nothing recorded here.</p>'}
-   <div class="row" style="margin-top:10px"><button class="go sm" id="mpCount">Count this spot</button>${ls.length?`<button class="sm" id="mpMove">Move from here</button><button class="sm ghost" id="mpPull">Pull from here</button>`:'<button class="sm" id="mpRecv">Receive into here</button>'}<button class="sm ghost" id="mpClr">Clear</button></div>`;
-  $('#mpCount').onclick=()=>{cZone=l.z;openCount(selLoc);go('count')};
-  const mv=$('#mpMove');if(mv)mv.onclick=()=>{lAct='move';lForm={sku:ls[0].sku,from:selLoc};go('log')};
-  const pu=$('#mpPull');if(pu)pu.onclick=()=>{lAct='pull';lForm={sku:ls[0].sku,from:selLoc};go('log')};
-  const rv=$('#mpRecv');if(rv)rv.onclick=()=>{lAct='receive';lForm={to:selLoc};go('log')};
-  $('#mpClr').onclick=()=>{selLoc=null;if(W3){W3.mark();W3.render()}mapPanel()};
-  if(W3){W3.mark();W3.render()}return}
- const zs=ZONES.filter(z=>z.kind!=='virtual');
- p.innerHTML=`<h2>Zones</h2><ul class="feed">${zs.map(z=>{const ls=PHYS.filter(l=>l.z===z.id),used=ls.filter(l=>lines(l.id).length).length,c=ls.filter(l=>S.meta[l.id]?.counted).length;return `<li><span><b>${esc(z.name)}</b><br><span class="dim small">${esc(z.kind==='bunk'?'1: white 2S · 2: white back, colored front · 3: colored · 4: 6 mm':z.purpose(1))}</span></span><span class="small dim">${used} in use · ${c}/${ls.length} counted</span></li>`}).join('')}</ul><p class="dim small" style="margin-top:8px">Tap a box in the 3D view, or scan a label, to see what is in that spot.</p>`}
+   ${sl.length?`<ul class="feed">${sl.map(x=>{const i=item(x.sku);return `<li><span>${i&&i.swatch?`<span class="sw" style="background:${esc(i.swatch)}"></span>`:''}${esc(i?i.name:x.sku)}<br><span class="dim small">${esc(x.sku)}</span></span><b>${x.qty==null?'<span class="warnt">not counted</span>':fmt(x.qty)+' '+esc(unit(i,x.qty))}</b></li>`}).join('')}</ul>`:'<p class="dim">Nothing recorded here.</p>'}
+   <div class="row" style="margin-top:10px"><button class="go sm" id="mpCount">Count this spot</button>${sl.length?`<button class="sm" id="mpMove">Move from here</button><button class="sm ghost" id="mpPull">Pull from here</button>`:'<button class="sm" id="mpRecv">Receive into here</button>'}</div></div>`}
+ h+=`<div class="row" style="justify-content:space-between;align-items:center;margin-top:${selLoc?'14px':'0'}"><h2 style="margin:0">${esc(z.name)}</h2>${z.ph?'<span class="pill ph">placed from photos</span>':''}</div>
+  <p class="small dim" style="margin:4px 0">${used} in use · ${c} of ${ls.length} counted</p>${prog(c,ls.length)}
+  <div class="row" style="margin:10px 0"><button class="sm" id="mpCZ">Count this zone</button><button class="sm ghost" id="mpLZ">Print labels</button></div>
+  <div class="elev">${elevation(zid)}</div>`;
+ p.innerHTML=h;
+ $$('[data-sp]').forEach(b=>b.onclick=()=>selectSpot(b.dataset.sp));
+ $$('[data-bay]').forEach(b=>b.onclick=()=>flyBay(zid,+b.dataset.bay));
+ $('#mpCZ').onclick=()=>{cZone=zid;cLoc=null;go('count')};
+ $('#mpLZ').onclick=()=>{lbZone=zid;lbType='loc';lbLevel='all';go('labels')};
+ const sl=selLoc?lines(selLoc):[];
+ const mc=$('#mpCount');if(mc)mc.onclick=()=>{cZone=zid;openCount(selLoc);go('count')};
+ const mv=$('#mpMove');if(mv)mv.onclick=()=>{lAct='move';lForm={sku:sl[0].sku,from:selLoc};go('log')};
+ const pu=$('#mpPull');if(pu)pu.onclick=()=>{lAct='pull';lForm={sku:sl[0].sku,from:selLoc};go('log')};
+ const rv=$('#mpRecv');if(rv)rv.onclick=()=>{lAct='receive';lForm={to:selLoc};go('log')};
+ const cur=p.querySelector('.sp[aria-current="true"]');if(cur)cur.scrollIntoView({block:'nearest'});
+}
 
 /* ---------- Count ---------- */
 let cZone='D',cLoc=null,cLines=[],cOpen=false,cNew=false,cMsg='',cPhoto=null;
@@ -592,7 +742,7 @@ function vCount(){
  if(cLoc&&LOC[cLoc]?.z!==cZone)cLoc=null;
  const shown=cOpen?ls.filter(l=>!S.meta[l.id]?.counted||S.meta[l.id]?.recount):ls;
  let list='',lastG=null;
- shown.forEach(l=>{const grp=l.z==='BK'?'Bunk '+l.bunk:l.z.startsWith('CL')?'Column '+l.bay:l.z==='HR'?'Bay '+l.bay:zone(l.z).name+' · bay '+l.bay;if(grp!==lastG){list+=`<div class="lv">${esc(grp)}</div>`;lastG=grp}
+ shown.forEach(l=>{const grp=l.z==='BK'?'Bunk '+l.bunk:l.z.startsWith('CL')?zone(l.z).name+' · column '+l.bay:zone(l.z).kind==='shelf'?zone(l.z).name+' · bay '+l.bay:zone(l.z).name+' · bay '+l.bay;if(grp!==lastG){list+=`<div class="lv">${esc(grp)}</div>`;lastG=grp}
   const n=lines(l.id).length;list+=`<button data-c="${l.id}" aria-current="${l.id===cLoc}"><span><b>${l.id}</b> <span class="dim small">${n?n+' item'+(n>1?'s':''):''}</span></span>${pill(locStatus(l.id))}</button>`});
  el.innerHTML=`<h1>Count</h1><p class="dim small">Go spot by spot and enter what is physically there. Saving a count replaces what the system had. If it's in the spot, it goes in the count.</p>
  <div class="chips" role="group" aria-label="Zone" style="margin:8px 0 10px">${zs.map(z=>{const a=PHYS.filter(l=>l.z===z.id),c=a.filter(l=>S.meta[l.id]?.counted).length;return `<button data-z="${z.id}" aria-pressed="${z.id===cZone}">${esc(z.name)}<small>${pct(c,a.length)}%</small></button>`}).join('')}</div>
@@ -609,7 +759,7 @@ function countForm(){const f=$('#cform');
   $('#cFirst').onclick=()=>{const n=PHYS.find(l=>l.z===cZone&&!S.meta[l.id]?.counted);if(n){openCount(n.id);vCount()}else toast('Every spot in this zone is counted')};return}
  const l=LOC[cLoc],m=S.meta[cLoc]||{},z=zone(l.z),cats=Object.keys(CATS);
  const opts=`<option value="">Choose an item…</option>`+cats.map(c=>{const its=S.items.filter(i=>i.cat===c);return its.length?`<optgroup label="${CATS[c][0]}">${its.map(i=>`<option value="${esc(i.sku)}">${esc(i.name)} (${esc(i.sku)})</option>`).join('')}</optgroup>`:''}).join('');
- const defCat=l.z==='BK'||l.z.startsWith('CL')?'board':l.z==='HR'?'fastener':l.z==='R1'?'handle':l.z==='D'?'hardware':['A','B','C'].includes(l.z)?'pallet':'misc';
+ const defCat=l.z==='BK'||l.z.startsWith('CL')?'board':zone(l.z).kind==='shelf'?'fastener':l.z==='R1'?'handle':l.z==='D'?'hardware':['A','B','C'].includes(l.z)?'pallet':'misc';
  f.innerHTML=`<div class="row" style="justify-content:space-between;align-items:center"><h2 style="margin:0"><span class="loc big">${esc(cLoc)}</span></h2>${pill(locStatus(cLoc))}</div>
   <p class="small dim" style="margin-top:4px">${esc(z.name)} · meant for <b>${esc(l.purpose)}</b> · last counted ${m.counted?ago(m.counted)+' by '+esc(m.by):'never'}</p>
   <div>${cLines.map((x,k)=>{const i=item(x.sku),w=ruleFor(cLoc,i);return `<div class="cl"><div>${i&&i.swatch?`<span class="sw" style="background:${esc(i.swatch)}"></span>`:''}<b>${esc(i?i.name:x.sku)}</b><div class="small dim">${esc(x.sku)}${i?' · '+esc(i.unit):''}</div>${w?`<div class="small err">${esc(w)}</div>`:''}${i&&i.photo?`<img class="photo" src="${i.photo}" alt="Photo of ${esc(i.name)}">`:''}</div><input type="number" inputmode="numeric" min="0" step="1" data-q="${k}" value="${esc(x.qty)}" placeholder="count" aria-label="Count of ${esc(i?i.name:x.sku)}"><button class="sm ghost" data-rm="${k}" aria-label="Remove ${esc(i?i.name:x.sku)}">✕</button></div>`}).join('')||'<p class="dim" style="padding:8px 0">Nothing recorded here yet.</p>'}</div>
@@ -645,7 +795,7 @@ function readPhoto(file,cb){const r=new FileReader();r.onload=()=>{const im=new 
 let pkOpen=null,pkQ='';
 function vPickup(){
  const el=$('#v-pickup'),rows=[];
- PHYS.filter(l=>(l.z==='D'&&l.L===1)||l.z==='HR').forEach(l=>lines(l.id).forEach(x=>{const i=item(x.sku);if(i)rows.push({l,x,i})}));
+ PHYS.filter(l=>(l.z==='D'&&l.L===1)||zone(l.z).kind==='shelf').forEach(l=>lines(l.id).forEach(x=>{const i=item(x.sku);if(i)rows.push({l,x,i})}));
  const q=pkQ.toLowerCase(),list=rows.filter(r=>!q||(r.i.name+' '+r.i.sku+' '+r.l.id).toLowerCase().includes(q));
  el.innerHTML=`<h1>Installer pickup</h1><p class="dim">Grabbing hardware for a job? Find it, tap Take, enter how many and the job number. That keeps Rack D level 1 and the office rack accurate without a clipboard.</p>
  <div class="row" style="margin:10px 0"><label for="pkq" style="flex:1 1 260px">Filter<input id="pkq" type="search" value="${esc(pkQ)}" placeholder="hinge, drawer member, 21, D-13"></label></div>
@@ -807,7 +957,7 @@ function vLocations(){
   if(z.id==='D')return `Level 1: ${esc(z.purpose(1))}<br>Levels 2–4: ${esc(z.purpose(2))}`;
   if(z.id==='R0')return `Levels 1–3: ${esc(z.purpose(1))}<br>Level 4: ${esc(z.purpose(4))}`;
   return esc(z.purpose(1))};
- el.innerHTML=`<h1>Locations</h1><p class="dim">Every spot has one code, and that code goes on its label. Codes follow the rack map: <b>D-11-c</b> is Rack D, level 1, bay 1, bin c (c and d in front, a and b behind). Bunks are <b>BK1-F</b> (front) and <b>BK1-B</b> (back). Cantilever arms are <b>CL1-2-5</b>: column 2, row 5. Office rack shelves are <b>HR-31</b>: shelf 3, bay 1.</p>
+ el.innerHTML=`<h1>Locations</h1><p class="dim">Every spot has one code, and that code goes on its label. Codes follow the rack map: <b>D-11-c</b> is Rack D, level 1, bay 1, bin c (c and d in front, a and b behind). Bunks are <b>BK1-F</b> (front) and <b>BK1-B</b> (back). Cantilever arms are <b>CL1-2-5</b>: column 2, row 5. Office rack shelves are <b>HR1-31</b>: office rack 1, shelf 3, bay 1.</p>
  <div class="grid2" style="margin-top:12px">${zs.map(z=>{const ls=PHYS.filter(l=>l.z===z.id),used=ls.filter(l=>lines(l.id).length),c=ls.filter(l=>S.meta[l.id]?.counted).length;
   return `<div class="card"><div class="row" style="justify-content:space-between;align-items:center"><h2 style="margin:0">${esc(z.name)}</h2>${z.ph?'<span class="pill ph">size and spot from sketch</span>':''}</div>
    <p class="small" style="margin:6px 0">${purp(z)}</p><p class="small dim">${ls.length} spots · ${used.length} in use · ${c} counted</p>${prog(c,ls.length)}
@@ -828,12 +978,12 @@ function vLabels(){
  const el=$('#v-labels'),zs=ZONES.filter(z=>z.kind!=='virtual');
  let labels=[];
  if(lbType==='loc'){let ls=PHYS.filter(l=>l.z===lbZone);if(lbLevel!=='all')ls=ls.filter(l=>String(l.L)===lbLevel);
-  labels=ls.map(l=>({code:l.id,sub:`${esc(zone(l.z).name)}${l.L?(l.z.startsWith('CL')?` · column ${l.bay}, row ${l.L}`:l.z==='HR'?` · shelf ${l.L}, bay ${l.bay}`:` · level ${l.L}, bay ${l.bay}`):''}<br>${esc(l.purpose)}`}))}
+  labels=ls.map(l=>({code:l.id,sub:`${esc(zone(l.z).name)}${l.L?(l.z.startsWith('CL')?` · column ${l.bay}, row ${l.L}`:zone(l.z).kind==='shelf'?` · shelf ${l.L}, bay ${l.bay}`:` · level ${l.L}, bay ${l.bay}`):''}<br>${esc(l.purpose)}`}))}
  else labels=S.items.filter(i=>i.cat===lbType).map(i=>({code:i.sku,sub:`${esc(i.name)}${i.thk?`<br>${esc(i.thk)} · ${esc(i.color||'')}${i.sides==='2S'?' · double-sided':i.sides==='1S'?' · one side':''}`:''}`}));
  const levels=lbType==='loc'?[...new Set(PHYS.filter(l=>l.z===lbZone&&l.L).map(l=>l.L))]:[];
  el.innerHTML=`<div class="noprint"><h1>Labels</h1><p class="dim">Print, cut and hang one label per spot. The QR code holds the spot code, so a phone or handheld scanner can type it into the search box at the top and jump straight there. Item tags work the same way for boards and boxes.</p>
   <div class="row" style="margin:10px 0"><label for="lbT">What to print<select id="lbT"><option value="loc"${lbType==='loc'?' selected':''}>Spot labels</option>${Object.entries(CATS).map(([k,v])=>`<option value="${k}"${lbType===k?' selected':''}>Item tags: ${v[0]}</option>`).join('')}</select></label>
-  ${lbType==='loc'?`<label for="lbZ">Zone<select id="lbZ">${zs.map(z=>`<option value="${z.id}"${z.id===lbZone?' selected':''}>${esc(z.name)}</option>`).join('')}</select></label><label for="lbL">${lbZone.startsWith('CL')?'Row':lbZone==='HR'?'Shelf':'Level'}<select id="lbL"><option value="all">All</option>${levels.map(L=>`<option${String(L)===lbLevel?' selected':''}>${L}</option>`).join('')}</select></label>`:''}
+  ${lbType==='loc'?`<label for="lbZ">Zone<select id="lbZ">${zs.map(z=>`<option value="${z.id}"${z.id===lbZone?' selected':''}>${esc(z.name)}</option>`).join('')}</select></label><label for="lbL">${lbZone.startsWith('CL')?'Row':zone(lbZone).kind==='shelf'?'Shelf':'Level'}<select id="lbL"><option value="all">All</option>${levels.map(L=>`<option${String(L)===lbLevel?' selected':''}>${L}</option>`).join('')}</select></label>`:''}
   ${CAN_PRINT?'<button class="go" id="lbP">Print these labels</button>':''}</div>
   <p class="small ${CAN_PRINT?'dim':'warnt'}">${CAN_PRINT?`${labels.length} labels, 3 across on letter paper or label stock.`:`${labels.length} labels. Printing is blocked inside the Claude viewer. Open the file on a computer in Chrome or Edge to print.`}</p></div>
   <div class="labels">${labels.map(b=>{const s=qr(b.code);return `<div class="label"><div class="qr${s?'':' none'}">${s||'QR needs internet'}</div><div style="min-width:0"><div class="code">${esc(b.code)}</div><div class="sub">${b.sub}</div><div class="sub"><b>FORCE · GILBERT</b></div></div></div>`}).join('')||'<p class="empty">Nothing to print.</p>'}</div>`;
