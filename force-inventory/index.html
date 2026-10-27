@@ -224,6 +224,96 @@ details.cell .dbody{padding:0 16px 14px}
 .sp span{font-weight:500;color:var(--ink2);font-size:12px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .sp::after{content:"";position:absolute;top:6px;right:6px;width:7px;height:7px;border-radius:50%;background:var(--st,transparent)}
 .sp[aria-current="true"]{outline:3px solid var(--tint)}
+
+/* =========================================================
+   LIQUID GLASS LAYER. Warm, blurred backdrop; translucent panels with a lit
+   rim; one orange accent; capsule controls; floating tab bar and sheets.
+   Rules live in LIQUID-GLASS.md.
+   ========================================================= */
+:root{
+ --bg:#ECECF0;--cell:rgba(255,255,255,.58);--fill:rgba(118,118,128,.13);--sep:rgba(60,60,67,.13);--ink:#16120F;--ink2:#6E6A66;
+ --tint:#C2410C;--tint2:#F27A2E;--tintbg:rgba(242,122,46,.14);--ontint:#FFFFFF;
+ --rim:rgba(255,255,255,.78);--rim2:rgba(255,255,255,.35);--gblur:saturate(180%) blur(22px);
+ --gshadow:inset 0 1px 0 rgba(255,255,255,.95),inset 0 -1px 0 rgba(255,255,255,.25),0 12px 32px -14px rgba(60,40,20,.22);
+ --bar:rgba(246,245,243,.55);--sbg:rgba(244,243,241,.80);--scell:rgba(255,255,255,.72);--sfill:rgba(118,118,128,.14);--icobg:rgba(255,255,255,.75);
+ --blob1:rgba(255,164,110,.40);--blob2:rgba(165,152,205,.32);--blob3:rgba(255,214,170,.45);
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+ --bg:#140E0A;--cell:rgba(255,245,235,.075);--fill:rgba(255,245,235,.10);--sep:rgba(255,245,235,.10);--ink:#FBF6F1;--ink2:#B3A79C;
+ --tint:#FF8A3D;--tint2:#FFB27A;--tintbg:rgba(255,138,61,.18);--ontint:#1B0F07;
+ --rim:rgba(255,240,225,.16);--rim2:rgba(255,240,225,.06);
+ --gshadow:inset 0 1px 0 rgba(255,240,225,.14),0 16px 36px -14px rgba(0,0,0,.6);
+ --bar:rgba(26,18,13,.55);--sbg:rgba(34,24,18,.82);--scell:rgba(255,245,235,.08);--sfill:rgba(255,245,235,.12);--icobg:rgba(255,245,235,.10);
+ --blob1:rgba(255,128,50,.30);--blob2:rgba(140,80,40,.40);--blob3:rgba(255,190,120,.16)}}
+:root[data-theme="dark"]{
+ --bg:#140E0A;--cell:rgba(255,245,235,.075);--fill:rgba(255,245,235,.10);--sep:rgba(255,245,235,.10);--ink:#FBF6F1;--ink2:#B3A79C;
+ --tint:#FF8A3D;--tint2:#FFB27A;--tintbg:rgba(255,138,61,.18);--ontint:#1B0F07;
+ --rim:rgba(255,240,225,.16);--rim2:rgba(255,240,225,.06);
+ --gshadow:inset 0 1px 0 rgba(255,240,225,.14),0 16px 36px -14px rgba(0,0,0,.6);
+ --bar:rgba(26,18,13,.55);--sbg:rgba(34,24,18,.82);--scell:rgba(255,245,235,.08);--sfill:rgba(255,245,235,.12);--icobg:rgba(255,245,235,.10);
+ --blob1:rgba(255,128,50,.30);--blob2:rgba(140,80,40,.40);--blob3:rgba(255,190,120,.16)}
+body::after{content:"";position:fixed;inset:-10%;z-index:-1;pointer-events:none;background:
+ radial-gradient(38% 30% at 12% 18%,var(--blob1),transparent 70%),radial-gradient(34% 28% at 92% 34%,var(--blob2),transparent 70%),
+ radial-gradient(44% 34% at 30% 88%,var(--blob3),transparent 70%),radial-gradient(30% 24% at 85% 92%,var(--blob1),transparent 70%)}
+/* glass surfaces */
+.group,.tile,.stat,.banner,.search,#menu,.toast,.zchips button,.verb,.pill,.btn.gray,.btn.red,.seg,.stepper button,.stepper input,.sp,textarea{
+ background:var(--cell);-webkit-backdrop-filter:var(--gblur);backdrop-filter:var(--gblur);border:1px solid var(--rim);box-shadow:var(--gshadow)}
+.sheet .group,.sheet .verb,.sheet .seg,.sheet .stepper button,.sheet .stepper input,.sheet .pill,.sheet .btn.gray,.sheet .btn.red,#menu .mi{-webkit-backdrop-filter:none;backdrop-filter:none}
+.group{border-radius:22px}.tile{border-radius:26px;min-height:124px}.stat{border-radius:22px}.banner{border-radius:18px}.search{border-radius:999px;padding:0 16px}
+.verb{border-radius:22px}.sp{border-radius:14px}textarea{border-radius:18px}
+.seg{border-radius:999px;padding:3px}.seg button{border-radius:999px;min-height:36px}
+.seg button[aria-pressed="true"]{background:var(--ontint);color:var(--ink);box-shadow:0 1px 0 var(--rim) inset,0 4px 12px -4px rgba(0,0,0,.25)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .seg button[aria-pressed="true"]{background:rgba(255,245,235,.18)}}
+:root[data-theme="dark"] .seg button[aria-pressed="true"]{background:rgba(255,245,235,.18)}
+.btn{border-radius:999px;min-height:52px;background:linear-gradient(180deg,var(--tint2),var(--tint));color:#fff;border:1px solid rgba(255,255,255,.28);
+ box-shadow:inset 0 1px 0 rgba(255,255,255,.45),0 10px 24px -10px rgba(194,65,12,.7);text-shadow:0 1px 0 rgba(0,0,0,.12)}
+.btn.gray{color:var(--tint);text-shadow:none}.btn.red{color:var(--red);text-shadow:none}.btn.plain{background:none;border:0;box-shadow:none}
+.pill{border-radius:999px}
+.stepper button{border-radius:999px;height:60px}.stepper input{border-radius:22px;height:60px}.stepper{grid-template-columns:60px 1fr 60px}
+.ico,.tile .ico{background:var(--icobg)!important;color:var(--tint)!important;border-radius:50%;box-shadow:inset 0 1px 0 var(--rim),0 4px 10px -4px rgba(60,40,20,.25);border:1px solid var(--rim2)}
+.verb .ico{background:linear-gradient(180deg,var(--tint2),var(--tint))!important;color:#fff!important}
+.tile .n{font-weight:700;color:var(--tint)}
+.code{color:var(--tint)}
+.lt{letter-spacing:-.025em}
+.hd{letter-spacing:.06em;font-weight:600}
+/* nav: floating round glass buttons */
+.nav{background:transparent;border-bottom:0;-webkit-backdrop-filter:none;backdrop-filter:none;height:56px}
+.nav.scrolled{background:var(--bar);-webkit-backdrop-filter:var(--gblur);backdrop-filter:var(--gblur);border-bottom:1px solid var(--rim2)}
+.nb{width:42px;height:42px;background:var(--cell);border:1px solid var(--rim);box-shadow:var(--gshadow);-webkit-backdrop-filter:var(--gblur);backdrop-filter:var(--gblur);color:var(--ink)}
+.nb svg.i{width:20px;height:20px}
+body::before{background:transparent}
+/* floating capsule tab bar */
+.tabbar{left:max(12px,env(safe-area-inset-left,0px));right:max(12px,env(safe-area-inset-right,0px));bottom:calc(10px + env(safe-area-inset-bottom,0px));padding:6px;border-radius:999px;
+ background:var(--bar);border:1px solid var(--rim);box-shadow:var(--gshadow),0 18px 40px -16px rgba(40,25,10,.35)}
+.tabbar .in{max-width:520px}
+.tab{border-radius:999px;min-height:54px;padding:6px 0 4px;z-index:0}
+.tab[aria-current="page"]{color:var(--tint)}
+.tab[aria-current="page"]::before{content:"";position:absolute;inset:0 4px;border-radius:999px;z-index:-1;background:var(--tintbg);box-shadow:inset 0 1px 0 var(--rim)}
+main{padding-bottom:calc(132px + env(safe-area-inset-bottom,0px))}
+/* menu, toast, sheets */
+#menu{border-radius:24px;background:var(--sbg);top:calc(env(safe-area-inset-top,0px) + 58px)}
+.toast{border-radius:999px;background:var(--sbg)}.toast svg.i{color:var(--tint)}
+#sheetWrap .scrim{background:rgba(20,12,6,.18)}
+.sheet{left:8px;right:8px;bottom:calc(8px + env(safe-area-inset-bottom,0px));border-radius:34px;-webkit-backdrop-filter:saturate(180%) blur(30px);backdrop-filter:saturate(180%) blur(30px);
+ border:1px solid var(--rim);box-shadow:var(--gshadow),0 30px 60px -20px rgba(30,15,5,.45);max-height:calc(100dvh - env(safe-area-inset-top,0px) - 32px);overflow:hidden}
+.sfoot{background:transparent;padding-bottom:14px}
+.shead .close{background:var(--fill)}
+.hero .big{background:linear-gradient(180deg,var(--ink),color-mix(in srgb,var(--ink) 70%,var(--tint)));-webkit-background-clip:text;background-clip:text;color:transparent}
+.switch input:checked+i{background:linear-gradient(180deg,var(--tint2),var(--tint))}
+.dots span.on::before{background:var(--tint);border-color:var(--tint)}
+/* map */
+.zchips button{border-radius:999px}
+.zchips button[aria-pressed="true"]{background:linear-gradient(180deg,var(--tint2),var(--tint));color:#fff;border-color:rgba(255,255,255,.3)}
+#stage{margin:0 12px;border-radius:30px;background:#E9E4DE;border:1px solid var(--rim);box-shadow:var(--gshadow);height:calc(100svh - 250px - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px))}
+@media (min-width:721px){#stage{margin:0 16px}}
+.olay .lb{background:rgba(255,255,255,.62);-webkit-backdrop-filter:blur(14px) saturate(180%);backdrop-filter:blur(14px) saturate(180%);border:1px solid rgba(255,255,255,.85);border-radius:999px;box-shadow:0 6px 16px -6px rgba(40,25,10,.35)}
+.olay .lb.bay{background:rgba(30,20,12,.55);border-color:rgba(255,255,255,.22);color:#fff}
+.olay .lb.area{background:none;border:0;-webkit-backdrop-filter:none;backdrop-filter:none;box-shadow:none;color:rgba(40,30,20,.55)}
+.fab button,.mapbar .mb{background:rgba(255,255,255,.6);-webkit-backdrop-filter:blur(16px) saturate(180%);backdrop-filter:blur(16px) saturate(180%);border:1px solid rgba(255,255,255,.85);box-shadow:inset 0 1px 0 #fff,0 8px 20px -8px rgba(40,25,10,.4);border-radius:999px}
+.fab button[aria-pressed="true"]{background:linear-gradient(180deg,#F27A2E,#C2410C);color:#fff}
+.maphint{bottom:auto;top:12px;left:12px;transform:none;border-radius:999px;background:rgba(30,20,12,.55);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px)}
+.legend i{border-radius:4px}
+@supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){:root{--cell:rgba(255,255,255,.92);--sbg:#F4F3F1}}
 </style>
 
 <header class="nav" id="nav">
@@ -669,6 +759,7 @@ function fr(){const out=$('#fr'),q=findQ.trim().toLowerCase();
 
 /* ---------- 3D map ---------- */
 let W3=null,showStatus=false,mode3='aerial',tourTok=0,touring=false,selLoc=null;
+const TINT={hardware:0x3B82F6,board:0xC9A46E,handle:0x8B5CF6,fastener:0x64748B,packaging:0xF59E0B,pallet:0x14B8A6,molding:0x9CA3AF,misc:0x9CA3AF};
 const COL={ok:0x34C759,uncounted:0xFF9F0A,wrong:0xFF3B30,recount:0xAF52DE,empty:0x9AA3A0,emptyok:0x8E8E93};
 const AREAS=[['WAREHOUSE 2',-5.2,.3,-27],['SHOP',18,.3,-30],['OPENING',4.6,2.4,-4.5],['PRODUCTION',24,.3,-12]];
 const AER={p:[8,40,22],t:[7,0,-22],fov:50};
@@ -684,7 +775,8 @@ function spotPose(id){const g=LOC[id].geo,deep=zone(LOC[id].z).deep,bk=LOC[id].z
  // keep the spot in the top part of the stage, clear of the sheet that opens over the bottom
  const p=add3(add3(c,g.n,d),g.a,.25);p[1]=bk?Math.max(g.y+4.6,c[1]+2.4):c[1]+.35;const t=[c[0],c[1]-d*.3-(bk?1.2:0),c[2]];return{p,t,fov:54}}
 function bayPose(zid,bay){const ls=PHYS.filter(l=>l.z===zid&&l.bay===bay);let c=[0,0,0],H=0;ls.forEach(l=>{c=add3(c,[l.geo.x,0,l.geo.z],1/ls.length);H=Math.max(H,l.geo.y+l.geo.h)});
- const g=ls[0].geo,deep=zone(zid).deep,t=[c[0],H*.45,c[2]];const p=add3(add3(t,g.n,deep?2.7:Math.max(4.5,H*1.1)),g.a,deep?3.4:1.6);p[1]=H*.55+1;return{p,t,fov:56}}
+ const g=ls[0].geo,deep=zone(zid).deep,t=[c[0],H*.45,c[2]];// deep racks face a ~3 m aisle: rise above it and look down so a whole bay fits a portrait screen
+ const p=add3(add3(t,g.n,deep?2.4:Math.max(4.5,H*1.1)),g.a,deep?.6:1.6);p[1]=deep?H+1.6:H*.55+1;if(deep)t[1]=H*.32;return{p,t,fov:deep?60:56}}
 function makeTextures(T){
  const R=rng(5),tx=(w,h,draw,rep)=>{const c=document.createElement('canvas');c.width=w;c.height=h;draw(c.getContext('2d'),w,h);const t=new T.CanvasTexture(c);t.anisotropy=8;if(rep){t.wrapS=t.wrapT=T.RepeatWrapping;t.repeat.set(...rep)}return t};
  const noise=(g,w,h,base,amt,n)=>{g.fillStyle=base;g.fillRect(0,0,w,h);for(let i=0;i<n;i++){const v=Math.floor(R()*amt*2-amt);g.fillStyle=`rgba(${v>0?255:0},${v>0?255:0},${v>0?255:0},${Math.abs(v)/255})`;g.fillRect(R()*w,R()*h,1+R()*3,1+R()*3)}};
@@ -704,7 +796,7 @@ function makeTextures(T){
 function init3D(){
  if(!window.THREE)return null;const T=THREE;
  const ren=new T.WebGLRenderer({antialias:true});ren.setPixelRatio(Math.min(devicePixelRatio,2));
- const scene=new T.Scene();scene.background=new T.Color(0xD9DEDB);scene.fog=new T.Fog(0xD9DEDB,110,260);
+ const scene=new T.Scene();scene.background=new T.Color(0xE9E4DE);scene.fog=new T.Fog(0xE9E4DE,110,260);
  const cam=new T.PerspectiveCamera(50,1,.1,600);
  scene.add(new T.HemisphereLight(0xffffff,0x8a8a84,.95));const dl=new T.DirectionalLight(0xfff6e8,.45);dl.position.set(20,60,30);scene.add(dl);const dl2=new T.DirectionalLight(0xe8f0ff,.22);dl2.position.set(-30,30,-40);scene.add(dl2);
  const TX=makeTextures(T),mats={};
@@ -716,6 +808,9 @@ function init3D(){
   else if(k==='deck')m=new T.MeshStandardMaterial({color:0x8a9094,transparent:true,opacity:.3});
   else if(k==='tape')m=new T.MeshBasicMaterial({color:0xF2C318});
   else if(k==='shadow')m=new T.MeshBasicMaterial({map:TX.shadow,transparent:true,depthWrite:false});
+  else if(k==='ghost')m=new T.MeshStandardMaterial({color:0xffffff,transparent:true,opacity:.34,roughness:.08,metalness:.1,emissive:0xffffff,emissiveIntensity:.12,depthWrite:false});
+  else if(k==='foot')m=new T.MeshBasicMaterial({color:0xffffff,transparent:true,opacity:.22,depthWrite:false});
+  else if(k==='gline')m=new T.LineBasicMaterial({vertexColors:true,transparent:true,opacity:.95});
   else m=new T.MeshStandardMaterial({map:TX[k],roughness:.85});
   return mats[k]=m};
  const cube=new T.BoxGeometry(1,1,1),o=new T.Object3D();
@@ -768,11 +863,17 @@ function init3D(){
   m.position.set(...Z.c);m.scale.set(Z.mx[0]-Z.mn[0]+.8,Z.mx[1]-Z.mn[1]+1,Z.mx[2]-Z.mn[2]+.8);m.userData.z=z.id;scene.add(m);zoneHits.push(m)});
  const floorHit=new T.Mesh(new T.PlaneGeometry(200,200),new T.MeshBasicMaterial({visible:false}));floorHit.rotation.x=-Math.PI/2;floorHit.position.set(8,0,-24);scene.add(floorHit);
  let content=new T.Group();scene.add(content);
- function buildContent(){scene.remove(content);content.children.forEach(m=>m.dispose&&m.dispose());content=new T.Group();
+ function buildContent(){scene.remove(content);content.children.forEach(m=>{if(m.geometry&&m.geometry!==cube)m.geometry.dispose();m.dispose&&m.dispose()});content=new T.Group();
+  const G=[],RS=[],ghH=(zn,g)=>Math.min(g.h-.12,zn.kind==='bunk'?1.7:zn.kind==='shelf'?g.h*.8:1.0);
   const cp=new Map(),put=(k,x,y,z,w,h,d,col)=>{(cp.get(k)||cp.set(k,[]).get(k)).push([w,h,d,x,y,z,col])};
-  PHYS.forEach(l=>{const ls=lines(l.id);if(!ls.length)return;const g=l.geo,zn=zone(l.z),rack=zn.kind==='rack',n=ls.length,sa=g.sa/n;
+  PHYS.forEach(l=>{const ls=lines(l.id),g=l.geo,zn=zone(l.z);
+   // reserved for a part but empty: outline and floor footprint only
+   if(!ls.length){const a=sinfo(l.id).assign;if(a){const h=ghH(zn,g);RS.push([g.x,g.y+h/2,g.z,g.w*.94,h,g.d*.94,TINT[(item(a)||{}).cat]||TINT.misc])}return}
+   const rack=zn.kind==='rack',n=ls.length,sa=g.sa/n;
    ls.forEach((x,k)=>{const i=item(x.sku)||{cat:'misc'},so=(k-(n-1)/2)*sa,cx=g.x+g.a[0]*so,cz=g.z+g.a[2]*so;
     const B=(kind,y,h,sh,col)=>put(kind,cx,y+h/2,cz,(Math.abs(g.a[0])*sa+Math.abs(g.n[0])*g.sn)*sh,h,(Math.abs(g.a[2])*sa+Math.abs(g.n[2])*g.sn)*sh,col);
+    // not counted yet: frosted glass block tinted by part type
+    if(x.qty==null){const h=ghH(zn,g);G.push([cx,g.y+h/2,cz,(Math.abs(g.a[0])*sa+Math.abs(g.n[0])*g.sn)*.92,h,(Math.abs(g.a[2])*sa+Math.abs(g.n[2])*g.sn)*.92,TINT[i.cat]||TINT.misc]);return}
     let y=g.y;const pal=()=>{B('pallet',y,.14,.95);y+=.14};
     if(i.cat==='board'){
      if(zn.kind==='bunk'){const u=x.qty==null?2:Math.max(1,Math.min(4,Math.ceil(x.qty/(i.thk==='6mm'?90:45))));for(let j=0;j<u;j++){B('c0xB08A5A',y,.1,.98);y+=.1;B('unit',y,.78,.98);y+=.78}}
@@ -782,7 +883,13 @@ function init3D(){
     else if(i.cat==='molding'){if(rack)pal();B('card',y,Math.min(g.h-.2,.3),.95)}
     else{if(rack)pal();B('boxes',y,zn.kind==='shelf'?g.h*.8:Math.min(g.h-.2,.8),.9)}
    })});
-  build(cp,content);scene.add(content)}
+  build(cp,content);
+  const inst=(list,mat,fy)=>{if(!list.length)return;const im=new T.InstancedMesh(cube,mat,list.length);list.forEach((b,i)=>{if(fy){o.position.set(b[0],b[1]-b[4]/2+.006,b[2]);o.scale.set(b[3],.008,b[5])}else{o.position.set(b[0],b[1],b[2]);o.scale.set(b[3],b[4],b[5])}o.updateMatrix();im.setMatrixAt(i,o.matrix);im.setColorAt(i,new T.Color(b[6]))});im.renderOrder=2;content.add(im)};
+  inst(G,M('ghost'));inst(RS,M('foot'),1);
+  const pos=[],cl=[];[...G,...RS].forEach(b=>{const c=new T.Color(b[6]),hs=[b[3]/2,b[4]/2,b[5]/2];
+   for(let ax=0;ax<3;ax++){const o1=(ax+1)%3,o2=(ax+2)%3;for(const s1 of[-1,1])for(const s2 of[-1,1])for(const e of[-1,1]){const p=[0,0,0];p[ax]=e*hs[ax];p[o1]=s1*hs[o1];p[o2]=s2*hs[o2];pos.push(b[0]+p[0],b[1]+p[1],b[2]+p[2]);cl.push(c.r,c.g,c.b)}}});
+  if(pos.length){const eg=new T.BufferGeometry();eg.setAttribute('position',new T.Float32BufferAttribute(pos,3));eg.setAttribute('color',new T.Float32BufferAttribute(cl,3));const ln=new T.LineSegments(eg,M('gline'));ln.renderOrder=3;content.add(ln)}
+  scene.add(content)}
  const selBox=new T.LineSegments(new T.EdgesGeometry(cube),new T.LineBasicMaterial({color:0xFFCC00}));
  const beam=new T.Mesh(new T.CylinderGeometry(.06,.06,1,10),new T.MeshBasicMaterial({color:0xFFCC00,transparent:true,opacity:.6}));scene.add(selBox,beam);
  let beamOn=false;
@@ -844,7 +951,8 @@ function mapUI(){const st=$('#stage');if(!st)return;const zid=curZone();
  $$('#zc [data-z]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.z===zid));
  const cur=$('#zc [aria-pressed="true"]');if(cur)cur.scrollIntoView({inline:'center',block:'nearest',behavior:'smooth'});
  let bar=st.querySelector('.mapbar');if(!bar){bar=document.createElement('div');bar.className='mapbar';st.append(bar)}
- bar.innerHTML=zid==='aerial'?'':`<button class="mb" id="mList">${ic('list')}Spots</button><button class="mb" id="mTour">${ic('play')}${touring?'Stop':'Tour'}</button>${selLoc?`<button class="mb" id="mSpot" style="background:#FFCC00">${esc(selLoc)}</button>`:''}`;
+ const ver=PHYS.filter(l=>['ok','emptyok'].includes(locStatus(l.id))).length;
+ bar.innerHTML=zid==='aerial'?`<span class="mb">${ic('check')}${ver} of ${PHYS.length} verified</span>`:`<button class="mb" id="mList">${ic('list')}Spots</button><button class="mb" id="mTour">${ic('play')}${touring?'Stop':'Tour'}</button>${selLoc?`<button class="mb" id="mSpot" style="background:#FFCC00">${esc(selLoc)}</button>`:''}`;
  let hint=st.querySelector('.maphint');if(!hint){hint=document.createElement('div');hint.className='maphint';st.append(hint)}
  hint.textContent=zid==='aerial'?'Tap a rack or bunk':'';hint.hidden=zid!=='aerial';
  const l=$('#mList');if(l)l.onclick=()=>spotList(zid);const t=$('#mTour');if(t)t.onclick=()=>touring?stopTour():tour();const sp=$('#mSpot');if(sp)sp.onclick=()=>spotSheet(selLoc)}
@@ -861,7 +969,7 @@ function vMap(v){V.live=false;
  legend();mapUI();
  if(selLoc&&LOC[selLoc]?.geo&&pendingSheet){pendingSheet=false;setTimeout(()=>spotSheet(selLoc),900)}}
 let pendingSheet=false;
-function legend(){const lg=$('#lg');if(!lg)return;lg.innerHTML=showStatus?['ok','uncounted','wrong','recount','emptyok'].map(s=>`<span><i style="background:${STC[s]}"></i>${STL[s]}</span>`).join(''):'<span>Drag to look · pinch to zoom · double-tap to glide</span>'}
+function legend(){const lg=$('#lg');if(!lg)return;lg.innerHTML=showStatus?['ok','uncounted','wrong','recount','emptyok'].map(s=>`<span><i style="background:${STC[s]}"></i>${STL[s]}</span>`).join(''):`<span><i style="background:#B98F5E"></i>Solid · counted</span><span><i style="background:rgba(59,130,246,.3);box-shadow:inset 0 0 0 1.5px #3B82F6"></i>Glass · not counted</span><span><i style="box-shadow:inset 0 0 0 1.5px #8B5CF6"></i>Outline · reserved</span>`}
 function spotList(zid){const z=zone(zid);openSheet({title:z.name,live:true,body:()=>{const ls=PHYS.filter(l=>l.z===zid),c=ls.filter(l=>sinfo(l.id).counted).length;
   return `<div class="stack"><p class="sub cap" style="text-align:center">${c} of ${ls.length} counted · top row is the top level</p><div class="elev">${[...new Set(ls.map(l=>l.bay))].map(b=>{const bl=ls.filter(l=>l.bay===b),rows=z.kind==='bunk'?[bl]:[...new Set(bl.map(l=>l.L))].sort((a,c)=>c-a).map(L=>bl.filter(l=>l.L===L));
    return `<div><div class="bayh"><span>${esc(bayName(zid,b))}</span><button class="pill" data-bay="${b}" style="min-height:30px">${ic('map')}View</button></div>${rows.map(r=>`<div class="lvrow" style="grid-template-columns:repeat(${r.length},minmax(0,1fr))">${r.map(l=>{const sl=lines(l.id),st=locStatus(l.id);return `<button class="sp" data-sp="${l.id}" style="--st:${STC[st]}" aria-current="${l.id===selLoc}" aria-label="${l.id}, ${STL[st]}">${esc(spotShort(l))}<span>${sl.length?sl.map(x=>x.qty==null?'?':fmt(x.qty)).join('+'):'–'}</span></button>`}).join('')}</div>`).join('')}</div>`}).join('')}</div></div>`},
@@ -873,7 +981,7 @@ function vCount(v){const ls=PHYS.filter(l=>l.z===CZ),done=ls.filter(l=>sinfo(l.i
  const R=52,C=2*Math.PI*R;
  v.innerHTML=`<div class="stack">${title('Count',`${pct(all,PHYS.length)}% of the warehouse counted`)}
  <div class="group">${field('Area',`<select id="cz">${ZPHYS.map(z=>`<option value="${z.id}"${z.id===CZ?' selected':''}>${esc(z.name)}</option>`).join('')}</select>`)}</div>
- <div class="group" style="padding:20px 16px;text-align:center"><svg class="ring" viewBox="0 0 120 120" role="img" aria-label="${p} percent counted"><circle cx="60" cy="60" r="${R}" fill="none" stroke="var(--fill)" stroke-width="12"/><circle cx="60" cy="60" r="${R}" fill="none" stroke="#34C759" stroke-width="12" stroke-linecap="round" stroke-dasharray="${C*p/100} ${C}" transform="rotate(-90 60 60)"/><text x="60" y="66" text-anchor="middle" font-size="26" font-weight="700" fill="currentColor">${p}%</text></svg><p class="sub cap" style="margin-top:8px">${done} of ${ls.length} spots</p></div>
+ <div class="group" style="padding:20px 16px;text-align:center"><svg class="ring" viewBox="0 0 120 120" role="img" aria-label="${p} percent counted"><circle cx="60" cy="60" r="${R}" fill="none" stroke="var(--fill)" stroke-width="12"/><circle cx="60" cy="60" r="${R}" fill="none" style="stroke:var(--tint)" stroke-width="12" stroke-linecap="round" stroke-dasharray="${C*p/100} ${C}" transform="rotate(-90 60 60)"/><text x="60" y="66" text-anchor="middle" font-size="26" font-weight="700" fill="currentColor">${p}%</text></svg><p class="sub cap" style="margin-top:8px">${done} of ${ls.length} spots</p></div>
  <button class="btn" id="cStart">${ic('count')}${done?'Count next spot':'Start counting'}</button>
  <div class="group"><button class="cell" id="cAll">${icoB('list','#8E8E93')}<span class="tx"><b>All spots in ${esc(zone(CZ).name)}</b></span>${chev}</button><button class="cell" id="cPick">${icoB('search','#007AFF')}<span class="tx"><b>Count a specific spot</b></span>${chev}</button></div></div>`;
  $('#cz').onchange=e=>{CZ=e.target.value;render()};
