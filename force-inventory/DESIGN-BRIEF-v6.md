@@ -55,6 +55,21 @@ Same spacing, same component sizes, same order. Learn one section and you know a
 - **It starts at the beginning**, Bay 1 (or Column 1 / Bunk 1), standing in the aisle, not zoomed to the middle. "Next bay" and "Previous bay" buttons (and a swipe) walk down the run in order. The bay number shows large.
 - **Overview** brings everything back. Search results isolate the area the item is in the same way, then glide to its exact spot.
 
+
+## Rack D level 1 is laid out differently from the other racks
+- **Level 1 uses the front two positions only, named `a` (left) and `b` (right)**, e.g. D-11-a and D-11-b. The back positions on level 1 don't exist in the app. The map draws them as empty deck, and they don't appear in pickers or counts.
+- **Levels 2–4 keep the standard layout** (a, b back / c, d front; level 4 a+b, c+d) and stay empty for now (cabinets later).
+- **Moving your existing data** happens once, during the build, with nothing lost and history kept:
+
+| Old | New |
+|---|---|
+| D-11-c (slides, right drawer member, 50 boxes) | **D-11-a** |
+| D-11-d (slides, left drawer member) | **D-11-b** |
+| D-12-c (slides, left cabinet member) | **D-12-a** |
+| D-13-c (hinge spot, 30 pcs) | **D-13-a** |
+
+  Old codes typed into search or on old labels still find the new spot.
+
 ## Pallets: build → store → ship
 1. **Build pallet:** choose Single or Double, then **scan each cabinet sticker**.
    - Ways to scan (a page can't open a live camera on iPhone):
