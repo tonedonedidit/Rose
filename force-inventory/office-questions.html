@@ -1,0 +1,111 @@
+<title>Force Gilbert Office Questions</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+/* Layout: one calm column of grouped questions; each answer saves itself, progress pinned at the top. */
+:root{
+ --bg:#F1F0EE;--card:#FFFFFF;--fill:#ECEAE7;--ink:#1B1612;--ink2:#6D655D;--line:#E2DED9;--accent:#C2410C;--accent2:#F27A2E;--ok:#2E7D4F;
+ --font:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",system-ui,sans-serif;--round:-apple-system-rounded,ui-rounded,"SF Pro Rounded",-apple-system,system-ui,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#15100C;--card:#211A15;--fill:#2C241E;--ink:#FAF5F0;--ink2:#B4A89C;--line:#3A3029;--accent:#FF8A3D;--accent2:#FFB27A;--ok:#5DC48A;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#15100C;--card:#211A15;--fill:#2C241E;--ink:#FAF5F0;--ink2:#B4A89C;--line:#3A3029;--accent:#FF8A3D;--accent2:#FFB27A;--ok:#5DC48A;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 17px/1.45 var(--font);-webkit-font-smoothing:antialiased}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+.wrap{max-width:680px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 60px;display:flex;flex-direction:column;gap:26px}
+header{display:flex;flex-direction:column;gap:8px}
+.eyebrow{font-size:13px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
+h1{margin:0;font:700 32px/1.12 var(--font);letter-spacing:-.02em;text-wrap:balance}
+.lede{margin:0;color:var(--ink2);max-width:58ch}
+.bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);padding-block:10px;display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--line)}
+.track{flex:1;height:8px;border-radius:4px;background:var(--fill);overflow:hidden}.track i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--accent2),var(--accent));border-radius:4px;transition:width .3s}
+.count{font:600 15px var(--round);font-variant-numeric:tabular-nums;color:var(--ink2);white-space:nowrap}
+.note{font-size:14px;color:var(--ink2);background:var(--fill);border-radius:12px;padding:10px 14px;margin:0}
+section{display:flex;flex-direction:column;gap:10px}
+section h2{margin:0 4px;font-size:13px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--ink2)}
+.q{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px;display:flex;flex-direction:column;gap:10px}
+.q label{font-weight:600;font-size:17px;line-height:1.35}
+.q .why{margin:0;font-size:14px;color:var(--ink2)}
+.q textarea{width:100%;min-height:84px;resize:vertical;border:1px solid var(--line);border-radius:12px;background:var(--fill);color:var(--ink);font:16px/1.45 var(--font);padding:10px 12px}
+.q textarea:focus{outline:2px solid var(--accent);outline-offset:1px;border-color:transparent}
+.state{font-size:13px;color:var(--ink2);min-height:18px;display:flex;gap:6px;align-items:center}
+.state.ok{color:var(--ok)}
+.others{display:flex;flex-direction:column;gap:6px}
+.other{font-size:15px;background:var(--fill);border-radius:10px;padding:8px 12px;white-space:pre-wrap;overflow-wrap:anywhere}
+.other b{display:block;font-size:12px;color:var(--ink2);font-weight:600;letter-spacing:.03em;text-transform:uppercase;margin-bottom:2px}
+footer{color:var(--ink2);font-size:14px;text-align:center}
+@media (prefers-reduced-motion:reduce){.track i{transition:none}}
+</style>
+
+<div class="bar" aria-live="polite"><div class="wrap" style="padding-block:0;flex-direction:row;align-items:center;gap:12px;width:100%"><div class="track" aria-hidden="true"><i id="prog"></i></div><span class="count" id="count">0 of 0 answered</span></div></div>
+<main class="wrap">
+ <header>
+  <span class="eyebrow">Force Cabinets · Gilbert warehouse app</span>
+  <h1>Questions for Stephen and Roman</h1>
+  <p class="lede">We're building the inventory app the warehouse will use for pallets, boards and hardware. These answers decide how it reads your POs, part lists and cabinet labels. Short answers are fine. Everything saves as you type.</p>
+  <p class="note" id="mode">Connecting…</p>
+ </header>
+ <div id="form" class="wrap" style="padding:0;gap:26px"></div>
+ <footer>Files (a sample PO, a part list, a cabinet export) can go straight to Tony. Note here what you sent.</footer>
+</main>
+
+<script>
+"use strict";
+const QS=[
+ ['Purchase orders',[
+  ['po-source','Where do POs live today, and who makes them?','Excel file per PO, one big sheet, a program (which one)?'],
+  ['po-columns','What columns does a PO sheet have?','For example: PO #, vendor, part #, description, qty, unit, price, due date. List them in order if you can.'],
+  ['po-sample','Can you send Tony one real PO file (any recent one)?','The app reads hand-made Excel files. One real sample lets us test it before go-live.'],
+  ['backorders','When a delivery comes in short, how do you track the rest today?','The app now keeps the missing qty on backorder until it arrives or you close it short.']]],
+ ['Parts & hardware',[
+  ['part-list','Is there a master list of hardware and handle part numbers with vendor and cost?','If yes, send it. It fills the app\'s part list and inventory value in one import.'],
+  ['box-qty','Box or case quantities for the hardware you buy most','For example: 16" slides, box of 20. Hinges, box of ?. Plates, bag of ?'],
+  ['reorder','Which 10 parts run out most, and at what count should we reorder each?','These become reorder points. The Office tab then lists what to order, grouped by vendor.'],
+  ['hinge','The real part number for the 110° soft-close hinge, and what 43-150-16-WT-DR / DL / CL are exactly','The app uses placeholders for these today.']]],
+ ['Boards',[
+  ['colors','Which board colors and finishes are stocked?','Name, thickness, one or two sided, vendor, sheet size, and sheets per unit (bundle).'],
+  ['cuts','How do you track sheets cut per day now, if at all?','The app can report sheets sent to the saw by color each day.']]],
+ ['Cabinets & pallets',[
+  ['label-source','Which program prints the cabinet stickers?','Cabinet Vision, Microvellum, Excel, something else?'],
+  ['label-export','Can that program export a file per job with one row per cabinet?','Cabinet ID, type, job, phase, building, floor, unit, color. With it, scanning a sticker shows every detail.'],
+  ['qr-content','What does a cabinet QR code contain?','Scan one with the iPhone Camera and paste what pops up here.'],
+  ['pallet-rules','How should pallets be numbered, and what must the printed pallet sheet show?','Today: items, qty, building, unit, job name. Anything else, like phase, floor or ship date?'],
+  ['shipping','How are shipments planned: by job, by truck, by date?','So pallets can be pulled and loaded in the right order.']]],
+ ['People',[
+  ['access','Who should have office access in the app?','Office can import POs, edit parts and costs, delete POs, and confirm paperwork. Everyone else works the floor.'],
+  ['wishes','What would make your week easier that we haven\'t asked about?','Anything: reports, alerts, a number you always have to hunt for.']]]];
+const ALL=QS.flatMap(([,qs])=>qs);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+let DB=null,USER=null,UID=null,NAMES={},ROWS={},timers={};
+const LK='force-office-questions';
+const local=()=>{try{return JSON.parse(localStorage.getItem(LK)||'{}')}catch(e){return {}}};
+const setLocal=(k,v)=>{try{const d=local();d[k]=v;localStorage.setItem(LK,JSON.stringify(d))}catch(e){}};
+
+function build(){
+ document.getElementById('form').innerHTML=QS.map(([h,qs])=>`<section><h2>${esc(h)}</h2>${qs.map(([id,q,why])=>`<div class="q"><label for="a-${id}">${esc(q)}</label><p class="why">${esc(why)}</p><textarea id="a-${id}" data-q="${id}" placeholder="Your answer"></textarea><div class="state" id="s-${id}"></div><div class="others" id="o-${id}"></div></div>`).join('')}</section>`).join('');
+ document.querySelectorAll('textarea[data-q]').forEach(t=>t.addEventListener('input',()=>queue(t.dataset.q,t.value)));
+}
+function mine(id){return UID?ROWS[`${id}--${UID}`]:null}
+function progress(){let n=0;ALL.forEach(([id])=>{const v=document.getElementById('a-'+id).value.trim();if(v)n++});
+ document.getElementById('count').textContent=`${n} of ${ALL.length} answered`;document.getElementById('prog').style.width=(n/ALL.length*100)+'%'}
+function queue(id,text){const s=document.getElementById('s-'+id);s.className='state';s.textContent='Saving…';clearTimeout(timers[id]);progress();
+ timers[id]=setTimeout(()=>save(id,text),700)}
+async function save(id,text){const s=document.getElementById('s-'+id);
+ if(!DB){setLocal(id,text);s.className='state ok';s.textContent='Saved on this device';return}
+ try{const ref=DB.collection('answers').doc(`${id}--${UID}`);if(text.trim())await ref.set({q:id,who:UID,text,at:new Date().toISOString()});else await ref.delete();s.className='state ok';s.textContent='Saved'}
+ catch(e){s.className='state';s.textContent='Didn’t save. Check your connection and keep typing to retry.'}}
+async function renderOthers(){const ids=[...new Set(Object.values(ROWS).map(r=>r.who).filter(w=>w&&w!==UID))];
+ if(USER&&ids.length){try{const ps=await USER.profiles(ids);for(const k in ps)NAMES[k]=ps[k].name||''}catch(e){}}
+ ALL.forEach(([id])=>{const o=document.getElementById('o-'+id),rows=Object.values(ROWS).filter(r=>r.q===id&&r.who!==UID&&r.text);
+  o.innerHTML='';rows.forEach(r=>{const d=document.createElement('div');d.className='other';const b=document.createElement('b');b.textContent=(NAMES[r.who]||'Someone')+' answered';d.append(b,document.createTextNode(r.text));o.append(d)})})}
+async function boot(){build();
+ let db=null,user=null;try{if(window.claude&&claude.use)[db,user]=await Promise.all([claude.use('db'),claude.use('user')])}catch(e){}
+ const mode=document.getElementById('mode');
+ if(db&&user){DB=db;USER=user;try{UID=await user.id()}catch(e){}
+  mode.textContent='Answers save for Tony automatically. You also see what the other person wrote under each question.';
+  let first=true;DB.collection('answers').onSnapshot(s=>{ROWS={};s.docs.forEach(d=>ROWS[d.id]=d.data());
+   if(first){ALL.forEach(([id])=>{const m=mine(id);if(m)document.getElementById('a-'+id).value=m.text});first=false}
+   renderOthers();progress()},()=>{mode.textContent='Live saving paused. Reopen the page to reconnect.'})}
+ else{const d=local();ALL.forEach(([id])=>{if(d[id])document.getElementById('a-'+id).value=d[id]});
+  mode.textContent='Open this page from its claude.ai link to send answers to Tony. Here they save on this device only.';progress()}}
+boot();
+</script>
