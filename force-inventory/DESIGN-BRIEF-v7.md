@@ -63,12 +63,18 @@ You said item numbers vary between the boxes and the Excel. So at put-away you *
 **5. The Excel stays simple**
 One total per item per PO, the way it's written today. Where a line is in boxes or pallets instead of pieces, the item's setting says what the Excel counts in ("Excel counts: pieces / boxes / pallets"). It's set once per item, by the office.
 
-**More questions this raises**
-- A. Does the board paperwork list **each stack's sheet count**, or only the total for the order?
-- B. When boards go to the saw, do you pull a **whole stack**, or a number of sheets from a stack?
-- C. When the slip itself says an item is **backordered** (not missing by mistake), should that go to Stephen as *Backorder* (no reorder needed) rather than *Missing*?
-- D. If more arrives than ordered (extra boxes), keep it and tell the office, or set it aside for return?
-- E. Who sets per-box amounts for new items: the office ahead of time, or the floor on the first delivery?
+**Answered (Oct 28)**
+- **Board paperwork shows only the total, but each stack has its own slip** with its quantity and color. → At put-away you type each stack's number from its slip. The app checks the stacks add up to the paperwork total.
+- **To the saw:** up to **28 sheets at a time**. The **beam saw computer already tracks what's cut.** Single sheets also get pulled for remakes at random times. → Two board actions:
+  - **To saw:** sheets from a stack, max 28 per pull.
+  - **Take sheet(s):** reason Remake, Job # optional.
+  The stack's count drops either way.
+- **Backorder on the slip = Backorder.** It shows to Stephen as *Backorder* (no reorder needed, still expected), separate from *Missing*.
+- **Extra arrives:** keep it. It's flagged *Extra* on the office board, and Stephen decides what happens to it.
+- **Per-box amounts:** a fixed number per item number, set once on the item and applied automatically every time that item arrives or is pulled.
+
+**Still open on quantities**
+- F. Can the **beam saw computer export** what it cut (a daily report or file)? If yes, the app can take board usage straight from the saw. Nobody would type cuts twice, and the counts would stay right.
 
 ## 4. Excel stays the office's tool: live, no uploads
 This is the make-or-break piece. The app can follow the sheet live only if the sheet lives somewhere the app can read online:
