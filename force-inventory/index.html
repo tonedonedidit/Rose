@@ -762,7 +762,7 @@ function fr(){const out=$('#fr'),q=findQ.trim().toLowerCase();
 let W3=null,showStatus=false,mode3='aerial',tourTok=0,touring=false,selLoc=null;
 const TINT={hardware:0x3B82F6,board:0xC9A46E,handle:0x8B5CF6,fastener:0x64748B,packaging:0xF59E0B,pallet:0x14B8A6,molding:0x9CA3AF,misc:0x9CA3AF};
 const COL={ok:0x34C759,uncounted:0xFF9F0A,wrong:0xFF3B30,recount:0xAF52DE,empty:0x9AA3A0,emptyok:0x8E8E93};
-const AREAS=[['WAREHOUSE 2',-5.2,.3,-27],['WAREHOUSE 1',18,.3,-30],['OPENING',4.6,2.4,-4.5]];
+const AREAS=[['WAREHOUSE 2',-5.2,.3,-27],['WAREHOUSE 1',27,.3,-17],['OPENING',4.6,2.4,-4.5],['PRODUCTION',23,1.8,-30]];
 const AER={p:[8,40,22],t:[7,0,-22],fov:50};
 const aer=()=>{const st=$('#stage');return st&&st.clientWidth<st.clientHeight?{p:[8,74,16],t:[8,0,-23],fov:50}:AER};
 const ZI={};
@@ -858,6 +858,14 @@ function init3D(){
    for(let b=1;b<=z.bays;b++)for(let s=1;s<=z.shelves;s++){const y=.1+(s-1)*z.sh;partF('c0xC9AE84',f,(b-.5)*z.bw,z.depth/2,y,z.bw-.06,z.depth-.02,.025);partF('c0x1C1E21',f,(b-.5)*z.bw,z.depth-.01,y-.05,z.bw-.06,.03,.06)}}
  });
  const statics=new T.Group();build(parts,statics);scene.add(statics);
+ // production floor (scenery, not tracked): clear glass shapes from the factory-tour footage; positions approximate until confirmed
+ const PROD=[[23,.75,-26,7,1.5,1.8],[23,.45,-23.6,7,.9,1.6],[23,.45,-28.4,7,.9,1.6],[23,4.2,-26,.5,.5,7],[19.6,2.6,-26,.5,5.2,.5],
+  ...[0,1,2,3].flatMap(k=>[[18.5+k*3.2,.4,-33,2.6,.8,1.2],[18.5+k*3.2,.4,-36,2.6,.8,1.2]])];
+ {const pg=new T.Group(),im=new T.InstancedMesh(cube,M('ghost'),PROD.length),pos=[];
+  PROD.forEach((b,i)=>{o.position.set(b[0],b[1],b[2]);o.scale.set(b[3],b[4],b[5]);o.updateMatrix();im.setMatrixAt(i,o.matrix);im.setColorAt(i,new T.Color(0xB8C2CC));
+   const hs=[b[3]/2,b[4]/2,b[5]/2];for(let ax=0;ax<3;ax++){const o1=(ax+1)%3,o2=(ax+2)%3;for(const s1 of[-1,1])for(const s2 of[-1,1])for(const e of[-1,1]){const q=[0,0,0];q[ax]=e*hs[ax];q[o1]=s1*hs[o1];q[o2]=s2*hs[o2];pos.push(b[0]+q[0],b[1]+q[1],b[2]+q[2])}}});
+  const eg=new T.BufferGeometry();eg.setAttribute('position',new T.Float32BufferAttribute(pos,3));
+  pg.add(im,new T.LineSegments(eg,new T.LineBasicMaterial({color:0x7A8794,transparent:true,opacity:.8})));scene.add(pg)}
  const sm=new T.InstancedMesh(cube,new T.MeshStandardMaterial({color:0xffffff,transparent:true,opacity:.62,depthWrite:false}),PHYS.length);
  const hm=new T.InstancedMesh(cube,new T.MeshBasicMaterial({visible:false}),PHYS.length);
  PHYS.forEach((l,i)=>{const g=l.geo;o.position.set(g.x,g.y+g.h/2,g.z);o.scale.set(g.w,g.h,g.d);o.updateMatrix();hm.setMatrixAt(i,o.matrix)});
