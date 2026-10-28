@@ -66,7 +66,7 @@ Same spacing, same component sizes, same order. Learn one section and you know a
 | D-11-c (slides, right drawer member, 50 boxes) | **D-11-a** |
 | D-11-d (slides, left drawer member) | **D-11-b** |
 | D-12-c (slides, left cabinet member) | **D-12-a** |
-| D-13-c (hinge spot, 30 pcs) | **D-13-a** |
+| D-13-c (set aside for hinges) | **D-13-a** |
 
   Old codes typed into search or on old labels still find the new spot.
 
