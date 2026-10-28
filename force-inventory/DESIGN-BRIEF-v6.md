@@ -49,6 +49,12 @@ Same spacing, same component sizes, same order. Learn one section and you know a
 3. **More than one location:** chips across the card ("D-11-c · 47 boxes" · "Receiving · 30 pcs"). Tap a chip and the map glides there; all locations get small pins.
 4. **A pallet search** shows the pallet's spot plus its contents: job, building, unit and item count.
 
+
+## Map focus: one area at a time
+- **Tapping a rack or area (e.g. Rack D) isolates it.** Every other aisle, rack and bunk disappears, leaving the floor, walls and that one area, so nothing blocks the view.
+- **It starts at the beginning**, Bay 1 (or Column 1 / Bunk 1), standing in the aisle, not zoomed to the middle. "Next bay" and "Previous bay" buttons (and a swipe) walk down the run in order. The bay number shows large.
+- **Overview** brings everything back. Search results isolate the area the item is in the same way, then glide to its exact spot.
+
 ## Pallets: build → store → ship
 1. **Build pallet:** choose Single or Double, then **scan each cabinet sticker**.
    - Ways to scan (a page can't open a live camera on iPhone):
