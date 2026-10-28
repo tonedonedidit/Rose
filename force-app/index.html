@@ -236,8 +236,8 @@ function serverStore(){
  const hdr=()=>({'content-type':'application/json',authorization:'Bearer '+(SESS&&SESS.token||'')});
  async function pull(){try{const r=await fetch('/api/state?v='+encodeURIComponent(ver),{headers:hdr()});if(r.status===401){signOut();return}if(r.status===200){const j=await r.json();ver=j.v;COLS.forEach(c=>S[c]=j.state[c]||{});S.meta=j.state.meta||{};cb()}}catch(e){}}
  async function send(ops){const r=await fetch('/api/ops',{method:'POST',headers:hdr(),body:JSON.stringify({ops})});if(r.status===401){signOut();throw new Error('Signed out')}if(!r.ok)throw new Error((await r.text())||'Save failed');const j=await r.json();ver=j.v;COLS.forEach(c=>S[c]=j.state[c]||{});S.meta=j.state.meta||{};cb()}
- return{kind:'server',start(f){cb=f;pull();timer=setInterval(()=>{if(!document.hidden)pull()},2500);document.addEventListener('visibilitychange',()=>{if(!document.hidden)pull()})},
-  set:(c,id,v)=>send([{op:'set',c,id,v}]),del:(c,id)=>send([{op:'del',c,id}]),
+ let started=false;return{kind:'server',start(f){cb=f;pull();if(started)return;started=true;timer=setInterval(()=>{if(!document.hidden)pull()},2500);document.addEventListener('visibilitychange',()=>{if(!document.hidden)pull()})},
+  set:(c,id,v)=>send([{op:'set',c,id,v}]),del:(c,id)=>send([{op:'del',c,id}]),batch:ops=>send(ops),
   async mut(c,id,fn){const nx=fn(S[c][id]?{...S[c][id]}:null);if(nx===undefined)return;
    // the server re-applies numeric deltas to its latest copy; plain fields are last-writer-wins
    await send([nx===null?{op:'del',c,id}:{op:'mut',c,id,v:nx,base:S[c][id]||null}])}}}
@@ -251,7 +251,8 @@ function localStore(){
   async del(c,id){delete S[c][id];save();cb()},
   async mut(c,id,fn){const nx=fn(S[c][id]?{...S[c][id]}:null);if(nx===undefined)return;if(nx===null)delete S[c][id];else S[c][id]={...nx,id};save();cb()}}}
 const W={
- set:(c,id,v)=>STORE.set(c,id,clean(v)),del:(c,id)=>STORE.del(c,id),mut:(c,id,fn)=>STORE.mut(c,id,x=>{const r=fn(x);return r?clean(r):r}),
+ set:(c,id,v)=>STORE.set(c,id,clean(v)),del:(c,id)=>STORE.del(c,id),
+ batch:async ops=>{if(STORE.batch){for(let i=0;i<ops.length;i+=150)await STORE.batch(ops.slice(i,i+150).map(o=>({...o,v:clean(o.v)})));return}for(let i=0;i<ops.length;i+=8)await Promise.all(ops.slice(i,i+8).map(o=>o.op==='del'?STORE.del(o.c,o.id):STORE.set(o.c,o.id,clean(o.v))))},mut:(c,id,fn)=>STORE.mut(c,id,x=>{const r=fn(x);return r?clean(r):r}),
  meta:v=>STORE.set('meta','main',clean({...S.meta,...v}))};
 function clean(o){if(!o||typeof o!=='object')return o;const r={};for(const k in o){if(o[k]===undefined||k==='id')continue;r[k]=o[k]}return r}
 async function logIt(e){e.t=new Date().toISOString();e.day=today();e.who=ME||'Someone';e.acct=SESS&&SESS.u;await W.set('log',uid(),e)}
@@ -644,10 +645,9 @@ async function importFile(file){toast('Reading '+file.name+'…');let R;try{R=aw
   ${chg.map(c=>row('diff-chg',c.n,c.d.map(f=>`${f}: ${c.o[f]||'—'} → ${c.n[f]||'—'}`).join(' · '))).join('')}
   ${gone.map(o=>row('diff-gone',o,'Not in this file; hidden from the shop')).join('')}</tbody></table></div><button class="btn pri block" data-primary id="iapply">Apply ${add.length+chg.length+gone.length} changes</button>`:'<p class="note ok">Everything already matches. Nothing to apply.</p>'}`,sh=>{
   $('#iapply',sh)?.addEventListener('click',e=>busy(e.target,async()=>{e.target.textContent='Applying…';await applyLines([...add,...chg.map(c=>c.n)],gone);await W.meta({lastImport:{file:file.name,at:new Date().toISOString(),by:ME,rows:R.rows.length}});await logIt({type:'import',note:`${file.name}: ${add.length} new, ${chg.length} changed, ${gone.length} removed`});closeSheet();toast(`Applied: ${add.length} new, ${chg.length} changed, ${gone.length} removed`);render()}))})}
-async function applyLines(rows,gone=[]){const jobs=[];
- rows.forEach(r=>{const id=lineId(r.po,r.sku);jobs.push(()=>W.set('orders',id,{...clean(r),gone:false}));if(!item(r.sku))jobs.push(()=>W.set('items',key(r.sku),{sku:r.sku,desc:r.desc,type:r.type}))});
- gone.forEach(o=>jobs.push(()=>W.set('orders',o.id,{...o,gone:true})));
- for(let i=0;i<jobs.length;i+=8)await Promise.all(jobs.slice(i,i+8).map(f=>f()))}
+async function applyLines(rows,gone=[]){const ops=[],seen=new Set();
+ rows.forEach(r=>{ops.push({op:'set',c:'orders',id:lineId(r.po,r.sku),v:{...clean(r),gone:false}});const k=key(r.sku);if(!item(r.sku)&&!seen.has(k)){seen.add(k);ops.push({op:'set',c:'items',id:k,v:{sku:r.sku,desc:r.desc,type:r.type}})}});
+ gone.forEach(o=>ops.push({op:'set',c:'orders',id:o.id,v:{...o,gone:true}}));await W.batch(ops)}
 
 /* ---------- exports (our own sheets for Stephen; never written into his Excel) ---------- */
 function exportSheet(){openSheet('Export to Excel',`<div class="list">${[['check','Orders check','Ordered, put away, still out and issues per line'],['issues','Issues','Every problem with its status'],['stock','Stock','On hand, on order and spots'],['backorders','Backorders and extras','What’s still coming and what came extra']].map(([k,t,d])=>`<button class="row" data-x="${k}"><span class="tx"><b>${t}</b><span class="t2">${d}</span></span>${ico('chev',20)}</button>`).join('')}</div>`,sh=>{
