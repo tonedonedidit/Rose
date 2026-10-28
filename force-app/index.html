@@ -620,34 +620,44 @@ function lineSheet(){openSheet('Add an order line',`<label class="field"><span>P
 
 /* ---------- Excel import: read, show what changed, then apply ---------- */
 const HDR={po:['po','po#','po #','po no','po number','purchase order','purchase order #','order #','order number'],vendor:['vendor','supplier','vendor name','supplier name'],sku:['item','item #','item#','item no','item number','part','part #','part#','part number','sku','product #','product code','code'],desc:['description','desc','item description','product','product name','name'],
- type:['type','category','cat','material'],qty:['qty','quantity','qty ordered','ordered','order qty','quantity ordered','total','amount ordered'],unit:['unit','uom','units','u/m','unit of measure'],date:['expected','expected date','due','due date','eta','delivery date','delivery','ship date','arrival','date expected'],status:['status','order status'],job:['job','job #','job#','job no','job name','job number'],note:['note','notes','comment','comments','memo','remarks']};
+ type:['type','category','cat'],qty:['qty','quantity','qty ordered','ordered','order qty','quantity ordered','total','amount ordered'],unit:['unit','uom','units','u/m','unit of measure'],date:['expected','expected date','due','due date','eta','delivery date','delivery','ship date','arrival','date expected'],status:['status','order status'],job:['job','job #','job#','job no','job name','job number'],note:['note','notes','comment','comments','memo','remarks']};
 const hnorm=s=>String(s??'').toLowerCase().replace(/[\s_.:]+/g,' ').replace(/ ?# ?/,' #').trim();
 function headerMap(row){const m={};row.forEach((c,ix)=>{const h=hnorm(c);if(!h)return;for(const f in HDR){if(m[f]!=null)continue;if(HDR[f].map(hnorm).includes(h)){m[f]=ix;return}}});
- row.forEach((c,ix)=>{const h=hnorm(c);if(!h||Object.values(m).includes(ix))return;for(const f in HDR){if(m[f]!=null)continue;if(HDR[f].some(x=>x.length>3&&h.includes(hnorm(x)))){m[f]=ix;return}}});return m}
+ row.forEach((c,ix)=>{const h=hnorm(c);if(!h||Object.values(m).includes(ix))return;for(const f in HDR){if(m[f]!=null)continue;if(HDR[f].some(x=>x.length>3&&h.includes(hnorm(x)))){m[f]=ix;return}}});
+ if(m.date==null){const ix=row.findIndex((c,i)=>hnorm(c)==='date'&&!Object.values(m).includes(i));if(ix>=0)m.date=ix}return m}
 function xdate(v){if(v==null||v==='')return '';if(typeof v==='number'&&v>20000&&v<80000){const d=new Date(Math.round((v-25569)*864e5));return `${d.getUTCFullYear()}-${pad(d.getUTCMonth()+1)}-${pad(d.getUTCDate())}`}if(v instanceof Date)return ymd(v);const s=String(v).trim();let m=s.match(/^(\d{1,2})[\/-](\d{1,2})[\/-](\d{2,4})$/);if(m){let y=+m[3];if(y<100)y+=2000;return `${y}-${pad(m[1])}-${pad(m[2])}`}m=s.match(/^(\d{4})-(\d{2})-(\d{2})/);if(m)return m[0];const d=Date.parse(s);return isNaN(d)?'':ymd(d)}
 function xstatus(v){const s=String(v||'').toLowerCase();return /cancel/.test(s)?'Cancelled':/delay|back ?order|push/.test(s)?'Delayed':/receiv|complete|closed|done/.test(s)?'Closed':'Ordered'}
 const lineId=(po,sku)=>`${key(po)}~${key(sku).slice(0,48)}`;
 async function readBook(file){await loadScript(XLSX_SRC);const buf=await file.arrayBuffer();const wb=XLSX.read(buf,{type:'array',cellDates:false});
- const rows=[],warn=[];let sheets=0;
+ const rows=[],warn=[],maps=[];let sheets=0;
  wb.SheetNames.forEach(sn=>{const A=XLSX.utils.sheet_to_json(wb.Sheets[sn],{header:1,raw:true,defval:''});let hi=-1,m=null;
   for(let r=0;r<Math.min(A.length,20);r++){const mm=headerMap(A[r]);if(mm.qty!=null&&(mm.sku!=null||mm.desc!=null)&&Object.keys(mm).length>=3){hi=r;m=mm;break}}
-  if(hi<0)return;sheets++;
+  if(hi<0)return;sheets++;const H=A[hi].map(h=>String(h??'').trim()),used=new Set(Object.values(m));maps.push({sheet:sn,m:Object.fromEntries(Object.entries(m).map(([f,i])=>[f,H[i]||'column '+(i+1)])),extra:H.filter((h,i)=>!used.has(i)&&h)});
   for(let r=hi+1;r<A.length;r++){const row=A[r];const g=f=>m[f]!=null?row[m[f]]:'';if(row.every(c=>String(c).trim()===''))continue;
-   const sku=String(g('sku')||'').trim(),desc=String(g('desc')||'').trim(),qtyRaw=g('qty'),qty=parseFloat(String(qtyRaw).replace(/[^0-9.\-]/g,''));let po=String(g('po')||'').trim();
-   if(!sku&&!desc)continue;if(!isFinite(qty)||qty<=0){warn.push(`${sn} row ${r+1}: no quantity (${esc(sku||desc)})`);continue}
+   // every column the app doesn't use on its own (color, sides, size…) is kept as a detail
+   const det=row.map((c,i)=>used.has(i)||String(c).trim()===''?null:(H[i]?`${H[i]}: `:'')+(typeof c==='number'&&/date/i.test(H[i])?xdate(c):String(c).trim())).filter(Boolean);
+   const sku=String(g('sku')||'').trim(),desc0=String(g('desc')||'').trim(),desc=[desc0,...det].filter(Boolean).join(' · '),qtyRaw=g('qty'),qty=parseFloat(String(qtyRaw).replace(/[^0-9.\-]/g,''));let po=String(g('po')||'').trim();
+   if(!sku&&!desc0&&!det.length)continue;if(!isFinite(qty)||qty<=0){warn.push(`${sn} row ${r+1}: no quantity (${esc(sku||desc)})`);continue}
    if(!po){warn.push(`${sn} row ${r+1}: no PO # (${esc(sku||desc)}); used the sheet name`);po=sn}
    const tRaw=String(g('type')||'').toLowerCase(),type=/door/.test(tRaw)?'doors':/board|sheet|melamine|panel/.test(tRaw)?'boards':/pack|cardboard|foam|strap|supply/.test(tRaw)?'packaging':/hard|handle|hinge|slide/.test(tRaw)?'hardware':(item(sku||desc)?.type||guessType(desc,sku));
-   rows.push({po,vendor:String(g('vendor')||'').trim(),sku:sku||desc,desc,type,qty,unit:String(g('unit')||'').trim(),date:xdate(g('date')),status:xstatus(g('status')),job:String(g('job')||'').trim(),note:String(g('note')||'').trim(),src:'excel',sheet:sn,row:r+1})}});
- return{rows,warn,sheets,names:wb.SheetNames}}
+   rows.push({po,vendor:String(g('vendor')||'').trim(),sku:sku||desc,desc,details:det,type,qty,unit:String(g('unit')||'').trim(),date:xdate(g('date')),status:xstatus(g('status')),job:String(g('job')||'').trim(),note:String(g('note')||'').trim(),src:'excel',sheet:sn,row:r+1})}});
+ // the same item # with different details (two colors) stays two lines and two items
+ const by={};rows.forEach(r=>{const k=key(r.po)+'~'+key(r.sku);(by[k]=by[k]||[]).push(r)});
+ Object.values(by).forEach(G=>{if(G.length<2)return;const hv={};G.forEach(r=>r.details.forEach(d=>{const[h,...v]=d.split(': ');(hv[h]=hv[h]||new Set()).add(v.join(': '))}));
+  const diff=Object.keys(hv).filter(h=>hv[h].size>1||G.some(r=>!r.details.some(d=>d.startsWith(h+': '))));if(!diff.length)return;
+  G.forEach(r=>{const v=diff.map(h=>(r.details.find(d=>d.startsWith(h+': '))||'').slice(h.length+2)).filter(Boolean);if(v.length)r.sku=`${r.sku} (${v.join(', ')})`})});
+ return{rows,warn,sheets,names:wb.SheetNames,maps}}
 const FIELDS=['vendor','desc','type','qty','unit','date','status','job','note'];
+const FLBL={po:'PO #',vendor:'Vendor',sku:'Item #',desc:'Description',type:'Type',qty:'Quantity',unit:'Unit',date:'Expected date',status:'Status',job:'Job',note:'Note'};
 async function importFile(file){toast('Reading '+file.name+'…');let R;try{R=await readBook(file)}catch(e){toast('Couldn’t read that file: '+e.message,true);return}
  if(!R.rows.length){openSheet('Nothing to import',`<p class="note bad">No order lines found in ${esc(file.name)}. The app looks for a header row with a quantity column and an item # or description column.</p><p class="muted small">Sheets in the file: ${esc(R.names.join(', '))}</p>${R.warn.length?`<p class="muted small">${R.warn.slice(0,20).join('<br>')}</p>`:''}`);return}
- const inFile={};R.rows.forEach(r=>{const id=lineId(r.po,r.sku);if(inFile[id]){inFile[id].qty+=r.qty}else inFile[id]={...r}});
+ const inFile={};R.rows.forEach(r=>{const id=lineId(r.po,r.sku);if(inFile[id]){inFile[id].qty+=r.qty;R.warn.push(`${r.sheet} row ${r.row}: same PO and item as row ${inFile[id].row}; quantities added together`)}else inFile[id]={...r}});
  const add=[],chg=[],gone=[];
  for(const id in inFile){const n=inFile[id],o=S.orders[id];if(!o||o.gone)add.push(n);else{const d=FIELDS.filter(f=>String(o[f]??'')!==String(n[f]??''));if(d.length)chg.push({n,o,d})}}
  Object.values(S.orders).forEach(o=>{if(o.src==='excel'&&!o.gone&&!inFile[o.id])gone.push(o)});
  const row=(cls,o,extra)=>`<tr class="${cls}"><td>${esc(o.po)}</td><td>${esc(o.sku)}</td><td>${esc(o.desc)}</td><td class="n">${fmt(o.qty)} ${esc(o.unit)}</td><td>${esc(extra)}</td></tr>`;
  openSheet(`Import ${file.name}`,`<p style="margin:0">${R.rows.length} lines read from ${R.sheets} ${R.sheets===1?'sheet':'sheets'}.</p>
+  ${R.maps.map(x=>`<p class="note" style="font-size:14px"><b>${esc(x.sheet)}</b>: ${Object.entries(x.m).map(([f,h])=>`${FLBL[f]} ← “${esc(h)}”`).join(' · ')}${x.extra.length?`<br>Also kept with each line: ${x.extra.map(h=>'“'+esc(h)+'”').join(', ')}`:''}</p>`).join('')}
   <div class="chips"><span class="pill ok">${add.length} new</span><span class="pill warn">${chg.length} changed</span><span class="pill bad">${gone.length} no longer in the file</span></div>
   ${R.warn.length?`<p class="note warn">${R.warn.slice(0,12).join('<br>')}${R.warn.length>12?`<br>+${R.warn.length-12} more`:''}</p>`:''}
   ${add.length+chg.length+gone.length?`<div class="tbl" style="max-height:44vh"><table><thead><tr><th>PO</th><th>Item</th><th>Description</th><th class="n">Qty</th><th>Change</th></tr></thead><tbody>
