@@ -13,7 +13,7 @@ Everything that doesn't serve that sentence gets cut (see §6).
 | Before 6:00 | Stephen's Excel already lists every open order: 12 units of white 6 mm board, 10 pallets of hardware, 7 cardboard, 12 pallets of doors, each from a different vendor with its own date | The app **reads the Excel live**. No uploading. Each order line shows under its delivery date. |
 | 6:10 | Tony opens the app | **Today** shows 4 deliveries expected: Boards (Vendor A), Hardware (Vendor B), Cardboard (Vendor C), Doors (Vendor D), with what's on each. |
 | 7:00 | Boards arrive, all good. Tony signs the paper and checks it against the paper | One tap: **"All here, all good."** No line-by-line re-entry; the paper is still the paper. The delivery turns ✓ **Arrived** for the office instantly. |
-| 7:05 | Put away | Boards appear in **Put away**. The app only offers **bunk slots** that fit the board (white 3/4 → Bunk 1, 6 mm → Bunk 4…), typed or tapped. On-hand updates. |
+| 7:05 | Put away | Boards appear in **Put away**. Each **stack** goes in with its count (40 + 40 + 20) into **bunk slots** that fit the board (white 3/4 → Bunk 1, 6 mm → Bunk 4…). The tally shows 100 of 100 ✓. |
 | 8:00 | Stephen arrives | His **Office board** already shows: Boards ✓ arrived complete at 7:00, put away in BK4-1/BK4-2. He didn't have to walk over to know. |
 | 9:00 | Hardware arrives; 1 box of strap missing vs the list | Tony taps **"Something's wrong"** → Missing → *Strap, 1 box* → note *"Not on truck; driver says backordered."* The delivery shows ⚠ **Arrived with 1 issue**, and the issue lands in Stephen's queue. Everything else gets put away into its spots. |
 | 10:00 | Cardboard didn't come. Stephen types **Delayed** in the Excel status cell | The app picks up the change on its own within a couple of minutes: Cardboard moves from *Today* to *Delayed (new date)*. Nobody re-uploads anything. |
@@ -30,6 +30,45 @@ Everything that doesn't serve that sentence gets cut (see §6).
    - **Statuses:** Open → Reordered (new PO#) → Archived. They archive automatically when the replacement arrives, or by hand ("credit taken", "not needed").
    - **Raised anywhere:** at receiving, at the door machine, or on the floor.
 4. **Stock (only where it's worth it):** hardware spots (Rack D L1 a/b, Rack 1, Supplies, office racks) and board bunk slots. On hand = put away − taken. Doors and cabinets are not stocked (see §7).
+
+## 3b. Quantities: totals, stacks, pallets and boxes (from your answers)
+**The problem you spotted:** the Excel says *100 boards* or *300 cardboard*, but the truck brings **stacks of 40 + 40 + 20** or **6 pallets**, and hardware comes on **mixed pallets** (about 50 boxes of about 10 item numbers each). If the app asks "put 100 here", it's asking for something that doesn't exist on the floor.
+
+**The rule: the Excel total is the target, never an instruction.** The app checks what you put away against it, in the units you can actually see.
+
+**1. Two steps, not one**
+
+| Step | When | What you enter |
+|---|---|---|
+| **Arrived** (dock) | When the truck is unloaded | Nothing, if it's all there: **"All here"**, plus problems if any. Optional: number of pallets/stacks. |
+| **Put away** (the real count) | Right away or the next day (you said sometimes a day later) | Each **stack, pallet or box group** as you place it. The app adds them up against the order. |
+
+Until something is put away, it shows on the office board as **"On the dock: 3 of 10 hardware items not put away yet"**. Nothing gets lost between the two steps.
+
+**2. Boards and cardboard: each stack or pallet is its own unit**
+- Put away one stack at a time: *Stack 1: 40 → BK4-1*, *Stack 2: 40 → BK4-1*, *Stack 3: 20 → BK4-2*. A running tally shows **100 of 100 ✓**.
+- A bunk slot holds several stacks (up to 5 high). Each stack keeps its own count, so a whole stack can be pulled later, or part of one sent to the saw.
+- Cardboard works the same way: 6 pallets = 6 units, each with its own count, on Supplies' top level.
+- If the paper says per-stack counts, type those. If it only gives a total, the app splits it evenly as a starting point, and you correct any stack that's different.
+
+**3. Hardware: down-stack a mixed pallet by item**
+- Open the delivery → **Put away**. You see only the item numbers on *that* order, as big buttons with the description and the ordered total.
+- Tap the item → enter **boxes** → the app does the math (*10 boxes × 20 = 200*) → type the spot → done. Repeat as boxes come off the pallet.
+- Each item shows **put away / ordered**, e.g. *Hinges 180 / 200*. Finish with any item short and the app asks: *"20 hinges short: report missing?"* One tap makes the issue for Stephen.
+- **Per-box amount is set once per item** (you said it's always the same). The first time an item arrives without it, the app asks "How many per box?" and remembers.
+
+**4. When the box number isn't the Excel number**
+You said item numbers vary between the boxes and the Excel. So at put-away you **pick from the order's list** (description + number), rather than typing whatever's on the box. If a box's number differs, you can save it as a **second name** for that item, so search and future deliveries recognize it.
+
+**5. The Excel stays simple**
+One total per item per PO, the way it's written today. Where a line is in boxes or pallets instead of pieces, the item's setting says what the Excel counts in ("Excel counts: pieces / boxes / pallets"). It's set once per item, by the office.
+
+**More questions this raises**
+- A. Does the board paperwork list **each stack's sheet count**, or only the total for the order?
+- B. When boards go to the saw, do you pull a **whole stack**, or a number of sheets from a stack?
+- C. When the slip itself says an item is **backordered** (not missing by mistake), should that go to Stephen as *Backorder* (no reorder needed) rather than *Missing*?
+- D. If more arrives than ordered (extra boxes), keep it and tell the office, or set it aside for return?
+- E. Who sets per-box amounts for new items: the office ahead of time, or the floor on the first delivery?
 
 ## 4. Excel stays the office's tool: live, no uploads
 This is the make-or-break piece. The app can follow the sheet live only if the sheet lives somewhere the app can read online:
