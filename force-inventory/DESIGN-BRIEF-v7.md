@@ -170,8 +170,26 @@ All at tablet and desktop sizes, light and dark, zero errors.
 7. **Cardboard, foam, strap:** tracked **by count**, like hardware.
 8. **Excel write-back:** never. The app may **export its own Excel sheets** for Stephen (received vs. ordered, backorders, extras, issues) as downloads.
 
+## Proposed: move off claude.ai to our own app (Oct 28, round 4)
+**Why:** the office has no Claude logins, wants a desktop site, and wants live sync. A claude.ai artifact can't do any of those well. Its camera also can't scan live.
+
+**Shape:** one web app at its own address, built from this repo.
+- **Phone/tablet:** opened once and added to the home screen. It looks and launches like a regular app, with **live camera scanning** (instant QR, no photo step).
+- **Office computer:** the same address in a desktop browser shows a wide office layout (orders, issues, backorders, exports).
+- **Data:** a hosted database (Supabase free tier, or similar) that every device syncs to live. A change on one device shows on the others within a second.
+- **Hosting:** auto-deploys from GitHub (Netlify/Vercel free tier). The company owns the accounts. About $12/yr for a domain, otherwise $0 at this size.
+
+**Live Excel sync:** a small **Force Sync** program runs on Stephen's computer (or the computer that holds Community Drive #2). It watches the order Excel. Each time the file is saved, it sends the changes to the app's database, so *Delayed* shows up on the floor with no upload. Fallback, if IT won't allow installing it: drag the file into the office page.
+
+**Logins:** one shared company login per device. On the floor, people tap their name, so the log still shows who received, pulled or reported what. Stephen's office actions sit behind a PIN.
+
+**Beam saw:** import the saw's cut export for **programmed** cuts. **Custom cuts** (boards pulled and cut outside the program) and **remakes** are logged in the app as *Custom cut* or *Remake* pulls, so nothing is counted twice.
+
+**Trade-offs:** setup takes accounts (GitHub, Netlify, Supabase) that the company signs up for. The app keeps working on its own, so it doesn't need Claude running. Changes after launch still go through this repo.
+
 ## Still open
 - Exact brand green (hex or a logo file).
-- Claude logins for Stephen and Roman (see 5).
-- Can the beam saw computer export what it cut?
+- Approve the move to our own app, and who owns the hosting accounts.
+- Can Force Sync be installed on the office computer (ask IT/Stephen)?
+- Beam saw export: what file format, and one sample.
 - Everything the real Excel sheets will raise.
