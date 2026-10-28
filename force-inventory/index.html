@@ -368,6 +368,7 @@ const ZONES=[
  {id:'R1',name:'Rack 1',short:'R1',kind:'rack',deep:0,depth:1.1,fx:11.9,nd:-1,z0:-16.1,first:1,last:1,levels:5,ly:[.15,1.05,1.95,2.85,3.75],bw:2.45,up:GY,beam:GY,wire:1,purpose:()=>'Excess handles',rule:i=>i.cat!=='handle'?'Rack 1 holds excess handles only.':null},
  {id:'CL1',name:'Cantilever 1',short:'CL1',kind:'cant',axis:'z',sx:13,sz:-8,dir:-1,cols:3,rows:8,bl:2.6,arm:1.3,base:.25,rh:.5,purpose:()=>'Boards for remakes and one-offs',rule:i=>i.cat!=='board'?'Cantilevers hold boards only.':null},
  {id:'CL2',name:'Cantilever 2',short:'CL2',kind:'cant',axis:'x',sx:26,sz:3.6,dir:-1,cols:1,rows:6,bl:2.6,arm:1.3,base:.25,rh:.62,purpose:()=>'Boards',rule:i=>i.cat!=='board'?'Cantilevers hold boards only.':null},
+ {id:'BD',name:'Board drop',short:'Drop',kind:'pad',axis:'x',sx:6.4,sz:-4.6,dir:-1,len:2.6,wid:1.3,purpose:()=>'Boards waiting for a home (placeholder spot)',rule:i=>i.cat!=='board'?'Board drop is for boards only.':null},
  {id:'BK',name:'Bunks',short:'Bunks',kind:'bunk',x0:14,z0:-8,purpose:()=>'Full board units'},
  {id:'HR1',name:'Hardware rack 1',short:'Hardware 1',kind:'shelf',axis:'x',sx:13.6,sz:-46.6,dir:1,bays:3,bw:1.2,shelves:5,sh:.42,depth:.6,purpose:()=>'Screws, nails, small hardware',rule:shelfRule},
  {id:'HR2',name:'Hardware rack 2',short:'Hardware 2',kind:'shelf',axis:'x',sx:17.4,sz:-46.6,dir:1,bays:2,bw:1.8,shelves:5,sh:.42,depth:.6,purpose:()=>'Handles, screws, small hardware',rule:shelfRule},
@@ -404,6 +405,8 @@ ZONES.forEach(z=>{
    addLoc({id:`${z.id}-${c}-${r}`,z:z.id,L:r,bay:c,purpose:z.purpose(),geo:G((c-.5)*z.bl,z.arm/2+.12,z.base+(r-1)*z.rh+.06,z.bl-.15,1.25,z.rh-.12)});
  }else if(z.kind==='bunk'){
   for(let b=1;b<=4;b++)for(let c=1;c<=4;c++)addLoc({id:`BK${b}-${c}`,z:'BK',bunk:b,col:c,bay:b,L:1,purpose:bunkFor(b,c),geo:G((c-.5)*1.5,(b-.5)*2.9,.1,1.27,2.5,4.6)});
+ }else if(z.kind==='pad'){
+  addLoc({id:`${z.id}-1`,z:z.id,L:1,bay:1,purpose:z.purpose(),geo:G(z.len/2,z.wid/2,.1,z.len-.1,z.wid-.1,2.2)});
  }else if(z.kind==='shelf'){
   for(let b=1;b<=z.bays;b++)for(let s=1;s<=z.shelves;s++)
    addLoc({id:`${z.id}-${s}${b}`,z:z.id,L:s,bay:b,purpose:z.purpose(),geo:G((b-.5)*z.bw,z.depth/2,.1+(s-1)*z.sh+.03,z.bw-.08,z.depth-.04,z.sh-.08)});
@@ -411,8 +414,8 @@ ZONES.forEach(z=>{
 });
 const PHYS=LOCS.filter(l=>l.geo);
 const normLoc=s=>KEYS[key(s)]||null;
-function posText(l){if(!l)return '';if(!l.geo)return l.purpose;const k=zone(l.z).kind;return k==='cant'?`Column ${l.bay} · Row ${l.L}`:k==='shelf'?`Shelf ${l.L} · Bay ${l.bay}`:k==='bunk'?`Bunk ${l.bunk} · Column ${l.col}`:`Level ${l.L} · Bay ${l.bay} · ${l.bin.length>1?'Full':(l.bin==='c'||l.bin==='d'?'Front ':'Back ')+(l.bin==='a'||l.bin==='c'?'left':'right')}`}
-const spotShort=l=>{const k=zone(l.z).kind;return k==='bunk'?'Col '+l.col:k==='cant'?'Row '+l.L:k==='shelf'?'Shelf '+l.L:`${l.L}-${l.bin}`};
+function posText(l){if(!l)return '';if(!l.geo)return l.purpose;const k=zone(l.z).kind;return k==='cant'?`Column ${l.bay} · Row ${l.L}`:k==='shelf'?`Shelf ${l.L} · Bay ${l.bay}`:k==='bunk'?`Bunk ${l.bunk} · Column ${l.col}`:k==='pad'?'Floor spot':`Level ${l.L} · Bay ${l.bay} · ${l.bin.length>1?'Full':(l.bin==='c'||l.bin==='d'?'Front ':'Back ')+(l.bin==='a'||l.bin==='c'?'left':'right')}`}
+const spotShort=l=>{const k=zone(l.z).kind;return k==='bunk'?'Col '+l.col:k==='cant'?'Row '+l.L:k==='shelf'?'Shelf '+l.L:k==='pad'?'Floor':`${l.L}-${l.bin}`};
 
 /* ---------- helpers ---------- */
 const $=(s,r=document)=>r.querySelector(s),$$=(s,r=document)=>[...r.querySelectorAll(s)];
@@ -527,7 +530,7 @@ async function saveCount(loc,newLines,reason){const cur=clone(S.stock[loc]),old=
 async function guard(fn){if(!CANWRITE){toast('View only. Ask the owner for edit access.',true);return}try{await fn()}catch(e){console.error(e);toast(e&&e.code==='quota_exceeded'?'Storage is full.':'Didn’t save. Check your connection.',true)}}
 function suggest(i){const h=homeOf(i.sku).filter(l=>LOC[l]);if(h.length)return{loc:h[0],why:'Its spot'};
  const have=onHand(i.sku).locs.map(x=>x[0]).filter(l=>LOC[l]?.geo&&!ruleFor(l,i));if(have.length)return{loc:have[0],why:'Already here'};
- const PREF={board:['BK','CL1','CL2'],hardware:['D'],fastener:['HR1','HR2'],handle:['R1','HR2'],pallet:['A','B','C'],packaging:['R0'],molding:['R0'],misc:['R0']};
+ const PREF={board:['BK','CL1','CL2','BD'],hardware:['D'],fastener:['HR1','HR2'],handle:['R1','HR2'],pallet:['A','B','C'],packaging:['R0'],molding:['R0'],misc:['R0']};
  let cand=PHYS.filter(l=>(PREF[i.cat]||[]).includes(l.z)&&!lines(l.id).length&&!sinfo(l.id).assign&&!ruleFor(l.id,i));
  cand.sort((a,b)=>(PREF[i.cat]||[]).indexOf(a.z)-(PREF[i.cat]||[]).indexOf(b.z));
  if(isCard(i))cand=cand.filter(l=>l.L===4).concat(cand.filter(l=>l.L!==4));if(i.cat==='hardware')cand=cand.filter(l=>l.L===1).concat(cand.filter(l=>l.L!==1));
@@ -762,7 +765,7 @@ function fr(){const out=$('#fr'),q=findQ.trim().toLowerCase();
 let W3=null,showStatus=false,mode3='aerial',tourTok=0,touring=false,selLoc=null;
 const TINT={hardware:0x3B82F6,board:0xC9A46E,handle:0x8B5CF6,fastener:0x64748B,packaging:0xF59E0B,pallet:0x14B8A6,molding:0x9CA3AF,misc:0x9CA3AF};
 const COL={ok:0x34C759,uncounted:0xFF9F0A,wrong:0xFF3B30,recount:0xAF52DE,empty:0x9AA3A0,emptyok:0x8E8E93};
-const AREAS=[['WAREHOUSE 2',-5.2,.3,-27],['WAREHOUSE 1',27,.3,-17],['OPENING',4.6,2.4,-4.5],['PRODUCTION',23,1.8,-30]];
+const AREAS=[['WAREHOUSE 2',-5.2,.3,-27],['WAREHOUSE 1',27,.3,-17],['OPENING',4.6,2.4,-4.5]];
 const AER={p:[8,40,22],t:[7,0,-22],fov:50};
 const aer=()=>{const st=$('#stage');return st&&st.clientWidth<st.clientHeight?{p:[8,74,16],t:[8,0,-23],fov:50}:AER};
 const ZI={};
@@ -772,11 +775,11 @@ function zoneInfo(id){if(ZI[id])return ZI[id];const ls=PHYS.filter(l=>l.z===id),
 const add3=(p,v,k)=>[p[0]+v[0]*k,p[1]+v[1]*k,p[2]+v[2]*k];
 function zonePose(id){const Z=zoneInfo(id),d=Math.min(28,Math.max(7.5,Z.L*.6)),H=Z.mx[1],t=[Z.c[0],Math.min(H*.45,2.4),Z.c[2]];
  const p=add3(add3(t,Z.n,d),Z.a,Z.L*.2);p[1]=t[1]+Math.max(H*.85,d*(Z.L>30?.8:.45));return{p,t,fov:50}}
-function spotPose(id){const g=LOC[id].geo,deep=zone(LOC[id].z).deep,bk=LOC[id].z==='BK',c=[g.x,g.y+g.h/2,g.z],d=deep?2.6:bk?4.2:3.4;
+function spotPose(id){const g=LOC[id].geo,deep=zone(LOC[id].z).deep,bk=['BK','BD'].includes(LOC[id].z),c=[g.x,g.y+g.h/2,g.z],d=deep?2.6:bk?4.2:3.4;
  // keep the spot in the top part of the stage, clear of the sheet that opens over the bottom
  const p=add3(add3(c,g.n,d),g.a,.25);p[1]=bk?g.y+7.5:c[1]+.35;const t=bk?[c[0],g.y+1,c[2]]:[c[0],c[1]-d*.3,c[2]];return{p,t,fov:54}}
 function bayPose(zid,bay){const ls=PHYS.filter(l=>l.z===zid&&l.bay===bay);let c=[0,0,0],H=0;ls.forEach(l=>{c=add3(c,[l.geo.x,0,l.geo.z],1/ls.length);H=Math.max(H,l.geo.y+l.geo.h)});
- const g=ls[0].geo,deep=zone(zid).deep||zid==='BK',t=[c[0],H*.45,c[2]];// deep racks face a ~3 m aisle: rise above it and look down so a whole bay fits a portrait screen
+ const g=ls[0].geo,deep=zone(zid).deep||zid==='BK'||zid==='BD',t=[c[0],H*.45,c[2]];// deep racks face a ~3 m aisle: rise above it and look down so a whole bay fits a portrait screen
  const p=add3(add3(t,g.n,deep?2.4:Math.max(4.5,H*1.1)),g.a,deep?.6:1.6);p[1]=deep?H+1.6:H*.55+1;if(deep)t[1]=H*.32;return{p,t,fov:deep?60:56}}
 function makeTextures(T){
  const R=rng(5),tx=(w,h,draw,rep)=>{const c=document.createElement('canvas');c.width=w;c.height=h;draw(c.getContext('2d'),w,h);const t=new T.CanvasTexture(c);t.anisotropy=8;if(rep){t.wrapS=t.wrapT=T.RepeatWrapping;t.repeat.set(...rep)}return t};
@@ -853,19 +856,12 @@ function init3D(){
   if(z.kind==='bunk')for(let b=1;b<=4;b++)for(let c=1;c<=4;c++){const s=(c-.5)*1.5,t=(b-.5)*2.9;
    partF('tape',f,s,t-1.3,0,1.38,.05,.006);partF('tape',f,s,t+1.3,0,1.38,.05,.006);partF('tape',f,s-.69,t,0,.05,2.6,.006);partF('tape',f,s+.69,t,0,.05,2.6,.006);
    partF('c0x8B6B43',f,s,t-.85,0,1.27,.1,.09);partF('c0x8B6B43',f,s,t+.85,0,1.27,.1,.09)}
+  if(z.kind==='pad'){partF('c0xD7263D',f,z.len/2,0,0,z.len,.08,.008);partF('c0xD7263D',f,z.len/2,z.wid,0,z.len,.08,.008);partF('c0xD7263D',f,0,z.wid/2,0,.08,z.wid,.008);partF('c0xD7263D',f,z.len,z.wid/2,0,.08,z.wid,.008);[.5,z.len-.5].forEach(x=>partF('c0x8B6B43',f,x,z.wid/2,0,.1,z.wid-.1,.09))}
   if(z.kind==='shelf'){const top=.1+z.shelves*z.sh+.1;
    for(let k=0;k<=z.bays;k++){const s=k*z.bw;partF('c0x1C1E21',f,s,.03,0,.05,.05,top);partF('c0x1C1E21',f,s,z.depth-.03,0,.05,.05,top)}
    for(let b=1;b<=z.bays;b++)for(let s=1;s<=z.shelves;s++){const y=.1+(s-1)*z.sh;partF('c0xC9AE84',f,(b-.5)*z.bw,z.depth/2,y,z.bw-.06,z.depth-.02,.025);partF('c0x1C1E21',f,(b-.5)*z.bw,z.depth-.01,y-.05,z.bw-.06,.03,.06)}}
  });
  const statics=new T.Group();build(parts,statics);scene.add(statics);
- // production floor (scenery, not tracked): clear glass shapes from the factory-tour footage; positions approximate until confirmed
- const PROD=[[23,.75,-26,7,1.5,1.8],[23,.45,-23.6,7,.9,1.6],[23,.45,-28.4,7,.9,1.6],[23,4.2,-26,.5,.5,7],[19.6,2.6,-26,.5,5.2,.5],
-  ...[0,1,2,3].flatMap(k=>[[18.5+k*3.2,.4,-33,2.6,.8,1.2],[18.5+k*3.2,.4,-36,2.6,.8,1.2]])];
- {const pg=new T.Group(),im=new T.InstancedMesh(cube,M('ghost'),PROD.length),pos=[];
-  PROD.forEach((b,i)=>{o.position.set(b[0],b[1],b[2]);o.scale.set(b[3],b[4],b[5]);o.updateMatrix();im.setMatrixAt(i,o.matrix);im.setColorAt(i,new T.Color(0xB8C2CC));
-   const hs=[b[3]/2,b[4]/2,b[5]/2];for(let ax=0;ax<3;ax++){const o1=(ax+1)%3,o2=(ax+2)%3;for(const s1 of[-1,1])for(const s2 of[-1,1])for(const e of[-1,1]){const q=[0,0,0];q[ax]=e*hs[ax];q[o1]=s1*hs[o1];q[o2]=s2*hs[o2];pos.push(b[0]+q[0],b[1]+q[1],b[2]+q[2])}}});
-  const eg=new T.BufferGeometry();eg.setAttribute('position',new T.Float32BufferAttribute(pos,3));
-  pg.add(im,new T.LineSegments(eg,new T.LineBasicMaterial({color:0x7A8794,transparent:true,opacity:.8})));scene.add(pg)}
  const sm=new T.InstancedMesh(cube,new T.MeshStandardMaterial({color:0xffffff,transparent:true,opacity:.62,depthWrite:false}),PHYS.length);
  const hm=new T.InstancedMesh(cube,new T.MeshBasicMaterial({visible:false}),PHYS.length);
  PHYS.forEach((l,i)=>{const g=l.geo;o.position.set(g.x,g.y+g.h/2,g.z);o.scale.set(g.w,g.h,g.d);o.updateMatrix();hm.setMatrixAt(i,o.matrix)});
@@ -875,7 +871,7 @@ function init3D(){
  const floorHit=new T.Mesh(new T.PlaneGeometry(200,200),new T.MeshBasicMaterial({visible:false}));floorHit.rotation.x=-Math.PI/2;floorHit.position.set(8,0,-24);scene.add(floorHit);
  let content=new T.Group();scene.add(content);
  function buildContent(){scene.remove(content);content.children.forEach(m=>{if(m.geometry&&m.geometry!==cube)m.geometry.dispose();m.dispose&&m.dispose()});content=new T.Group();
-  const G=[],RS=[],ghH=(zn,g)=>Math.min(g.h-.12,zn.kind==='bunk'?1.7:zn.kind==='shelf'?g.h*.8:1.0);
+  const G=[],RS=[],ghH=(zn,g)=>Math.min(g.h-.12,zn.kind==='bunk'||zn.kind==='pad'?1.7:zn.kind==='shelf'?g.h*.8:1.0);
   const cp=new Map(),put=(k,x,y,z,w,h,d,col)=>{(cp.get(k)||cp.set(k,[]).get(k)).push([w,h,d,x,y,z,col])};
   PHYS.forEach(l=>{const ls=lines(l.id),g=l.geo,zn=zone(l.z);
    // reserved for a part but empty: outline and floor footprint only
@@ -887,7 +883,7 @@ function init3D(){
     if(x.qty==null){const h=ghH(zn,g);G.push([cx,g.y+h/2,cz,(Math.abs(g.a[0])*sa+Math.abs(g.n[0])*g.sn)*.92,h,(Math.abs(g.a[2])*sa+Math.abs(g.n[2])*g.sn)*.92,TINT[i.cat]||TINT.misc]);return}
     let y=g.y;const pal=()=>{B('pallet',y,.14,.95);y+=.14};
     if(i.cat==='board'){
-     if(zn.kind==='bunk'){const u=x.qty==null?2:Math.max(1,Math.min(5,Math.ceil(x.qty/(i.thk==='6mm'?90:45))));for(let j=0;j<u;j++){B('c0xB08A5A',y,.1,.98);y+=.1;B('unit',y,.78,.98);y+=.78}}
+     if(zn.kind==='bunk'||zn.kind==='pad'){const u=x.qty==null?2:Math.max(1,Math.min(5,Math.ceil(x.qty/(i.thk==='6mm'?90:45))));for(let j=0;j<u;j++){B('c0xB08A5A',y,.1,.98);y+=.1;B('unit',y,.78,.98);y+=.78}}
      else{const h=x.qty==null?.18:Math.max(.03,Math.min(g.h-.05,x.qty*(i.thk==='6mm'?.007:.019)));B('edge',y,h,.98);B('top',y+h,.012,.98,i.swatch?parseInt(i.swatch.slice(1),16):0xD8D2C4)}}
     else if(i.cat==='pallet'){pal();B('wrap',y,Math.min(g.h-.2,1.05),.92)}
     else if(i.cat==='packaging'){if(rack)pal();B(isCard(i)?'card':'rolls',y,Math.min(g.h-.2,isCard(i)?.55:.8),.92)}
@@ -945,10 +941,10 @@ function refresh3D(){if(W3){W3.refresh();if(route==='map')labelsFor()}}
 const curZone=()=>selLoc&&LOC[selLoc]?.geo?LOC[selLoc].z:mode3;
 function bayName(zid,b){const k=zone(zid).kind;return k==='bunk'?'Bunk '+b:k==='cant'?'Column '+b:'Bay '+b}
 function bayCenter(zid,b){const ls=PHYS.filter(l=>l.z===zid&&l.bay===b);let x=0,z=0,H=0;ls.forEach(l=>{x+=l.geo.x/ls.length;z+=l.geo.z/ls.length;H=Math.max(H,l.geo.y+l.geo.h)});return[x,H+.35,z]}
-const AERN={R0:'Rack 0',R1:'Rack 1',CL1:'Cantilever 1',CL2:'Cantilever 2',BK:'Bunks',HR1:'Hardware',HR2:''};
+const AERN={BD:'Board drop',R0:'Rack 0',R1:'Rack 1',CL1:'Cantilever 1',CL2:'Cantilever 2',BK:'Bunks',HR1:'Hardware',HR2:''};
 function labelsFor(){if(!W3)return;const L=[],zid=curZone();
  if(zid==='aerial'){ZPHYS.forEach((z,k)=>{const Z=zoneInfo(z.id),aisle=z.kind==='rack'&&z.deep;const tx=aisle?z.id:(z.id in AERN?AERN[z.id]:z.name);if(tx)L.push({text:tx,pos:[Z.c[0],Z.mx[1]+1.2,aisle?Z.c[2]+(k%2?-7:3):Z.c[2]],click:()=>enterZone(z.id)})});AREAS.forEach(a=>L.push({text:a[0],pos:[a[1],a[2],a[3]],cls:'area'}))}
- else{const bays=[...new Set(PHYS.filter(l=>l.z===zid).map(l=>l.bay))];if(bays.length<=18)bays.forEach(b=>L.push({text:bayName(zid,b),pos:bayCenter(zid,b),cls:'bay',click:()=>flyBay(zid,b)}))}
+ else{const bays=[...new Set(PHYS.filter(l=>l.z===zid).map(l=>l.bay))];if(bays.length>1&&bays.length<=18)bays.forEach(b=>L.push({text:bayName(zid,b),pos:bayCenter(zid,b),cls:'bay',click:()=>flyBay(zid,b)}))}
  W3.setLabels(L)}
 function stopTour(){tourTok++;if(touring){touring=false;mapUI()}}
 function enterZone(id){stopTour();mode3=id;selLoc=null;if(W3){W3.mark();const q=zonePose(id);W3.fly(q.p,q.t,q.fov);labelsFor()}mapUI()}
