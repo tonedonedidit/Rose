@@ -48,8 +48,10 @@ export default async(req)=>{
    const name=String(u||'').toLowerCase();if(!a||!env('FC_SECRET')||!(await checkPw(name,p)))return json({error:'no'},401);
    return json({u:name,role:a.role,token:makeToken(name,a.role,(await auth())[name]?.gen||0)})}
   const who=await current(req);if(!who)return json({error:'Sign in again'},401);
-  if(path==='password'&&req.method==='POST'){if(who.role!=='office')return json({error:'Only the office can change passwords'},400);
+  if(path==='password'&&req.method==='POST'){
    const {account,current:cur,next}=await req.json().catch(()=>({}));if(!ACCTS[account])return json({error:'Unknown account'},400);
+   if(who.role!=='office'&&account!=='fcwarehouse')return json({error:'Only the office can change that password'},400);
+   if(who.role!=='office'&&!(await checkPw('fcwarehouse',cur)))return json({error:'The current warehouse password is wrong.'},400);
    if(String(next||'').length<8)return json({error:'Use at least 8 characters.'},400);
    if(account==='fcadmin'&&!(await checkPw('fcadmin',cur)))return json({error:'The current office password is wrong.'},400);
    const A=await auth(true),salt=randomBytes(16).toString('hex'),gen=((A[account]&&A[account].gen)||0)+1;A[account]={salt,hash:hashPw(next,salt),gen,at:new Date().toISOString()};
