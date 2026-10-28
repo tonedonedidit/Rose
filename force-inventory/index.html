@@ -344,13 +344,14 @@ const UNIT={board:'sheets',hardware:'pcs',fastener:'boxes',handle:'pcs',packagin
 const THK=['3/4"','6mm','1/4"','1/2"','5/8"','Other'];
 const isWhite=i=>/white/i.test(i.color||'');
 const isCard=i=>i.cat==='packaging'&&/cardboard/i.test(i.name||'');
-const BUNK={1:{F:'3/4" double-sided white',B:'3/4" double-sided white'},2:{F:'3/4" colored (front)',B:'3/4" white (back)'},3:{F:'3/4" colored',B:'3/4" colored'},4:{F:'6 mm, any color',B:'6 mm, any color'}};
-function bunkRule(i,b,s){
+// Bunk 2: columns 1–2 (front, toward the opening) colored, 3–4 white
+const bunkFor=(b,c)=>b===1?'3/4" double-sided white':b===4?'6 mm, any color':b===3||c<=2?'3/4" colored':'3/4" white';
+function bunkRule(i,b,c){
  if(i.cat!=='board')return 'Bunks hold boards only.';
  if(b===4)return i.thk==='6mm'?null:'Bunk 4 is 6 mm only.';
  if(i.thk!=='3/4"')return `Bunk ${b} is 3/4" only.`;
  if(b===1)return isWhite(i)&&i.sides==='2S'?null:'Bunk 1 is 3/4" double-sided white only.';
- if(b===2)return s==='B'?(isWhite(i)?null:'The back of Bunk 2 is white.'):(isWhite(i)?'The front of Bunk 2 is colored.':null);
+ if(b===2)return c>=3?(isWhite(i)?null:'Bunk 2 columns 3–4 are white.'):(isWhite(i)?'Bunk 2 columns 1–2 are colored.':null);
  return isWhite(i)?'Bunk 3 is colored 3/4" only.':null;
 }
 const GR=0x2E8B6E,OR=0xD9531E,GY=0x3B434B;
@@ -362,14 +363,14 @@ const ZONES=[
  {id:'C',name:'Aisle C',short:'C',kind:'rack',deep:1,fx:-8.05,nd:-1,first:5,last:18,levels:4,ly:LY,bw:P,up:GR,beam:OR,purpose:()=>'Cabinet pallets',rule:palletRule},
  {id:'B',name:'Aisle B',short:'B',kind:'rack',deep:1,fx:-3.05,nd:1,first:5,last:18,levels:4,ly:LY,bw:P,up:GR,beam:OR,purpose:()=>'Cabinet pallets',rule:palletRule},
  {id:'A',name:'Aisle A',short:'A',kind:'rack',deep:1,fx:0,nd:-1,first:1,last:18,levels:4,ly:LY,bw:P,up:GR,beam:OR,purpose:()=>'Cabinet pallets',rule:palletRule},
- {id:'R0',name:'Rack 0',short:'R0',kind:'rack',deep:0,depth:1.1,fx:7.6,nd:1,z0:-8,first:1,last:5,levels:4,ly:[.15,1.45,2.65,3.85],bw:2.75,up:GY,beam:0xE0622A,wire:1,
+ {id:'R0',name:'Rack 0',short:'R0',kind:'rack',deep:0,depth:1.1,fx:7.6,nd:1,z0:-8,first:1,last:4,levels:4,ly:[.15,1.45,2.65,3.85],bw:2.75,up:GY,beam:0xE0622A,wire:1,
   purpose:L=>L===4?'Cardboard only':'Scribe molding, misc, drop-off',rule:(i,L)=>L===4&&!isCard(i)?'The top of Rack 0 is cardboard only.':null},
  {id:'R1',name:'Rack 1',short:'R1',kind:'rack',deep:0,depth:1.1,fx:11.9,nd:-1,z0:-16.1,first:1,last:1,levels:5,ly:[.15,1.05,1.95,2.85,3.75],bw:2.45,up:GY,beam:GY,wire:1,purpose:()=>'Excess handles',rule:i=>i.cat!=='handle'?'Rack 1 holds excess handles only.':null},
  {id:'CL1',name:'Cantilever 1',short:'CL1',kind:'cant',axis:'z',sx:13,sz:-8,dir:-1,cols:3,rows:8,bl:2.6,arm:1.3,base:.25,rh:.5,purpose:()=>'Boards for remakes and one-offs',rule:i=>i.cat!=='board'?'Cantilevers hold boards only.':null},
- {id:'CL2',name:'Back cantilever',short:'CL2',kind:'cant',axis:'x',sx:18,sz:-45.6,dir:1,cols:1,rows:6,bl:2.6,arm:1.3,base:.25,rh:.62,purpose:()=>'Boards',rule:i=>i.cat!=='board'?'Cantilevers hold boards only.':null},
- {id:'BK',name:'Bunks',short:'Bunks',kind:'bunk',x0:13.3,z0:-8,purpose:()=>'Full board units'},
- {id:'HR1',name:'Office rack 1',short:'Office 1',kind:'shelf',axis:'x',sx:6.3,sz:-37.9,dir:1,bays:3,bw:1.2,shelves:5,sh:.42,depth:.6,purpose:()=>'Screws, nails, small hardware',rule:shelfRule},
- {id:'HR2',name:'Office rack 2',short:'Office 2',kind:'shelf',axis:'z',sx:13.1,sz:-39,dir:1,bays:2,bw:1.8,shelves:5,sh:.42,depth:.6,purpose:()=>'Handles, screws, small hardware',rule:shelfRule},
+ {id:'CL2',name:'Cantilever 2',short:'CL2',kind:'cant',axis:'x',sx:26,sz:3.6,dir:-1,cols:1,rows:6,bl:2.6,arm:1.3,base:.25,rh:.62,purpose:()=>'Boards',rule:i=>i.cat!=='board'?'Cantilevers hold boards only.':null},
+ {id:'BK',name:'Bunks',short:'Bunks',kind:'bunk',x0:14,z0:-8,purpose:()=>'Full board units'},
+ {id:'HR1',name:'Hardware rack 1',short:'Hardware 1',kind:'shelf',axis:'x',sx:13.6,sz:-46.6,dir:1,bays:3,bw:1.2,shelves:5,sh:.42,depth:.6,purpose:()=>'Screws, nails, small hardware',rule:shelfRule},
+ {id:'HR2',name:'Hardware rack 2',short:'Hardware 2',kind:'shelf',axis:'x',sx:17.4,sz:-46.6,dir:1,bays:2,bw:1.8,shelves:5,sh:.42,depth:.6,purpose:()=>'Handles, screws, small hardware',rule:shelfRule},
  {id:'VR',name:'Staging',kind:'virtual'}
 ];
 const zone=id=>ZONES.find(z=>z.id===id);
@@ -402,7 +403,7 @@ ZONES.forEach(z=>{
   for(let c=1;c<=z.cols;c++)for(let r=1;r<=z.rows;r++)
    addLoc({id:`${z.id}-${c}-${r}`,z:z.id,L:r,bay:c,purpose:z.purpose(),geo:G((c-.5)*z.bl,z.arm/2+.12,z.base+(r-1)*z.rh+.06,z.bl-.15,1.25,z.rh-.12)});
  }else if(z.kind==='bunk'){
-  for(let b=1;b<=4;b++)['B','F'].forEach(s=>addLoc({id:`BK${b}-${s}`,z:'BK',bunk:b,bay:b,side:s,L:s==='B'?2:1,purpose:BUNK[b][s],geo:G((b-.5)*2.7,s==='B'?.68:2.0,.02,2.5,1.27,3.6)}));
+  for(let b=1;b<=4;b++)for(let c=1;c<=4;c++)addLoc({id:`BK${b}-${c}`,z:'BK',bunk:b,col:c,bay:b,L:1,purpose:bunkFor(b,c),geo:G((c-.5)*1.5,(b-.5)*2.9,.1,1.27,2.5,4.6)});
  }else if(z.kind==='shelf'){
   for(let b=1;b<=z.bays;b++)for(let s=1;s<=z.shelves;s++)
    addLoc({id:`${z.id}-${s}${b}`,z:z.id,L:s,bay:b,purpose:z.purpose(),geo:G((b-.5)*z.bw,z.depth/2,.1+(s-1)*z.sh+.03,z.bw-.08,z.depth-.04,z.sh-.08)});
@@ -410,8 +411,8 @@ ZONES.forEach(z=>{
 });
 const PHYS=LOCS.filter(l=>l.geo);
 const normLoc=s=>KEYS[key(s)]||null;
-function posText(l){if(!l)return '';if(!l.geo)return l.purpose;const k=zone(l.z).kind;return k==='cant'?`Column ${l.bay} · Row ${l.L}`:k==='shelf'?`Shelf ${l.L} · Bay ${l.bay}`:k==='bunk'?`Bunk ${l.bunk} · ${l.side==='B'?'Back':'Front'}`:`Level ${l.L} · Bay ${l.bay} · ${l.bin.length>1?'Full':(l.bin==='c'||l.bin==='d'?'Front ':'Back ')+(l.bin==='a'||l.bin==='c'?'left':'right')}`}
-const spotShort=l=>{const k=zone(l.z).kind;return k==='bunk'?(l.side==='B'?'Back':'Front'):k==='cant'?'Row '+l.L:k==='shelf'?'Shelf '+l.L:`${l.L}-${l.bin}`};
+function posText(l){if(!l)return '';if(!l.geo)return l.purpose;const k=zone(l.z).kind;return k==='cant'?`Column ${l.bay} · Row ${l.L}`:k==='shelf'?`Shelf ${l.L} · Bay ${l.bay}`:k==='bunk'?`Bunk ${l.bunk} · Column ${l.col}`:`Level ${l.L} · Bay ${l.bay} · ${l.bin.length>1?'Full':(l.bin==='c'||l.bin==='d'?'Front ':'Back ')+(l.bin==='a'||l.bin==='c'?'left':'right')}`}
+const spotShort=l=>{const k=zone(l.z).kind;return k==='bunk'?'Col '+l.col:k==='cant'?'Row '+l.L:k==='shelf'?'Shelf '+l.L:`${l.L}-${l.bin}`};
 
 /* ---------- helpers ---------- */
 const $=(s,r=document)=>r.querySelector(s),$$=(s,r=document)=>[...r.querySelectorAll(s)];
@@ -505,7 +506,7 @@ function onHand(sku){let n=0,unk=0;const locs=[];for(const loc in S.stock)for(co
 function onOrder(sku){let n=0;Object.values(S.pos).forEach(p=>{if(p.status==='open')(p.lines||[]).forEach(l=>{if(l.sku===sku)n+=l.ordered||0})});return n}
 function homeOf(sku){return Object.keys(S.stock).filter(k=>S.stock[k].assign===sku)}
 function ruleFor(loc,i){if(!i)return null;const l=LOC[loc];if(!l||!l.geo)return null;const a=sinfo(loc).assign;if(a&&a!==i.sku)return `Set aside for ${item(a)?.name||a}.`;
- const z=zone(l.z);if(z.kind==='bunk')return bunkRule(i,l.bunk,l.side);return z.rule?z.rule(i,l.L):null}
+ const z=zone(l.z);if(z.kind==='bunk')return bunkRule(i,l.bunk,l.col);return z.rule?z.rule(i,l.L):null}
 function locStatus(id){const ls=lines(id),m=sinfo(id);
  if(m.recount)return 'recount';if(ls.some(l=>ruleFor(id,item(l.sku))))return 'wrong';
  if(!ls.length)return m.counted?'emptyok':'empty';if(!m.counted||ls.some(l=>l.qty==null))return 'uncounted';return 'ok'}
@@ -761,7 +762,7 @@ function fr(){const out=$('#fr'),q=findQ.trim().toLowerCase();
 let W3=null,showStatus=false,mode3='aerial',tourTok=0,touring=false,selLoc=null;
 const TINT={hardware:0x3B82F6,board:0xC9A46E,handle:0x8B5CF6,fastener:0x64748B,packaging:0xF59E0B,pallet:0x14B8A6,molding:0x9CA3AF,misc:0x9CA3AF};
 const COL={ok:0x34C759,uncounted:0xFF9F0A,wrong:0xFF3B30,recount:0xAF52DE,empty:0x9AA3A0,emptyok:0x8E8E93};
-const AREAS=[['WAREHOUSE 2',-5.2,.3,-27],['WAREHOUSE 1',18,.3,-30],['OPENING',4.6,2.4,-4.5],['PRODUCTION',24,.3,-12]];
+const AREAS=[['WAREHOUSE 2',-5.2,.3,-27],['WAREHOUSE 1',18,.3,-30],['OPENING',4.6,2.4,-4.5]];
 const AER={p:[8,40,22],t:[7,0,-22],fov:50};
 const aer=()=>{const st=$('#stage');return st&&st.clientWidth<st.clientHeight?{p:[8,74,16],t:[8,0,-23],fov:50}:AER};
 const ZI={};
@@ -773,9 +774,9 @@ function zonePose(id){const Z=zoneInfo(id),d=Math.min(28,Math.max(7.5,Z.L*.6)),H
  const p=add3(add3(t,Z.n,d),Z.a,Z.L*.2);p[1]=t[1]+Math.max(H*.85,d*(Z.L>30?.8:.45));return{p,t,fov:50}}
 function spotPose(id){const g=LOC[id].geo,deep=zone(LOC[id].z).deep,bk=LOC[id].z==='BK',c=[g.x,g.y+g.h/2,g.z],d=deep?2.6:bk?4.2:3.4;
  // keep the spot in the top part of the stage, clear of the sheet that opens over the bottom
- const p=add3(add3(c,g.n,d),g.a,.25);p[1]=bk?Math.max(g.y+4.6,c[1]+2.4):c[1]+.35;const t=[c[0],c[1]-d*.3-(bk?1.2:0),c[2]];return{p,t,fov:54}}
+ const p=add3(add3(c,g.n,d),g.a,.25);p[1]=bk?g.y+7.5:c[1]+.35;const t=bk?[c[0],g.y+1,c[2]]:[c[0],c[1]-d*.3,c[2]];return{p,t,fov:54}}
 function bayPose(zid,bay){const ls=PHYS.filter(l=>l.z===zid&&l.bay===bay);let c=[0,0,0],H=0;ls.forEach(l=>{c=add3(c,[l.geo.x,0,l.geo.z],1/ls.length);H=Math.max(H,l.geo.y+l.geo.h)});
- const g=ls[0].geo,deep=zone(zid).deep,t=[c[0],H*.45,c[2]];// deep racks face a ~3 m aisle: rise above it and look down so a whole bay fits a portrait screen
+ const g=ls[0].geo,deep=zone(zid).deep||zid==='BK',t=[c[0],H*.45,c[2]];// deep racks face a ~3 m aisle: rise above it and look down so a whole bay fits a portrait screen
  const p=add3(add3(t,g.n,deep?2.4:Math.max(4.5,H*1.1)),g.a,deep?.6:1.6);p[1]=deep?H+1.6:H*.55+1;if(deep)t[1]=H*.32;return{p,t,fov:deep?60:56}}
 function makeTextures(T){
  const R=rng(5),tx=(w,h,draw,rep)=>{const c=document.createElement('canvas');c.width=w;c.height=h;draw(c.getContext('2d'),w,h);const t=new T.CanvasTexture(c);t.anisotropy=8;if(rep){t.wrapS=t.wrapT=T.RepeatWrapping;t.repeat.set(...rep)}return t};
@@ -833,7 +834,7 @@ function init3D(){
  wallPlane(SH.x0,SH.z0,SH.x1,SH.z0,...cs);wallPlane(SH.x0,SH.z1,SH.x1,SH.z1,...cs);wallPlane(SH.x1,SH.z0,SH.x1,SH.z1,...cs);
  wallPlane(SH.x0,SH.z0,SH.x0,-2,...cs);wallPlane(SH.x0,-7,SH.x0,SH.z1,...cs);
  [-11,-4.5].forEach(x=>door(x,B2.z0-.05,Math.PI));door(B2.x0+.05,-20,Math.PI/2);door(B2.x0+.05,-32,Math.PI/2);
- [22.6,26.6].forEach(x=>door(x,SH.z1+.05,0));door(SH.x1-.05,-20,-Math.PI/2);door(SH.x1-.05,-30,-Math.PI/2);
+ [24,28].forEach(x=>door(x,SH.z1+.05,0));door(SH.x1-.05,-20,-Math.PI/2);door(SH.x1-.05,-30,-Math.PI/2);
  const O=OFFICE;[[O.x0,O.z0,O.x1,O.z0],[O.x0,O.z0,O.x0,O.z1],[O.x1,O.z0,O.x1,O.z1]].forEach(([a,b,c,d])=>{part('c0xE6E2D8',(a+c)/2,.5,(b+d)/2,Math.max(.15,Math.abs(c-a)),1,Math.max(.15,Math.abs(d-b)));part('glass',(a+c)/2,1.8,(b+d)/2,Math.max(.1,Math.abs(c-a)),1.6,Math.max(.1,Math.abs(d-b)));part('c0xE6E2D8',(a+c)/2,2.85,(b+d)/2,Math.max(.15,Math.abs(c-a)),.5,Math.max(.15,Math.abs(d-b)))});
  // safety tape along aisles, contact shadows under structures
  ZPHYS.forEach(z=>{const f=frameOf(z),Z=zoneInfo(z.id);const sl=Math.max(Z.mx[0]-Z.mn[0],Z.mx[2]-Z.mn[2]);
@@ -849,7 +850,9 @@ function init3D(){
    for(let k=0;k<=z.cols*2;k++){const s=k*z.bl/2;partF('c0x2E7D3A',f,s,-.12,0,.22,.25,top);partF('c0x2E7D3A',f,s,.55,0,.25,1.45,.16);
     for(let r=1;r<=z.rows;r++)partF('c0xD9531E',f,s,z.arm/2,z.base+(r-1)*z.rh-.1,.09,z.arm,.1)}
    for(let c=0;c<z.cols*2;c++){const s=(c+.5)*z.bl/2;[top*.35,top*.72].forEach(y=>partF('c0xD9531E',f,s,-.22,y,z.bl/2-.22,.06,.07))}}
-  if(z.kind==='bunk')for(let b=1;b<=4;b++){const s=(b-.5)*2.7;partF('tape',f,s-1.33,1.34,0,.06,2.66,.006);partF('tape',f,s+1.33,1.34,0,.06,2.66,.006);partF('tape',f,s,.02,0,2.66,.06,.006);partF('tape',f,s,2.68,0,2.66,.06,.006)}
+  if(z.kind==='bunk')for(let b=1;b<=4;b++)for(let c=1;c<=4;c++){const s=(c-.5)*1.5,t=(b-.5)*2.9;
+   partF('tape',f,s,t-1.3,0,1.38,.05,.006);partF('tape',f,s,t+1.3,0,1.38,.05,.006);partF('tape',f,s-.69,t,0,.05,2.6,.006);partF('tape',f,s+.69,t,0,.05,2.6,.006);
+   partF('c0x8B6B43',f,s,t-.85,0,1.27,.1,.09);partF('c0x8B6B43',f,s,t+.85,0,1.27,.1,.09)}
   if(z.kind==='shelf'){const top=.1+z.shelves*z.sh+.1;
    for(let k=0;k<=z.bays;k++){const s=k*z.bw;partF('c0x1C1E21',f,s,.03,0,.05,.05,top);partF('c0x1C1E21',f,s,z.depth-.03,0,.05,.05,top)}
    for(let b=1;b<=z.bays;b++)for(let s=1;s<=z.shelves;s++){const y=.1+(s-1)*z.sh;partF('c0xC9AE84',f,(b-.5)*z.bw,z.depth/2,y,z.bw-.06,z.depth-.02,.025);partF('c0x1C1E21',f,(b-.5)*z.bw,z.depth-.01,y-.05,z.bw-.06,.03,.06)}}
@@ -876,7 +879,7 @@ function init3D(){
     if(x.qty==null){const h=ghH(zn,g);G.push([cx,g.y+h/2,cz,(Math.abs(g.a[0])*sa+Math.abs(g.n[0])*g.sn)*.92,h,(Math.abs(g.a[2])*sa+Math.abs(g.n[2])*g.sn)*.92,TINT[i.cat]||TINT.misc]);return}
     let y=g.y;const pal=()=>{B('pallet',y,.14,.95);y+=.14};
     if(i.cat==='board'){
-     if(zn.kind==='bunk'){const u=x.qty==null?2:Math.max(1,Math.min(4,Math.ceil(x.qty/(i.thk==='6mm'?90:45))));for(let j=0;j<u;j++){B('c0xB08A5A',y,.1,.98);y+=.1;B('unit',y,.78,.98);y+=.78}}
+     if(zn.kind==='bunk'){const u=x.qty==null?2:Math.max(1,Math.min(5,Math.ceil(x.qty/(i.thk==='6mm'?90:45))));for(let j=0;j<u;j++){B('c0xB08A5A',y,.1,.98);y+=.1;B('unit',y,.78,.98);y+=.78}}
      else{const h=x.qty==null?.18:Math.max(.03,Math.min(g.h-.05,x.qty*(i.thk==='6mm'?.007:.019)));B('edge',y,h,.98);B('top',y+h,.012,.98,i.swatch?parseInt(i.swatch.slice(1),16):0xD8D2C4)}}
     else if(i.cat==='pallet'){pal();B('wrap',y,Math.min(g.h-.2,1.05),.92)}
     else if(i.cat==='packaging'){if(rack)pal();B(isCard(i)?'card':'rolls',y,Math.min(g.h-.2,isCard(i)?.55:.8),.92)}
@@ -934,9 +937,9 @@ function refresh3D(){if(W3){W3.refresh();if(route==='map')labelsFor()}}
 const curZone=()=>selLoc&&LOC[selLoc]?.geo?LOC[selLoc].z:mode3;
 function bayName(zid,b){const k=zone(zid).kind;return k==='bunk'?'Bunk '+b:k==='cant'?'Column '+b:'Bay '+b}
 function bayCenter(zid,b){const ls=PHYS.filter(l=>l.z===zid&&l.bay===b);let x=0,z=0,H=0;ls.forEach(l=>{x+=l.geo.x/ls.length;z+=l.geo.z/ls.length;H=Math.max(H,l.geo.y+l.geo.h)});return[x,H+.35,z]}
-const AERN={R0:'Rack 0',R1:'Rack 1',CL1:'Cantilever',CL2:'Back cantilever',BK:'Bunks',HR1:'Office 1',HR2:'Office 2'};
+const AERN={R0:'Rack 0',R1:'Rack 1',CL1:'Cantilever 1',CL2:'Cantilever 2',BK:'Bunks',HR1:'Hardware',HR2:''};
 function labelsFor(){if(!W3)return;const L=[],zid=curZone();
- if(zid==='aerial'){ZPHYS.forEach((z,k)=>{const Z=zoneInfo(z.id),aisle=z.kind==='rack'&&z.deep;L.push({text:aisle?z.id:(AERN[z.id]||z.name),pos:[Z.c[0],Z.mx[1]+1.2,aisle?Z.c[2]+(k%2?-7:3):Z.c[2]],click:()=>enterZone(z.id)})});AREAS.forEach(a=>L.push({text:a[0],pos:[a[1],a[2],a[3]],cls:'area'}))}
+ if(zid==='aerial'){ZPHYS.forEach((z,k)=>{const Z=zoneInfo(z.id),aisle=z.kind==='rack'&&z.deep;const tx=aisle?z.id:(z.id in AERN?AERN[z.id]:z.name);if(tx)L.push({text:tx,pos:[Z.c[0],Z.mx[1]+1.2,aisle?Z.c[2]+(k%2?-7:3):Z.c[2]],click:()=>enterZone(z.id)})});AREAS.forEach(a=>L.push({text:a[0],pos:[a[1],a[2],a[3]],cls:'area'}))}
  else{const bays=[...new Set(PHYS.filter(l=>l.z===zid).map(l=>l.bay))];if(bays.length<=18)bays.forEach(b=>L.push({text:bayName(zid,b),pos:bayCenter(zid,b),cls:'bay',click:()=>flyBay(zid,b)}))}
  W3.setLabels(L)}
 function stopTour(){tourTok++;if(touring){touring=false;mapUI()}}
