@@ -2,7 +2,7 @@
 
 The single file `index.html` runs in three places:
 - **claude.ai preview:** https://claude.ai/artifact/JanWGBN9F242LUGkKdAFtN. Data lives in the artifact's db.
-- **Company site (Netlify):** not deployed yet. When `/api/ping` answers, the page switches to the server store: sign-in is checked on the server, and sync polls every 2.5 s.
+- **Company site (Netlify):** https://force-receiving.netlify.app (site `force-receiving`). Deploy: `node build.mjs && netlify deploy --prod --build`. Passwords live in the site environment variables FC_ADMIN_PASS, FC_WAREHOUSE_PASS and FC_SECRET. When `/api/ping` answers, the page switches to the server store: sign-in is checked on the server, and sync polls every 2.5 s.
 - **Opened as a file:** saves on that device only (used by the tests).
 
 Sign-ins: `fcadmin` (office) and `fcwarehouse` (warehouse). The preview checks a SHA-256 hash in the page, which is a gate, not security. The Netlify version checks passwords on the server from environment variables.
