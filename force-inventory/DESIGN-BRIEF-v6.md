@@ -8,7 +8,7 @@ Split the app into **three storage sections that each work the same way**: Palle
 |---|---|
 | Pallets section | Aisles A, B, C. **Levels 1–3: single pallets. Level 4: double pallets only** (a+b, c+d), which already matches the spot codes, e.g. A-44-c+d. |
 | Boards section | Bunks 1–4, Cantilever 1 & 2, Board drop |
-| Hardware section | Rack D level 1, Hardware racks 1 & 2, **Rack 1 (excess handles)** |
+| Hardware section | Rack D level 1, Hardware racks 1 & 2, **Rack 1 (excess handles)**. Hardware is tracked **by pallet**: one QR label per pallet, made in this app; no item labels. |
 | Rack 0 | **Labeled "Supplies"** everywhere (map, search, spot codes stay R0-…). Holds molding, misc and cardboard on top. Shown as the Supplies area inside the Hardware section. |
 | Pallet identity | Every cabinet has a QR sticker printed by the office (type, job, phase, building, floor, unit, color). A pallet is built by **scanning each cabinet into it**. The finished pallet gets a **printed sheet** with its own QR code, listing every item, quantity, building, unit and job name. |
 | Bottom bar | My call, by the formula below |
@@ -83,6 +83,26 @@ What the app does with them:
   
   No retyping, no reset. An export from the old app, if one exists, would just skip this step.
 - **New pallets** keep the same `Pallet:<id>` format, so old and new stickers work the same way, and the printed sheet keeps the same layout (job, group/unit, PO#, item · quantity · building, total).
+
+
+## Hardware pallets: one QR per pallet, made in this app
+- **Hardware has no item labels.** Each hardware pallet gets **one QR label, created and named in this app**, e.g. "Blum hinges & plates" or "Slides 16 in., white".
+- **Making one:** in Hardware → **New hardware pallet**:
+  1. Name it.
+  2. Choose its spot (e.g. D-11-c).
+  3. Add what's on it (part + quantity, with box math).
+  4. Print the label: a large name, the spot, the QR, and the date.
+- **A pallet keeps its contents when it moves.** The contents belong to the pallet, not the rack spot: move the pallet to another spot and everything on it moves too.
+- **One Scan QR button, everywhere** (Home, the search bar, each section). Whatever is scanned goes to the right place:
+
+| Scanned | Goes to |
+|---|---|
+| `Pallet:<id>` (old cabinet pallet sheet) | Pallets → that pallet: spot, job, unit, items, with Store / Move / Ship |
+| Cabinet sticker (8 text lines) | Pallets → the pallet that cabinet is on, with the cabinet highlighted (or "Add to pallet" while building one) |
+| **New hardware pallet label** | Hardware → that pallet: contents with **View · Take · Add · Count**, its spot, and a map pin |
+| Spot label (e.g. D-11-c) | That spot's card |
+
+- New labels use a clear prefix so they never clash with the old ones, e.g. `FORCE:HW:<id>` for hardware pallets and `FORCE:SPOT:D-11-c` for spots. Plain old spot codes still work.
 
 ## Boards
 - **Bunk view:** a 4×4 grid colored by the rule (white, colored, 6 mm). Each cell shows units and sheets. A wrong-bunk board is outlined red.
