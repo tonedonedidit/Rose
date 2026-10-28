@@ -62,6 +62,28 @@ Same spacing, same component sizes, same order. Learn one section and you know a
 4. **Ship:** pick pallets by job (or truck). Mark each loaded, then mark the truck gone. The spots free up.
 5. **Search any cabinet QR** and you land on its pallet and spot.
 
+
+## Old QR codes: decoded and reused (no reprinting)
+Decoded from your photos:
+
+| Label | QR holds | Meaning |
+|---|---|---|
+| **Pallet sheet** | `Pallet:6aba968423164b53da864c63` | The old app's pallet record ID (24-character database ID; created Sep 28, 2026). It holds no contents itself. |
+| **Cabinet sticker** | 8 lines of text: `Granville Remodel` · `PO#3303b-GVR-4` · `Group 48 - [Casita Unit 1065]` · `1065` · `2bed Casita Type A` · `Ultra Light Grey #8` · `B30-ADA` · `10651117` | Job · Order · Building · Unit · Type · Color · Cabinet · Cabinet ID (unit 1065 + label ID 1117) |
+
+What the app does with them:
+- **A cabinet sticker describes itself.** A scan fills in job, PO, building, unit, type, color and cabinet with no lookup and no office export. The cabinet's key is PO + cabinet ID, so the same ID on different jobs never collides.
+- **A pallet sticker is a key.** The old ID becomes the pallet's permanent ID in the new app. Nothing is reprinted.
+- **Bringing an existing pallet into the app takes about one minute per pallet:**
+  1. Scan the pallet sheet.
+  2. The app says it doesn't know this pallet yet and asks you to scan its cabinets.
+  3. Scan the cabinet stickers you can reach.
+  4. The app fills the pallet (job, building, unit, PO, item list and count) and compares it to the printed total ("14 of 16 scanned").
+  5. Store it in its spot.
+  
+  No retyping, no reset. An export from the old app, if one exists, would just skip this step.
+- **New pallets** keep the same `Pallet:<id>` format, so old and new stickers work the same way, and the printed sheet keeps the same layout (job, group/unit, PO#, item · quantity · building, total).
+
 ## Boards
 - **Bunk view:** a 4×4 grid colored by the rule (white, colored, 6 mm). Each cell shows units and sheets. A wrong-bunk board is outlined red.
 - **Receive boards** and **Send to saw** (sheets cut today by color feed the daily report).
@@ -86,4 +108,4 @@ Same spacing, same component sizes, same order. Learn one section and you know a
 
 ## Open questions (in the office form for Stephen and Roman, plus these for you)
 1. ~~Rack 0~~ Decided: labeled **Supplies**.
-2. **Keep the old QR codes.** The iPhone Camera shows "no data" but the old app reads them, so they likely hold an ID in the old app's own format. Needed: close photos of a cabinet sticker and a pallet label, the old app's name, and a screenshot of what it shows after a scan. Copying the data in by hand is the last resort.
+2. ~~Old QR codes~~ Decoded (see above). Optional: the old app's name, and whether it can export pallets. That would only speed up bringing existing pallets in.
