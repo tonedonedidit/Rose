@@ -234,8 +234,10 @@ function claudeStore(db){
 function serverStore(){
  let ver='',timer=0,cb=()=>{};
  const hdr=()=>({'content-type':'application/json',authorization:'Bearer '+(SESS&&SESS.token||'')});
- async function pull(){try{const r=await fetch('/api/state?v='+encodeURIComponent(ver),{headers:hdr()});if(r.status===401){signOut();return}if(r.status===200){const j=await r.json();ver=j.v;COLS.forEach(c=>S[c]=j.state[c]||{});S.meta=j.state.meta||{};cb()}}catch(e){}}
- async function send(ops){const r=await fetch('/api/ops',{method:'POST',headers:hdr(),body:JSON.stringify({ops})});if(r.status===401){signOut();throw new Error('Signed out')}if(!r.ok)throw new Error((await r.text())||'Save failed');const j=await r.json();ver=j.v;COLS.forEach(c=>S[c]=j.state[c]||{});S.meta=j.state.meta||{};cb()}
+ let wrote=0,pending=0;
+ async function pull(){if(pending)return;const t0=Date.now();try{const r=await fetch('/api/state?v='+encodeURIComponent(ver),{headers:hdr()});if(r.status===401){signOut();return}if(r.status===200){const j=await r.json();if(pending||t0<=wrote)return;ver=j.v;COLS.forEach(c=>S[c]=j.state[c]||{});S.meta=j.state.meta||{};cb()}}catch(e){}}
+ let sseq=0,sdone=0;
+ async function send(ops){pending++;const my=++sseq;let r;try{r=await fetch('/api/ops',{method:'POST',headers:hdr(),body:JSON.stringify({ops})})}finally{pending--;wrote=Date.now()}if(r.status===401){signOut();throw new Error('Signed out')}if(!r.ok)throw new Error(((await r.json().catch(()=>({}))).error)||'Save failed');const j=await r.json();if(my<sdone)return;sdone=my;ver=j.v;COLS.forEach(c=>S[c]=j.state[c]||{});S.meta=j.state.meta||{};cb()}
  let started=false;return{kind:'server',start(f){cb=f;pull();if(started)return;started=true;timer=setInterval(()=>{if(!document.hidden)pull()},2500);document.addEventListener('visibilitychange',()=>{if(!document.hidden)pull()})},
   set:(c,id,v)=>send([{op:'set',c,id,v}]),del:(c,id)=>send([{op:'del',c,id}]),batch:ops=>send(ops),
   async mut(c,id,fn){const nx=fn(S[c][id]?{...S[c][id]}:null);if(nx===undefined)return;
@@ -312,7 +314,8 @@ function suggestLoc(sku){const u=unitsOf(sku)[0];if(u)return u.loc;const t=typeO
 /* ================= ui plumbing ================= */
 let route='',VIEW={};try{VIEW=JSON.parse(sessionStorage.getItem('fc-view')||'{}')}catch(e){}
 const SHOP_TABS=[['today','Today','today'],['putaway','Put away','put'],['find','Find','find'],['report','Report','report'],['more','More','more']];
-const OFF_TABS=[['board','Board','board'],['orders','Orders','orders'],['issues','Issues','issues'],['stock','Stock','stock']];
+const OFF_TABS=[['board','Board','board'],['orders','Orders','orders'],['issues','Issues','issues'],['stock','Stock','stock'],['-'],['today','Today','today'],['putaway','Put away','put'],['find','Find','find'],['report','Report','report'],['more','More','more']];
+const OFF_BAR=[['board','Board','board'],['issues','Issues','issues'],['today','Today','today'],['putaway','Put away','put'],['more','More','more']];
 function go(r,v){if(v)VIEW={...VIEW,...v};try{sessionStorage.setItem('fc-view',JSON.stringify(VIEW))}catch(e){}if(location.hash.slice(1)===r)render();else location.hash=r}
 addEventListener('hashchange',()=>render());
 let toastT=0;function toast(m,bad){let t=$('.toast');if(!t){t=document.createElement('div');t.className='toast';t.setAttribute('role','status');document.body.append(t)}t.textContent=m;t.classList.toggle('bad',!!bad);t.hidden=false;clearTimeout(toastT);toastT=setTimeout(()=>t.hidden=true,3200)}
@@ -352,15 +355,15 @@ function render(){
  const root=$('#root');
  if(!SESS){root.innerHTML=loginView();bindLogin();return}
  if(!ME){root.innerHTML=nameView();bindName();return}
- const tabs=isOffice()?[...OFF_TABS,['today','Shop','today'],['more','More','more']]:SHOP_TABS;
+ const tabs=isOffice()?OFF_TABS:SHOP_TABS,bar=isOffice()?OFF_BAR:SHOP_TABS;
  let r=location.hash.slice(1)||(isOffice()&&matchMedia('(min-width:900px)').matches?'board':'today');
  const V=VIEWS[r]&&(!VIEWS[r].office||isOffice())?r:'today';route=V;
  const open=Object.values(S.issues).filter(i=>i.status==='open').length;
- const nav=(cls)=>tabs.map(([id,l,ic])=>`<a href="#${id}" ${(route===id||(PARENT[route]===id))?'aria-current="page"':''}>${ico(ic)}<span>${l}${id==='issues'&&open?` <span class="badge">${open}</span>`:''}</span></a>`).join('');
+ const nav=(L=tabs)=>L.map(([id,l,ic])=>id==='-'?'<div class="sep"></div>':`<a href="#${id}" ${(route===id||(PARENT[route]===id))?'aria-current="page"':''}>${ico(ic)}<span>${l}${id==='issues'&&open?` <span class="badge">${open}</span>`:''}</span></a>`).join('');
  const rail=`<nav class="rail" aria-label="Main"><div class="mark"><i></i>FORCE</div>${nav()}<div class="foot">${esc(ME)} · ${esc(ACCTS[SESS.u]?.label||SESS.role)}<br>${MODE==='local'?'Saved on this device':'Live'}</div></nav>`;
  let body='';try{body=VIEWS[V].render()}catch(e){console.error(e);body=`<p class="note bad">This screen hit a problem: ${esc(e.message)}</p>`}
  const sy=scrollY,same=root.dataset.r===V;
- root.innerHTML=`<div class="app">${rail}<main id="main">${body}</main></div><nav class="tabs" aria-label="Main">${nav()}</nav>`;
+ root.innerHTML=`<div class="app">${rail}<main id="main">${body}</main></div><nav class="tabs" aria-label="Main">${nav(bar)}</nav>`;
  root.dataset.r=V;if(same)scrollTo(0,sy);else scrollTo(0,0);
  VIEWS[V].bind&&VIEWS[V].bind($('#main'));
 }
@@ -389,7 +392,7 @@ async function setName(n,add){ME=n;sset(NAME_K,n);render();if(add&&!(S.meta.peop
 /* ================= shop views ================= */
 const VIEWS={};
 const delRow=d=>`<button class="row" data-del="${esc(d.po)}"><span class="tx"><b>${esc(d.vendor)}</b><span class="t2">PO ${esc(d.po)} · ${esc(d.types.map(t=>TYPES[t]).join(', '))}</span><span class="t2">${esc(summaryOf(d))}</span></span><span class="end">${statePill(d)}${d.state==='delayed'||d.state==='upcoming'||d.state==='late'?`<span class="t2">${esc(dayLabel(d.date))}</span>`:''}${d.arr?`<span class="t2">${esc(timeLabel(d.arr.at))}</span>`:''}</span>${ico('chev',20)}</button>`;
-document.addEventListener('click',e=>{const b=e.target.closest('[data-del]');if(b){VIEW.po=b.dataset.del;go('delivery')}});
+document.addEventListener('click',e=>{const t=e.target.closest('[data-of]');if(t)VIEW.of=t.dataset.of;const b=e.target.closest('[data-del]');if(b){VIEW.po=b.dataset.del;go('delivery')}});
 VIEWS.today={render(){const D=deliveries(),t=today();
  const due=D.filter(d=>d.state==='due'),late=D.filter(d=>d.state==='late'),delayed=D.filter(d=>d.state==='delayed'),arr=D.filter(d=>d.arr&&ymd(d.arr.at)===t),soon=D.filter(d=>d.state==='upcoming'&&d.date<=addDays(t,7)).sort((a,b)=>a.date<b.date?-1:1);
  const bo=orders().filter(o=>issuesOf(o).some(i=>openIssue(i)&&i.kind==='backorder'));
@@ -404,23 +407,20 @@ VIEWS.delivery={render(){const d=deliveries().find(x=>x.k===key(VIEW.po));if(!d)
   return `<div class="row"><span class="tx"><b>${esc(o.desc||o.sku)}</b><span class="t2">${esc(o.sku)}${o.job?' · Job '+esc(o.job):''}${o.note?' · '+esc(o.note):''}</span>
    ${d.arr?`<span class="t2">Put away ${fmt(p)} of ${fmt(o.qty)}${lineLeft(o)?'':' ✓'}</span>`:''}${iss.map(i=>`<span class="t2" style="color:var(--${i.kind==='extra'||i.kind==='backorder'?'info':'bad'})">${esc(KIND[i.kind])} ${fmt(i.qty)}${i.note?' · '+esc(i.note):''}${i.kind==='backorder'?` <button class="btn sm" data-boin="${i.id}">It arrived</button>`:''}</span>`).join('')}</span>
    <span class="end"><span class="big">${fmt(o.qty)}</span><span class="t2">${esc(o.unit||BASEU[it])}</span></span></div>`}).join('');
- const acts=d.state==='cancelled'?'':!d.arr?`<div class="btns"><button class="btn pri" data-allhere>All here, all good</button><button class="btn" data-wrong>Something’s wrong</button></div><p class="muted small" style="margin:0">Check it against the paper. Only report what’s different; the paper still goes to the office.</p>`
-  :`<div class="btns">${d.left?`<button class="btn pri" data-putpo>Put away (${d.lines.filter(lineLeft).length} left)</button>`:''}<button class="btn" data-wrong>Report a problem</button></div>`;
+ const acts=d.state==='cancelled'?'':!d.arr?`<div class="btns"><button class="btn pri" data-allhere>All here, all good</button><button class="btn" data-wrong>Something’s wrong</button></div><p class="muted small" style="margin:0">Check it against the paper. One tap if it matches. Only report what’s different.</p>`
+  :`<div class="btns">${d.left?`<button class="btn pri" data-putpo>Put away now (${d.lines.filter(lineLeft).length} ${d.lines.filter(lineLeft).length===1?'item':'items'})</button>`:''}<button class="btn" data-wrong>Report a problem</button></div>`;
  return topBar(d.vendor,`PO ${d.po} · ${d.date?'Expected '+dayLabel(d.date):'No date'}`,'today')+`<div>${statePill(d)}${d.arr?` <span class="muted small">Checked in ${esc(timeLabel(d.arr.at))} by ${esc(d.arr.by)}${d.arr.count?` · ${esc(d.arr.count)} on the truck`:''}</span>`:''}</div>${acts}<section><div class="sh"><h2>On this order</h2><span class="muted">${plural(d.lines.length,'line')}</span></div><div class="list">${lines}</div></section>`},
  bind(m){const d=deliveries().find(x=>x.k===key(VIEW.po));if(!d)return;
-  $('[data-allhere]',m)?.addEventListener('click',()=>arriveSheet(d));
+  $('[data-allhere]',m)?.addEventListener('click',e=>busy(e.target,async()=>{await markArrived(d.po,0);toast(`${d.vendor} checked in. The office sees it now.`);render()}));
   $('[data-wrong]',m)?.addEventListener('click',()=>issueSheet({po:d.po,dock:!d.arr}));
   $('[data-putpo]',m)?.addEventListener('click',()=>{VIEW.putpo=d.po;go('putaway')});
   $$('[data-boin]',m).forEach(b=>b.addEventListener('click',()=>busy(b,async()=>{const i=S.issues[b.dataset.boin];await W.set('issues',i.id,{...i,status:'archived',closeNote:'Backorder arrived',closedAt:new Date().toISOString(),closedBy:ME});await logIt({type:'backorder-in',sku:i.sku,qty:i.qty,po:i.po});toast(`Backorder in. ${descOf(i.sku)} is ready to put away.`)})))}};
-function arriveSheet(d){openSheet('All here?',`<p class="muted" style="margin:0">${esc(d.vendor)} · PO ${esc(d.po)} · ${d.lines.length} lines match the paper.</p>
- <label class="field"><span>Pallets or stacks on the truck (optional)</span>${stepper('acount',0)}</label><button class="btn pri block" data-primary id="ago">Checked in, all good</button>`,sh=>{
- $('#ago',sh).addEventListener('click',e=>busy(e.target,async()=>{await markArrived(d.po,numv('acount'));closeSheet();toast(`${d.vendor} checked in. Office sees it now.`);render()}))})}
 async function markArrived(po,count){if(arrivalOf(po))return;await W.set('arrivals',key(po),{po,at:new Date().toISOString(),by:ME,count:count||0});await logIt({type:'arrived',po})}
 const KIND={missing:'Missing',short:'Short',damaged:'Damaged',wrong:'Wrong item',backorder:'Backorder',extra:'Extra',other:'Other'};
 function issueSheet(o={}){const L=o.po?linesOf(o.po):[];let sel=o.orderId||'';
  openSheet(o.po?'What’s wrong?':'Report a problem',`${o.po?`<div class="field"><span>Which item</span><div class="list" id="ilines">${L.map(x=>`<button type="button" class="row" data-line="${x.id}" aria-pressed="${x.id===sel}"><span class="tx"><b>${esc(x.desc||x.sku)}</b><span class="t2">${esc(x.sku)} · ordered ${fmt(x.qty)} ${esc(x.unit||'')}</span></span></button>`).join('')}</div></div>`:
   `<label class="field"><span>Item # or description</span><input class="in" id="isku" list="skus" autocomplete="off" placeholder="e.g. Vanity 45 sink base door"><datalist id="skus">${items().map(i=>`<option value="${esc(i.sku)}">${esc(i.desc||'')}</option>`).join('')}</datalist></label>`}
-  <div class="field"><span>What happened</span>${chips('kind',(o.po?['missing','short','damaged','wrong','backorder','extra','other']:['damaged','missing','wrong','other']).map(k=>[k,KIND[k]]),o.kind||'')}</div>
+  <div class="field"><span>What happened</span>${chips('kind',(o.po?['missing','short','damaged','wrong','backorder','extra','other']:['damaged','missing','wrong','other']).map(k=>[k,KIND[k]]),o.kind||(o.po?'':'damaged'))}</div>
   <div class="field"><span>How many</span>${stepper('iqty',1,1)}</div>
   ${o.po?'':`<label class="field"><span>Job # (optional)</span><input class="in" id="ijob" inputmode="text"></label>`}
   <label class="field"><span>Note</span><textarea class="in" id="inote" placeholder="e.g. scratched, needs reorder"></textarea></label>
@@ -466,7 +466,7 @@ function putSheet(o){const sku=o.sku,t=o.type||typeOf(sku),it=item(sku)||{sku,de
    await putUnit(sku,loc,base,t,o.po);await W.mut('recv',o.id,c=>({...(c||{}),put:(+(c&&c.put)||0)+tal,by:ME,t:new Date().toISOString()}));
    await logIt({type:'put',sku,qty:base,loc,po:o.po});await afterPut(o);
    toast(`${t==='boards'?'Stack of '+fmt(base):qtyText(sku,base)} → ${loc}`);
-   $('#tl',sh).innerHTML=tally();if(!lineLeft(S.orders[o.id]||o)){closeSheet();render();if(putOf(S.orders[o.id])>=+o.qty)toast(`${o.desc||sku}: all ${fmt(o.qty)} put away ✓`)}
+   $('#tl',sh).innerHTML=tally();if(!lineLeft(S.orders[o.id]||o)){closeSheet();const nx=linesOf(o.po).find(x=>lineLeft(x));render();if(nx){toast(`${o.desc||sku} done ✓ · next: ${nx.desc||nx.sku}`);putSheet(nx)}else toast(`PO ${o.po} is all put away ✓`)}
    else{if(t!=='hardware'){$('#pq',sh).value=t==='boards'?Math.min(lineLeft(S.orders[o.id]),40):1;calc()}}}));
   $('#pdone',sh).addEventListener('click',()=>{const l=lineLeft(S.orders[o.id]||o);if(!l){closeSheet();return}
    openSheet(`${fmt(l)} ${unit} not put away`,`<p style="margin:0">${esc(o.desc||sku)}: ${fmt(putOf(o))} of ${fmt(o.qty)} put away.</p><div class="btns" style="flex-direction:column"><button class="btn pri" id="sm">Report ${fmt(l)} missing</button><button class="btn" id="sb">It’s on backorder</button><button class="btn" id="sl">Finish later</button></div>`,s2=>{
@@ -506,14 +506,14 @@ function takeSheet(u,why){const t=typeOf(u.sku),pk=packOf(u.sku),max=why==='saw'
  openSheet(`${WHY[why]} · ${u.sku}`,`<p class="muted" style="margin:0">${esc(descOf(u.sku))} · ${esc(u.loc)} has ${esc(qtyText(u.sku,u.qty))}</p>
   ${hw?`<div class="field"><span>Count in</span>${chips('tu',[['box','Boxes'],['pc','Pieces']],'box')}</div>`:''}
   <div class="field"><span>${why==='saw'?'Sheets to the saw (max 28)':t==='boards'?'Sheets':'How many'}</span>${stepper('tq',why==='saw'?max:1,1)}</div><p class="calc" id="tcalc"></p>
-  ${why==='use'?'':`<label class="field"><span>Job #${why==='job'?'':' (optional)'}</span><input class="in" id="tjob"></label>`}
+  ${why==='use'?'':`<label class="field"><span>Job #${why==='job'?'':' (optional)'}</span><input class="in" id="tjob" value="${esc(sget('fc-lastjob')||'')}"></label>`}
   ${why==='custom'||why==='remake'?`<label class="field"><span>Note (optional)</span><input class="in" id="tnote" placeholder="What it was for"></label>`:''}
   <p class="note bad" id="terr" hidden></p><button class="btn pri block" data-primary id="tgo">${WHY[why]}</button>`,sh=>{
   const n=()=>{const q=numv('tq');return hw&&chipv(sh,'tu')==='box'?q*pk:q};const c=()=>{$('#tcalc',sh).textContent=hw?`= ${fmt(n())} pcs`:''};sh.addEventListener('input',c);sh.addEventListener('change',c);c();
   $('#tgo',sh).addEventListener('click',e=>busy(e.target,async()=>{const q=n(),err=$('#terr',sh),job=$('#tjob',sh)?.value.trim()||'';err.hidden=true;
    if(q<=0){err.textContent='Enter how many.';err.hidden=false;return}if(why==='saw'&&q>28){err.textContent='The saw takes 28 sheets at a time.';err.hidden=false;return}if(q>u.qty){err.textContent=`Only ${fmt(u.qty)} here. Count the spot if that’s wrong.`;err.hidden=false;return}if(why==='job'&&!job){err.textContent='Enter the job #.';err.hidden=false;return}
    await W.mut('units',u.id,c=>{if(!c)return undefined;const nq=(+c.qty||0)-q;return nq<=0?null:{...c,qty:nq}});
-   await logIt({type:'take',why,sku:u.sku,qty:q,loc:u.loc,job,note:$('#tnote',sh)?.value.trim()||''});closeSheet();toast(`${WHY[why]}: ${qtyText(u.sku,q)} from ${u.loc}`);render()}))})}
+   if(job)sset('fc-lastjob',job);await logIt({type:'take',why,sku:u.sku,qty:q,loc:u.loc,job,note:$('#tnote',sh)?.value.trim()||''});closeSheet();toast(`${WHY[why]}: ${qtyText(u.sku,q)} from ${u.loc}`);render()}))})}
 function countSheet(u){const t=typeOf(u.sku);openSheet(`Count ${u.loc}`,`<p class="muted" style="margin:0">${esc(u.sku)} · ${esc(descOf(u.sku))}. The app says ${esc(qtyText(u.sku,u.qty))}.</p><div class="field"><span>Actual ${BASEU[t]}</span>${stepper('cq',u.qty,0)}</div><button class="btn pri block" data-primary id="cgo">Save count</button>`,sh=>{
  $('#cgo',sh).addEventListener('click',e=>busy(e.target,async()=>{const q=numv('cq');await W.mut('units',u.id,c=>c?(q<=0?null:{...c,qty:q,counted:new Date().toISOString()}):undefined);await logIt({type:'count',sku:u.sku,loc:u.loc,prev:u.qty,qty:q});closeSheet();toast(`${u.loc} counted: ${fmt(q)} ${BASEU[t]}`);render()}))})}
 function moveSheet(u){openSheet(`Move from ${u.loc}`,`<p class="muted" style="margin:0">${esc(u.sku)} · ${esc(qtyText(u.sku,u.qty))}</p><div class="field"><span>New spot</span>${spotPick('mloc',u.sku,'')}</div><p class="note bad" id="merr" hidden></p><button class="btn pri block" data-primary id="mgo">Move</button>`,sh=>{
@@ -541,11 +541,21 @@ VIEWS.more={render(){return topBar('More',`${ME} · ${ACCTS[SESS.u]?.label||''}`
  <button class="row" data-scan><span class="tx"><b>Scan a label</b><span class="t2">Spot labels and item QR codes</span></span>${ico('chev',20)}</button>
  <button class="row" id="mname"><span class="tx"><b>Not ${esc(ME)}?</b><span class="t2">Switch the name on this device</span></span>${ico('chev',20)}</button>
  ${isOffice()?`<button class="row" id="mppl"><span class="tx"><b>People</b><span class="t2">${esc((S.meta.people||[]).join(', ')||'No names yet')}</span></span>${ico('chev',20)}</button>`:''}
+ ${isOffice()?`<button class="row" id="mpw"><span class="tx"><b>Passwords</b><span class="t2">Change the office or warehouse password</span></span>${ico('chev',20)}</button>`:''}
  <button class="row" id="mlog"><span class="tx"><b>Activity</b><span class="t2">Everything received, put away, taken and reported</span></span>${ico('chev',20)}</button>
  <button class="row" id="mout"><span class="tx"><b style="color:var(--bad)">Sign out</b><span class="t2">Signed in as ${esc(SESS.u)}</span></span></button></div>
  <p class="muted small">${MODE==='local'?'This copy saves on this device only.':MODE==='claude'?'Preview on claude.ai · syncs live for everyone with the link.':'Live · every device sees changes within seconds.'}</p>`},
  bind(m){$('#mname',m).addEventListener('click',()=>{ME=null;sset(NAME_K,null);render()});$('#mout',m).addEventListener('click',signOut);$('#mlog',m).addEventListener('click',()=>go('activity'));
-  $('#mppl',m)?.addEventListener('click',peopleSheet)}};
+  $('#mppl',m)?.addEventListener('click',peopleSheet);$('#mpw',m)?.addEventListener('click',pwSheet)}};
+function pwSheet(){if(MODE!=='server'){openSheet('Passwords','<p class="note">Passwords are changed on the company site (force-receiving.netlify.app), signed in as fcadmin.</p>');return}
+ openSheet('Passwords',`<section><h3>Office (fcadmin)</h3><label class="field"><span>Current office password</span><input class="in" id="pwc" type="password" autocomplete="current-password"></label><label class="field"><span>New office password</span><input class="in" id="pwn" type="password" autocomplete="new-password"></label><label class="field"><span>New password again</span><input class="in" id="pwn2" type="password" autocomplete="new-password"></label><button class="btn pri block" id="pwgo">Change office password</button></section>
+ <section><h3>Warehouse (fcwarehouse)</h3><label class="field"><span>New warehouse password</span><input class="in" id="pww" type="password" autocomplete="new-password"></label><label class="field"><span>New password again</span><input class="in" id="pww2" type="password" autocomplete="new-password"></label><button class="btn block" id="pwwgo">Change warehouse password</button><p class="muted small" style="margin:0">Every phone signed in as fcwarehouse gets signed out and needs the new password.</p></section><p class="note bad" id="pwerr" hidden></p>`,sh=>{
+  const err=m=>{const e=$('#pwerr',sh);e.textContent=m;e.hidden=!m};
+  const send=async(account,current,next,again)=>{err('');if(next.length<8)return err('Use at least 8 characters.');if(next!==again)return err('The two new passwords don’t match.');
+   const r=await fetch('/api/password',{method:'POST',headers:{'content-type':'application/json',authorization:'Bearer '+SESS.token},body:JSON.stringify({account,current,next})});const j=await r.json().catch(()=>({}));
+   if(!r.ok)return err(j.error||'That didn’t work. Try again.');if(j.token){SESS.token=j.token;sset(SESS_K,JSON.stringify(SESS))}closeSheet();toast(`${account==='fcadmin'?'Office':'Warehouse'} password changed`)};
+  $('#pwgo',sh).addEventListener('click',e=>busy(e.target,()=>send('fcadmin',$('#pwc',sh).value,$('#pwn',sh).value,$('#pwn2',sh).value)));
+  $('#pwwgo',sh).addEventListener('click',e=>busy(e.target,()=>send('fcwarehouse','',$('#pww',sh).value,$('#pww2',sh).value)))})}
 VIEWS.activity={render(){const L=Object.values(S.log).sort((a,b)=>a.t<b.t?1:-1).slice(0,200);const T={arrived:'Checked in',put:'Put away',take:'Took',count:'Counted',move:'Moved',issue:'Reported',found:'Found',import:'Imported orders','backorder-in':'Backorder in',reorder:'Reordered',archive:'Archived'};
  return topBar('Activity','Latest 200','more')+`<div class="list">${L.length?L.map(e=>`<div class="row"><span class="tx"><b>${esc(T[e.type]||e.type)}${e.why?' · '+esc(WHY[e.why]):''}${e.kind?' · '+esc(KIND[e.kind]||e.kind):''}</b><span class="t2">${[e.sku&&esc(e.sku),e.qty!=null&&fmt(e.qty),e.loc&&'at '+esc(e.loc),e.po&&'PO '+esc(e.po),e.job&&'Job '+esc(e.job),e.note&&'“'+esc(e.note)+'”'].filter(Boolean).join(' · ')}</span></span><span class="end"><span class="t2">${esc(e.who)}</span><span class="t2">${esc(timeLabel(e.t))}</span></span></div>`).join(''):'<p class="empty">Nothing yet.</p>'}</div>`}};
 PARENT.activity='more';
@@ -560,9 +570,9 @@ VIEWS.board={office:1,render(){const D=deliveries(),t=today(),I=Object.values(S.
  const open=I.filter(i=>i.status==='open').sort((a,b)=>a.t<b.t?-1:1),extras=I.filter(i=>i.kind==='extra'&&i.status==='open'),low=items().filter(lowOf);
  return `<header><div class="eyebrow">Office · ${esc(dayLabel(t))}</div><h1>Board</h1></header>
  <div class="tiles"><a class="tile" href="#issues"><span class="eyebrow">Needs action</span><span class="big">${open.length}</span><span class="muted small">open problems${open.filter(i=>daysBetween(ymd(i.t),t)>=2).length?` · ${open.filter(i=>daysBetween(ymd(i.t),t)>=2).length} over 2 days`:''}</span></a>
- <div class="tile"><span class="eyebrow">Today</span><span class="big">${due.filter(d=>d.arr).length}/${due.length}</span><span class="muted small">deliveries checked in</span></div>
- <div class="tile ${late.length?'hot':''}"><span class="eyebrow">Late</span><span class="big">${late.length}</span><span class="muted small">past due, not here</span></div>
- <div class="tile"><span class="eyebrow">On the dock</span><span class="big">${dock.length}</span><span class="muted small">not fully put away</span></div></div>
+ <a class="tile" href="#today"><span class="eyebrow">Today</span><span class="big">${due.filter(d=>d.arr).length}/${due.length}</span><span class="muted small">deliveries checked in</span></a>
+ <a class="tile ${late.length?'hot':''}" href="#orders" data-of="delayed"><span class="eyebrow">Late</span><span class="big">${late.length}</span><span class="muted small">past due, not here</span></a>
+ <a class="tile" href="#putaway"><span class="eyebrow">On the dock</span><span class="big">${dock.length}</span><span class="muted small">not fully put away</span></a></div>
  <div class="grid2"><section><div class="sh"><h2>Today’s deliveries</h2></div><div class="list">${due.length?due.map(delRow).join(''):'<p class="empty">Nothing due today.</p>'}</div></section>
  <section><div class="sh"><h2>Needs action</h2><a class="btn sm" href="#issues">All issues</a></div><div class="list">${open.length?open.slice(0,8).map(issueRow).join(''):'<p class="empty">No open problems.</p>'}</div></section>
  ${late.length||delayed.length?`<section><div class="sh"><h2>Late and delayed</h2></div><div class="list">${[...late,...delayed].map(delRow).join('')}</div></section>`:''}
@@ -586,9 +596,9 @@ VIEWS.issues={office:1,render(){const f=VIEW.isf||'open',I=Object.values(S.issue
  bind(m){$('[data-chips="isf"]',m).addEventListener('change',()=>{VIEW.isf=chipv(m,'isf');render()})}};
 function issueAct(i){if(!i)return;openSheet(`${KIND[i.kind]} · ${descOf(i.sku)}`,`<dl class="kv"><dt>Item</dt><dd>${esc(i.sku)}</dd><dt>Qty</dt><dd>${fmt(i.qty)}</dd>${i.po?`<dt>PO</dt><dd>${esc(i.po)} · ${esc(i.vendor||'')}</dd>`:''}${i.job?`<dt>Job</dt><dd>${esc(i.job)}</dd>`:''}<dt>From</dt><dd>${esc(i.by)} · ${esc(i.src)} · ${esc(timeLabel(i.t))}</dd>${i.note?`<dt>Note</dt><dd>${esc(i.note)}</dd>`:''}${i.newPo?`<dt>Reorder</dt><dd>PO ${esc(i.newPo)}</dd>`:''}${i.closeNote?`<dt>Closed</dt><dd>${esc(i.closeNote)}</dd>`:''}</dl>
  ${i.status==='archived'?`<button class="btn block" id="ireo">Reopen</button>`:`${i.kind!=='extra'&&i.kind!=='backorder'?`<label class="field"><span>Reordered on PO #</span><input class="in" id="inpo" value="${esc(i.newPo||'')}" placeholder="New PO #"></label><button class="btn pri block" data-primary id="ireord">Mark reordered</button><p class="muted small" style="margin:0">It archives itself when that PO’s line is put away.</p>`:''}
- <div class="field"><span>Or close it</span>${chips('cr',[['Credit taken','Credit taken'],['Not needed','Not needed'],['Arrived','Arrived'],['Kept as stock','Kept as stock'],['Returned','Returned']],'')}</div><button class="btn block" id="iarch">Archive</button>`}`,sh=>{
+ <div class="field"><span>Or close it</span><div class="btns">${['Credit taken','Not needed','Arrived','Kept as stock','Returned'].map(r=>`<button class="btn sm" data-cr="${r}">${r}</button>`).join('')}</div></div>`}`,sh=>{
  $('#ireord',sh)?.addEventListener('click',e=>busy(e.target,async()=>{const p=$('#inpo',sh).value.trim();if(!p)return toast('Enter the new PO #',true);await W.set('issues',i.id,{...i,status:'reordered',newPo:p,reorderedAt:new Date().toISOString(),reorderedBy:ME});await logIt({type:'reorder',sku:i.sku,qty:i.qty,po:p});closeSheet();toast(`Reordered on PO ${p}`);render()}));
- $('#iarch',sh)?.addEventListener('click',e=>busy(e.target,async()=>{const r=chipv(sh,'cr');if(!r)return toast('Pick why it’s closed',true);await W.set('issues',i.id,{...i,status:'archived',closeNote:r,closedAt:new Date().toISOString(),closedBy:ME});await logIt({type:'archive',sku:i.sku,note:r});closeSheet();toast('Archived');render()}));
+ $$('[data-cr]',sh).forEach(b=>b.addEventListener('click',e=>busy(e.target,async()=>{const r=b.dataset.cr;await W.set('issues',i.id,{...i,status:'archived',closeNote:r,closedAt:new Date().toISOString(),closedBy:ME});await logIt({type:'archive',sku:i.sku,note:r});closeSheet();toast(`Archived · ${r}`);render()})));
  $('#ireo',sh)?.addEventListener('click',e=>busy(e.target,async()=>{await W.set('issues',i.id,{...i,status:'open',closeNote:'',closedAt:''});closeSheet();render()}))})}
 VIEWS.stock={office:1,render(){const f=VIEW.sf||'all';let L=items();if(f!=='all')L=f==='low'?L.filter(lowOf):L.filter(i=>(i.type||typeOf(i.sku))===f);L.sort((a,b)=>a.sku.localeCompare(b.sku));
  return `<header><div class="eyebrow">Office</div><h1>Stock</h1></header><div class="btns" style="justify-content:space-between">${chips('sf',[['all','All'],['low','Low'],['hardware','Hardware'],['boards','Boards'],['packaging','Packaging'],['doors','Doors']],f)}<button class="btn sm" id="sexp" style="flex:0 0 auto">Export to Excel</button></div>
