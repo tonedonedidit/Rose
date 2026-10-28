@@ -214,6 +214,7 @@ details.cell .dbody{padding:0 16px 14px}
 .fab button[aria-pressed="true"]{background:#2F7A0F;color:#fff}
 .mapbar{position:absolute;left:12px;right:68px;bottom:12px;display:flex;gap:8px;align-items:center}
 .mapbar .mb{min-height:44px;padding:0 14px;border-radius:22px;border:0;background:rgba(255,255,255,.94);color:#111;font-weight:600;font-size:15px;box-shadow:0 2px 10px rgba(0,0,0,.18);display:flex;align-items:center;gap:6px;white-space:nowrap}
+.mapbar .mb.baylbl{flex:1;justify-content:center;font:700 17px var(--round)}
 .maphint{position:absolute;left:50%;transform:translateX(-50%);bottom:14px;background:rgba(17,17,17,.72);color:#fff;font-size:14px;padding:8px 14px;border-radius:16px;pointer-events:none;white-space:nowrap}
 .legend{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:13px;color:var(--ink2);padding:10px 16px}
 .legend i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:5px}
@@ -322,6 +323,32 @@ body.mapmode #stage{height:calc(100svh - 226px - env(safe-area-inset-top,0px) - 
 .fab{gap:10px}.fab button{width:52px;height:52px}.fab button svg.i{width:24px;height:24px}
 .mapbar{right:78px}.mapbar .mb{min-height:50px;padding:0 18px;font-size:16px}
 #stage .legend{position:absolute;top:12px;left:12px;right:78px;padding:8px 14px;border-radius:18px;gap:4px 12px;font-size:12px;color:#3a2f26;background:rgba(255,255,255,.62);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border:1px solid rgba(255,255,255,.85);width:max-content;max-width:calc(100% - 90px);pointer-events:none}
+
+/* v6 pieces */
+.hsearch{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center}
+.btn.scanbtn{width:auto;min-height:44px;padding:0 18px}
+.scanbox{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px}
+.scanbox textarea{min-height:54px;height:54px;resize:none;overflow:hidden;border-radius:18px;font:17px var(--font);padding:15px 16px;background:var(--cell);border:1px solid var(--rim);box-shadow:var(--gshadow);color:var(--ink)}
+.scanbox textarea:focus{outline:2px solid var(--tint);outline-offset:1px}
+.btn.scanphoto{width:auto;min-height:54px;padding:0 16px;cursor:pointer}
+.chips3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.chip3{position:relative;display:flex;flex-direction:column;align-items:flex-start;gap:2px;min-height:76px;padding:12px;border-radius:18px;border:1px solid var(--rim);background:var(--cell);box-shadow:var(--gshadow);color:var(--ink);text-align:left;-webkit-backdrop-filter:var(--gblur);backdrop-filter:var(--gblur)}
+.chip3 b{font:700 22px var(--round);min-height:26px}.chip3 span{font-size:13px;line-height:1.2;color:var(--ink2)}
+.chip3 i{position:absolute;top:13px;right:12px;width:9px;height:9px;border-radius:50%}
+.areas{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+.area{display:flex;flex-direction:column;align-items:flex-start;gap:4px;min-height:80px;padding:14px;border-radius:18px;border:1px solid var(--rim);background:var(--cell);box-shadow:var(--gshadow);color:var(--ink);text-align:left;-webkit-backdrop-filter:var(--gblur);backdrop-filter:var(--gblur)}
+.area b{font-size:16px;font-weight:600}.area span{font-size:13px;color:var(--ink2)}
+.abar{display:block;width:100%;height:6px;margin-top:auto;border-radius:3px;background:var(--fill);overflow:hidden}.abar i{display:block;height:100%;background:var(--tint)}
+.bkgrid{display:flex;flex-direction:column;gap:8px;padding:12px}
+.bkrow{display:grid;grid-template-columns:62px repeat(4,minmax(0,1fr));gap:8px;align-items:center}
+.bkn{font-size:13px;font-weight:600;color:var(--ink2)}
+.bk{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:56px;border-radius:12px;border:1px solid rgba(0,0,0,.08);background:var(--bc);color:#1B1612;font-size:12px}
+.bk b{font:700 17px var(--round)}.bk span{opacity:.55}.bk.bad{outline:3px solid var(--red);outline-offset:1px}
+.bkkey{display:flex;flex-wrap:wrap;gap:6px 14px;padding-top:4px;font-size:12px;color:var(--ink2)}.bkkey i{display:inline-block;width:10px;height:10px;margin-right:5px;border-radius:3px;border:1px solid var(--sep)}
+.dir{display:flex;gap:10px;align-items:flex-start;padding:12px 14px;border-radius:16px;border:1px solid var(--rim);background:var(--cell);font-size:15px;line-height:1.4}
+.dir svg.i{color:var(--tint);margin-top:1px}
+.retry{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(98px + env(safe-area-inset-bottom,0px));z-index:45;display:flex;gap:8px;align-items:center;padding:12px 18px;border:0;border-radius:999px;background:var(--red);color:#fff;font-weight:600;box-shadow:var(--shadow)}
+.retry svg.i{width:18px;height:18px}
 @supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){:root{--cell:rgba(255,255,255,.92);--sbg:#F4F3F1}}
 </style>
 
@@ -368,13 +395,13 @@ const GR=0x2E8B6E,OR=0xD9531E,GY=0x3B434B;
 const shelfRule=i=>['board','pallet','molding'].includes(i.cat)?'Office racks hold small hardware, screws, nails and handles.':null;
 const palletRule=i=>i.cat!=='pallet'?'Aisles A, B and C hold cabinet pallets only.':null;
 const ZONES=[
- {id:'D',name:'Rack D',short:'D',kind:'rack',deep:1,fx:-11.1,nd:1,first:1,last:18,levels:4,ly:LY,bw:P,up:GR,beam:OR,
+ {id:'D',name:'Rack D',short:'D',kind:'rack',deep:1,frontL1:1,fx:-11.1,nd:1,first:1,last:18,levels:4,ly:LY,bw:P,up:GR,beam:OR,
   purpose:L=>L===1?'Installer hardware':'Empty for now (cabinets later)',rule:(i,L)=>L===1?(i.cat!=='hardware'?'Rack D level 1 is installer hardware only.':null):'Rack D levels 2–4 stay empty for now.'},
  {id:'C',name:'Aisle C',short:'C',kind:'rack',deep:1,fx:-8.05,nd:-1,first:5,last:18,levels:4,ly:LY,bw:P,up:GR,beam:OR,purpose:()=>'Cabinet pallets',rule:palletRule},
  {id:'B',name:'Aisle B',short:'B',kind:'rack',deep:1,fx:-3.05,nd:1,first:5,last:18,levels:4,ly:LY,bw:P,up:GR,beam:OR,purpose:()=>'Cabinet pallets',rule:palletRule},
  {id:'A',name:'Aisle A',short:'A',kind:'rack',deep:1,fx:0,nd:-1,first:1,last:18,levels:4,ly:LY,bw:P,up:GR,beam:OR,purpose:()=>'Cabinet pallets',rule:palletRule},
- {id:'R0',name:'Rack 0',short:'R0',kind:'rack',deep:0,depth:1.1,fx:7.6,nd:1,z0:-8,first:1,last:4,levels:4,ly:[.15,1.45,2.65,3.85],bw:2.75,up:GY,beam:0xE0622A,wire:1,
-  purpose:L=>L===4?'Cardboard only':'Scribe molding, misc, drop-off',rule:(i,L)=>L===4&&!isCard(i)?'The top of Rack 0 is cardboard only.':null},
+ {id:'R0',name:'Supplies',short:'Supplies',kind:'rack',deep:0,depth:1.1,fx:7.6,nd:1,z0:-8,first:1,last:4,levels:4,ly:[.15,1.45,2.65,3.85],bw:2.75,up:GY,beam:0xE0622A,wire:1,
+  purpose:L=>L===4?'Cardboard only':'Scribe molding, misc, drop-off',rule:(i,L)=>L===4&&!isCard(i)?'The top of Supplies (Rack 0) is cardboard only.':null},
  {id:'R1',name:'Rack 1',short:'R1',kind:'rack',deep:0,depth:1.1,fx:11.9,nd:-1,z0:-16.1,first:1,last:1,levels:5,ly:[.15,1.05,1.95,2.85,3.75],bw:2.45,up:GY,beam:GY,wire:1,purpose:()=>'Excess handles',rule:i=>i.cat!=='handle'?'Rack 1 holds excess handles only.':null},
  {id:'CL1',name:'Cantilever 1',short:'CL1',kind:'cant',axis:'z',sx:13,sz:-8,dir:-1,cols:3,rows:8,bl:2.6,arm:1.3,base:.25,rh:.5,purpose:()=>'Boards for remakes and one-offs',rule:i=>i.cat!=='board'?'Cantilevers hold boards only.':null},
  {id:'CL2',name:'Cantilever 2',short:'CL2',kind:'cant',axis:'x',sx:22.8,sz:3.6,dir:-1,cols:3,rows:8,rowsBy:[8,8,5],flip:1,bl:2.6,arm:1.3,base:.25,rh:.5,purpose:()=>'Boards',rule:i=>i.cat!=='board'?'Cantilevers hold boards only.':null},
@@ -382,12 +409,14 @@ const ZONES=[
  {id:'BK',name:'Bunks',short:'Bunks',kind:'bunk',x0:14,z0:-8,purpose:()=>'Full board units'},
  {id:'HR1',name:'Hardware rack 1',short:'Hardware 1',kind:'shelf',axis:'x',sx:13.6,sz:-46.6,dir:1,bays:3,bw:1.2,shelves:5,sh:.42,depth:.6,purpose:()=>'Screws, nails, small hardware',rule:shelfRule},
  {id:'HR2',name:'Hardware rack 2',short:'Hardware 2',kind:'shelf',axis:'x',sx:17.4,sz:-46.6,dir:1,bays:2,bw:1.8,shelves:5,sh:.42,depth:.6,purpose:()=>'Handles, screws, small hardware',rule:shelfRule},
- {id:'VR',name:'Staging',kind:'virtual'}
+ {id:'VR',name:'Staging',kind:'virtual'},
+ {id:'HPAL',name:'Hardware pallet',kind:'virtual'}
 ];
 const zone=id=>ZONES.find(z=>z.id===id);
 // cantilever columns can differ in arm count; flip numbers columns from the viewer's left when facing the arms
 const cRows=(z,c)=>z.rowsBy?z.rowsBy[c-1]:z.rows,cPos=(z,c)=>z.flip?z.cols-c:c-1,pRows=(z,p)=>cRows(z,z.flip?z.cols-p:p+1);
 const ZPHYS=ZONES.filter(z=>z.kind!=='virtual');
+const SECT={pallets:['A','B','C'],boards:['BK','CL1','CL2','BD'],hardware:['D','HR1','HR2','R1','R0']};
 function frameOf(z){
  if(z.kind==='rack')return{O:[z.fx,0,z.z0||0],a:[0,0,-1],n:[z.nd,0,0]};
  if(z.kind==='bunk')return{O:[z.x0,0,z.z0],a:[0,0,-1],n:[1,0,0]};
@@ -400,17 +429,19 @@ const LOCS=[],LOC={},KEYS={};
 const key=s=>String(s||'').toUpperCase().replace(/[^A-Z0-9+]/g,'');
 function addLoc(o){LOCS.push(o);LOC[o.id]=o;KEYS[key(o.id)]=o.id}
 ZONES.forEach(z=>{
+ if(z.id==='HPAL')return;
  if(z.kind==='virtual'){addLoc({id:'RECEIVING',z:'VR',purpose:'Dock, waiting to be put away'});addLoc({id:'FLOOR',z:'VR',purpose:'On the floor'});return}
  const f=frameOf(z),G=(s,t,y,sa,sn,h)=>{const[x,zz]=at(f,s,t),[w,d]=dims(f,sa,sn);return{x,y,z:zz,w,d,h,sa,sn,a:f.a,n:f.n}};
  if(z.kind==='rack'){const D=z.deep?2.4:z.depth,bwi=z.bw-.1;
   for(let r=z.first;r<=z.last;r++)for(let L=1;L<=z.levels;L++){
    const s=(r-.5)*z.bw,y=z.ly[L-1]+.02,h=L<z.levels?Math.min(1.25,z.ly[L]-z.ly[L-1]-.2):1.25;
-   const bins=z.deep?(L===4?['a+b','c+d']:['a','b','c','d']):['c','d'];
+   const frontOnly=z.frontL1&&L===1,bins=frontOnly?['a','b']:z.deep?(L===4?['a+b','c+d']:['a','b','c','d']):['c','d'];
    bins.forEach(b=>{
-    const back=b[0]==='a'||b[0]==='b',dbl=b.length>1,t=z.deep?(back?-1.8:-.6):-D/2;
-    const so=dbl?0:((b==='c'||b==='a')?-1:1)*z.nd*bwi/4,id=`${z.id}-${L}${r}-${b}`;
-    addLoc({id,z:z.id,L,bay:r,bin:b,purpose:z.purpose(L),geo:G(s+so,t,y,dbl?bwi-.15:bwi/2-.1,z.deep?1.1:D-.06,h)});
+    const pb=frontOnly?{a:'c',b:'d'}[b]:b,back=pb[0]==='a'||pb[0]==='b',dbl=b.length>1,t=z.deep?(back?-1.8:-.6):-D/2;
+    const so=dbl?0:((pb==='c'||pb==='a')?-1:1)*z.nd*bwi/4,id=`${z.id}-${L}${r}-${b}`;
+    addLoc({id,z:z.id,L,bay:r,bin:b,pbin:pb,purpose:z.purpose(L),geo:G(s+so,t,y,dbl?bwi-.15:bwi/2-.1,z.deep?1.1:D-.06,h)});
     if(dbl)b.split('+').forEach(c=>KEYS[key(`${z.id}-${L}${r}-${c}`)]=id);
+    if(frontOnly)KEYS[key(`${z.id}-${L}${r}-${pb}`)]=id;
    })}
  }else if(z.kind==='cant'){
   for(let c=1;c<=z.cols;c++)for(let r=1;r<=cRows(z,c);r++)
@@ -426,7 +457,7 @@ ZONES.forEach(z=>{
 });
 const PHYS=LOCS.filter(l=>l.geo);
 const normLoc=s=>KEYS[key(s)]||null;
-function posText(l){if(!l)return '';if(!l.geo)return l.purpose;const k=zone(l.z).kind;return k==='cant'?`Column ${l.bay} · Row ${l.L}`:k==='shelf'?`Shelf ${l.L} · Bay ${l.bay}`:k==='bunk'?`Bunk ${l.bunk} · Column ${l.col}`:k==='pad'?'Floor spot':`Level ${l.L} · Bay ${l.bay} · ${l.bin.length>1?'Full':(l.bin==='c'||l.bin==='d'?'Front ':'Back ')+(l.bin==='a'||l.bin==='c'?'left':'right')}`}
+function posText(l){if(!l)return '';if(!l.geo)return l.purpose;const k=zone(l.z).kind;return k==='cant'?`Column ${l.bay} · Row ${l.L}`:k==='shelf'?`Shelf ${l.L} · Bay ${l.bay}`:k==='bunk'?`Bunk ${l.bunk} · Column ${l.col}`:k==='pad'?'Floor spot':`Level ${l.L} · Bay ${l.bay} · ${l.bin.length>1?'Full':((l.pbin||l.bin)==='c'||(l.pbin||l.bin)==='d'?'Front ':'Back ')+((l.pbin||l.bin)==='a'||(l.pbin||l.bin)==='c'?'left':'right')}`}
 const spotShort=l=>{const k=zone(l.z).kind;return k==='bunk'?'Col '+l.col:k==='cant'?'Row '+l.L:k==='shelf'?'Shelf '+l.L:k==='pad'?'Floor':`${l.L}-${l.bin}`};
 
 /* ---------- helpers ---------- */
@@ -452,7 +483,7 @@ const IC={
  count:'<rect x="5" y="4" width="14" height="17" rx="3"/><path d="M9 3h6v3H9zM9 13l2 2 4-4"/>',box:'<path d="M3 7l9-4 9 4-9 4zM3 7v10l9 4 9-4V7M12 11v10"/>',
  tag:'<path d="M3 12V4h8l10 10-8 8z"/><circle cx="7.5" cy="7.5" r="1.5"/>',chart:'<path d="M5 20V11M12 20V5M19 20v-6"/>',sheet:'<rect x="4" y="3" width="16" height="18" rx="3"/><path d="M4 9h16M4 15h16M10 3v18"/>',
  gear:'<circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9L7 7M17 17l2.1 2.1M4.9 19.1L7 17M17 7l2.1-2.1"/>',
- chev:'<path d="M9 6l6 6-6 6"/>',brief:'<rect x="3" y="7" width="18" height="13" rx="3"/><path d="M9 7V5a2 2 0 012-2h2a2 2 0 012 2v2M3 13h18"/>',dollar:'<path d="M12 3v18M17 7.5c0-1.9-2.2-3-5-3s-5 1.1-5 3 2.2 2.7 5 3.2 5 1.4 5 3.3-2.2 3-5 3-5-1.1-5-3"/>',back:'<path d="M15 6l-6 6 6 6"/>',check:'<path d="M5 12l5 5 9-10"/>',plus:'<path d="M12 5v14M5 12h14"/>',minus:'<path d="M5 12h14"/>',x:'<path d="M6 6l12 12M18 6L6 18"/>',
+ chev:'<path d="M9 6l6 6-6 6"/>',pallet:'<path d="M3 16h18M3 20h18M5 16v4M12 16v4M19 16v4"/><rect x="5" y="5" width="14" height="11" rx="1"/><path d="M5 10h14M12 5v11"/>',layers:'<path d="M12 3l9 5-9 5-9-5z"/><path d="M3 13l9 5 9-5"/>',wrench:'<path d="M14.7 6.3a4 4 0 00-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 005.4-5.4l-2.4 2.4-2.6-.4-.4-2.6z"/>',dots:'<circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/>',brief:'<rect x="3" y="7" width="18" height="13" rx="3"/><path d="M9 7V5a2 2 0 012-2h2a2 2 0 012 2v2M3 13h18"/>',dollar:'<path d="M12 3v18M17 7.5c0-1.9-2.2-3-5-3s-5 1.1-5 3 2.2 2.7 5 3.2 5 1.4 5 3.3-2.2 3-5 3-5-1.1-5-3"/>',back:'<path d="M15 6l-6 6 6 6"/>',check:'<path d="M5 12l5 5 9-10"/>',plus:'<path d="M12 5v14M5 12h14"/>',minus:'<path d="M5 12h14"/>',x:'<path d="M6 6l12 12M18 6L6 18"/>',
  search:'<circle cx="11" cy="11" r="7"/><path d="M16.5 16.5L21 21"/>',bell:'<path d="M6 16V11a6 6 0 0112 0v5l2 2H4z"/><path d="M10 21h4"/>',
  hand:'<path d="M8 13V5a2 2 0 014 0v6M12 11V4a2 2 0 014 0v8M16 12V7a2 2 0 014 0v7a7 7 0 01-7 7h-1a7 7 0 01-6-3l-3-5a2 2 0 013-2l2 2"/>',
  truck:'<path d="M2 6h11v10H2zM13 10h5l3 3v3h-8"/><circle cx="6" cy="18" r="2"/><circle cx="17" cy="18" r="2"/>',list:'<path d="M9 6h11M9 12h11M9 18h11M4 6h.01M4 12h.01M4 18h.01"/>',
@@ -467,27 +498,29 @@ const chev=`<span class="chev">${ic('chev')}</span>`;
    DATA. Live and shared when opened from claude.ai (db capability);
    falls back to this device only when opened as a plain file.
    ========================================================= */
-const S={items:{},stock:{},pos:{},outs:{},log:[],meta:{},ready:false};
-let DB=null,USER=null,UID=null,ME='',CANWRITE=true,MODE='loading',ASSETS=null,DLS=null,OWNER=false;
+const S={items:{},stock:{},pos:{},outs:{},pals:{},unks:{},log:[],meta:{},ready:false};
+let SAMPLE=null,MIG=0,DB=null,USER=null,UID=null,ME='',CANWRITE=true,MODE='loading',ASSETS=null,DLS=null,OWNER=false,EDITOR=false;
 const PROF={},LKEY='force-wms-v3-local',NKEY='force-inv-who';
-function loadLocal(){try{const d=JSON.parse(sget(LKEY)||'null');if(d&&d.v===3)Object.assign(S,d.S)}catch(e){}}
-function saveLocal(){sset(LKEY,JSON.stringify({v:3,S:{items:S.items,stock:S.stock,pos:S.pos,outs:S.outs,log:S.log.slice(0,2000),meta:S.meta}}))}
+function loadLocal(){try{const d=JSON.parse(sget(LKEY)||'null');if(d&&d.v===3)Object.assign(S,d.S)}catch(e){}S.pals=S.pals||{};S.unks=S.unks||{}}
+function saveLocal(){sset(LKEY,JSON.stringify({v:3,S:{items:S.items,stock:S.stock,pos:S.pos,outs:S.outs,pals:S.pals,unks:S.unks,log:S.log.slice(0,2000),meta:S.meta}}))}
 function applyLocal(col,id,data){
  if(col==='items'){for(const k in S.items)if(S.items[k]._id===id)delete S.items[k];if(data)S.items[data.sku]={...data,_id:id}}
  else if(col==='stock'){if(data)S.stock[id]=data;else delete S.stock[id]}
- else if(col==='pos'||col==='outs'){if(data)S[col][id]={...data,id};else delete S[col][id]}
+ else if(col==='pos'||col==='outs'||col==='pals'){if(data)S[col][id]={...data,id};else delete S[col][id];if(col==='pals')hpLocs()}
+ else if(col==='unks'){if(data)S.unks[id]={...data,_unk:id};else delete S.unks[id]}
  else if(col==='log'){S.log=S.log.filter(e=>e.id!==id);if(data){S.log.unshift({...data,id});S.log.sort((a,b)=>a.t<b.t?1:-1)}}
  else if(col==='meta')S.meta=data||{}}
 const W={
- async set(col,id,data){if(!CANWRITE)throw new Error('read-only');applyLocal(col,id,data);if(DB)await DB.collection(col).doc(id).set(data);else saveLocal();onData()},
- async del(col,id){if(!CANWRITE)throw new Error('read-only');applyLocal(col,id,null);if(DB)await DB.collection(col).doc(id).delete();else saveLocal();onData()}};
+ async set(col,id,data){if(!CANWRITE)throw new Error('read-only');applyLocal(col,id,data);if(DB)await DB.collection(dbCol(col)).doc(id).set(data);else saveLocal();onData()},
+ async del(col,id){if(!CANWRITE)throw new Error('read-only');applyLocal(col,id,null);if(DB)await DB.collection(dbCol(col)).doc(id).delete();else saveLocal();onData()}};
+const dbCol=c=>c==='pals'?'pallets':c;
 async function boot(){
  render();
  let db=null,user=null;
  try{if(window.claude&&claude.use)[db,user]=await Promise.all([claude.use('db'),claude.use('user')])}catch(e){}
  USER=user;
- if(user){try{UID=await user.id()}catch(e){}try{const m=await user.me();ME=m&&m.name||''}catch(e){}try{if(await user.can('data.write')===false)CANWRITE=false}catch(e){}try{OWNER=!!(await user.isOwner())}catch(e){}}
- if(db){DB=db;MODE='live';subscribe();try{claude.use('assets').then(a=>ASSETS=a,()=>{});claude.use('downloads').then(d=>DLS=d,()=>{})}catch(e){}}
+ if(user){try{UID=await user.id()}catch(e){}try{const m=await user.me();ME=m&&m.name||''}catch(e){}try{if(await user.can('data.write')===false)CANWRITE=false}catch(e){}try{OWNER=!!(await user.isOwner())}catch(e){}try{EDITOR=!!(await user.canEdit())}catch(e){}}
+ if(db){DB=db;MODE='live';subscribe();try{claude.use('assets').then(a=>ASSETS=a,()=>{});claude.use('downloads').then(d=>DLS=d,()=>{});claude.use('sample').then(x=>{SAMPLE=x;if(route==='pallet')render()},()=>{})}catch(e){}}
  else{MODE='local';loadLocal();S.ready=true;onData()}
 }
 function subscribe(){
@@ -497,6 +530,8 @@ function subscribe(){
  sub('stock',s=>{S.stock={};s.docs.forEach(d=>S.stock[d.id]=d.data())});
  sub('pos',s=>{S.pos={};s.docs.forEach(d=>S.pos[d.id]={...d.data(),id:d.id})});
  sub('outs',s=>{S.outs={};s.docs.forEach(d=>S.outs[d.id]={...d.data(),id:d.id})});
+ sub('pallets',s=>{S.pals={};s.docs.forEach(d=>S.pals[d.id]={...d.data(),id:d.id});hpLocs()});
+ sub('unks',s=>{S.unks={};s.docs.forEach(d=>S.unks[d.id]={...d.data(),_unk:d.id})});
  DB.collection('log').orderBy('t','desc').limit(600).onSnapshot(s=>{S.log=s.docs.map(d=>({...d.data(),id:d.id}));onData()},err);
  DB.doc('meta/main').onSnapshot(d=>{S.meta=d.exists?d.data():{};onData()},err);
 }
@@ -504,16 +539,17 @@ const whoId=()=>UID||('name:'+(sget(NKEY)||'Unnamed'));
 /* Office role: the page owner, plus anyone an office user adds under Setup. This-device mode uses a PIN.
    Enforced by the app (buttons hidden), not a hard lock: every change is still logged with who made it. */
 const OKEY='force-office',PKEY='force-office-pin';
-function isOffice(){return MODE==='local'?sget(OKEY)==='1':OWNER||(S.meta.office||[]).includes(UID)}
+function isOffice(){return MODE==='local'?sget(OKEY)==='1':OWNER||EDITOR||(S.meta.office||[]).includes(UID)}
 function nameOf(id){if(!id)return 'Someone';if(id.startsWith('name:'))return id.slice(5);if(id===UID)return ME||'You';return PROF[id]?.name||'Someone'}
 let profT=0;function resolveNames(){if(!USER||!USER.profiles)return;clearTimeout(profT);profT=setTimeout(async()=>{
  const ids=new Set();S.log.slice(0,200).forEach(e=>e.who&&ids.add(e.who));Object.values(S.pos).forEach(p=>[p.createdBy,p.receivedBy,p.paper?.by,p.paper?.cby].forEach(x=>x&&ids.add(x)));Object.values(S.outs).forEach(o=>[o.createdBy,o.doneBy].forEach(x=>x&&ids.add(x)));Object.values(S.stock).forEach(s=>s.by&&ids.add(s.by));
  const need=[...ids].filter(x=>!x.startsWith('name:')&&!PROF[x]);if(!need.length)return;
  try{const ps=await USER.profiles(need);let n=0;for(const k in ps){PROF[k]=ps[k];n++}if(n&&V.live)render()}catch(e){}},400)}
-let dataT=0;function onData(){clearTimeout(dataT);dataT=setTimeout(()=>{tabs();refresh3D();resolveNames();if(V.live&&!SH.open)render();if(SH.open&&SH.live)SH.redraw()},60)}
+let dataT=0;function onData(){clearTimeout(dataT);dataT=setTimeout(()=>{if(!MIG&&S.ready&&isOffice()){MIG=1;guard(migrateV6)}hpLocs();tabs();refresh3D();resolveNames();if(V.live&&!SH.open)render();if(SH.open&&SH.live)SH.redraw()},60)}
 
 /* ---------- stock math ---------- */
-const item=sku=>S.items[sku];
+const item=sku=>S.items[sku]||Object.values(S.unks).find(u=>u.sku===sku);
+const allItems=()=>[...Object.values(S.items),...Object.values(S.unks).filter(u=>!S.items[u.sku])];
 const lines=loc=>(S.stock[loc]&&S.stock[loc].lines)||[];
 const sinfo=loc=>S.stock[loc]||{};
 const uom=i=>(i&&i.uom)||'pcs';
@@ -534,24 +570,32 @@ function onOrder(sku){let n=0;Object.values(S.pos).forEach(p=>{if(waiting(p))(p.
 function homeOf(sku){return Object.keys(S.stock).filter(k=>S.stock[k].assign===sku)}
 function ruleFor(loc,i){if(!i)return null;const l=LOC[loc];if(!l||!l.geo)return null;const a=sinfo(loc).assign;if(a&&a!==i.sku)return `Set aside for ${item(a)?.name||a}.`;
  const z=zone(l.z);if(z.kind==='bunk')return bunkRule(i,l.bunk,l.col);return z.rule?z.rule(i,l.L):null}
-function locStatus(id){const ls=lines(id),m=sinfo(id);
- if(m.recount)return 'recount';if(ls.some(l=>ruleFor(id,item(l.sku))))return 'wrong';
+function locStatus(id){const ls=lines(id),m=sinfo(id),pl=palAt(id);
+ if(m.recount)return 'recount';if(pl.length&&!ls.length)return pl.every(palKnown)?'ok':'uncounted';if(ls.some(l=>ruleFor(id,item(l.sku))))return 'wrong';
  if(!ls.length)return m.counted?'emptyok':'empty';if(!m.counted||ls.some(l=>l.qty==null))return 'uncounted';return 'ok'}
 const STL={ok:'Counted',uncounted:'Not counted',wrong:'Wrong spot',recount:'Recount',empty:'Empty',emptyok:'Checked empty'};
 const STC={ok:'#34C759',uncounted:'#FF9F0A',wrong:'#FF3B30',recount:'#AF52DE',empty:'transparent',emptyok:'#8E8E93'};
 const chipSt=st=>`<span class="chip"><i style="background:${STC[st]==='transparent'?'var(--sep)':STC[st]}"></i>${STL[st]}</span>`;
 function lowState(i){if(!i||!i.min)return '';const o=onHand(i.sku);if(o.unk)return '';const oo=onOrder(i.sku);return o.n<=0&&!oo?'out':o.n+oo<=i.min?'low':''}
 const clone=o=>JSON.parse(JSON.stringify(o||{}));
-async function change(loc,sku,d){const doc=clone(S.stock[loc]);doc.lines=doc.lines||[];let l=doc.lines.find(x=>x.sku===sku),short=false;
+const LEASE=uid(),sleep=ms=>new Promise(r=>setTimeout(r,ms));
+async function fresh(col,id){if(!DB)return clone(col==='stock'?S.stock[id]:S[col][id]);const ref=DB.collection(dbCol(col)).doc(id);
+ for(let i=0;i<16;i++){let r;try{r=await ref.acquire({holder:LEASE,ttlMs:6000})}catch(e){r={acquired:true}}if(r&&r.acquired)break;await sleep(250)}
+ try{const sn=await ref.get();const d=sn.exists?sn.data():{};delete d.id;return d}catch(e){return clone(col==='stock'?S.stock[id]:S[col][id])}}
+async function change(loc,sku,d){const doc=await fresh('stock',loc);doc.lines=doc.lines||[];let l=doc.lines.find(x=>x.sku===sku),short=false;
  if(!l){if(d>0)doc.lines.push({sku,qty:d});else short=true}
  else if(l.qty!=null){l.qty+=d;if(l.qty<0){l.qty=0;short=true}if(l.qty===0)doc.lines=doc.lines.filter(x=>x!==l)}
- if(short&&LOC[loc]?.geo)doc.recount=true;await W.set('stock',loc,doc);return short}
+ if(short&&(LOC[loc]?.geo||loc.startsWith('HP-')))doc.recount=true;await W.set('stock',loc,doc);return short}
 async function logIt(e){e.t=new Date().toISOString();e.day=ymd(e.t);e.who=whoId();for(const k in e)if(e[k]===undefined)delete e[k];await W.set('log',uid(),e);return e}
 async function saveCount(loc,newLines,reason){const cur=clone(S.stock[loc]),old=cur.lines||[],t=new Date().toISOString();
  const skus=new Set([...old.map(l=>l.sku),...newLines.map(l=>l.sku)]);
  for(const sku of skus){const o=old.find(l=>l.sku===sku),nw=newLines.find(l=>l.sku===sku),prev=o?o.qty:0,now=nw?nw.qty:0;if(prev!==now)await logIt({type:'count',sku,at:loc,prev,qty:now,reason:prev?reason:undefined})}
  cur.lines=newLines.filter(l=>l.qty>0);cur.counted=t;cur.by=whoId();delete cur.recount;await W.set('stock',loc,cur)}
-async function guard(fn){if(!CANWRITE){toast('View only. Ask the owner for edit access.',true);return}try{await fn()}catch(e){console.error(e);toast(e&&e.code==='quota_exceeded'?'Storage is full.':'Didn’t save. Check your connection.',true)}}
+let RETRY=null;
+async function guard(fn){if(!CANWRITE){toast('View only. Ask the owner for edit access.',true);return}try{await fn();if(RETRY===fn)retryBar(null)}catch(e){console.error(e);
+ if(e&&(e.code==='permission_denied'||e.code==='not_granted'))return toast('Office only. Ask the owner.',true);toast(e&&e.code==='quota_exceeded'?'Storage is full.':'Not saved. Check the connection.',true);retryBar(fn)}}
+function retryBar(fn){RETRY=fn;let b=$('#retry');if(!fn){if(b)b.remove();return}if(!b){b=document.createElement('button');b.id='retry';b.className='retry';document.body.append(b)}
+ b.innerHTML=`${ic('x')}Not saved · tap to retry`;b.onclick=()=>guard(fn)}
 function suggest(i){const h=homeOf(i.sku).filter(l=>LOC[l]);if(h.length)return{loc:h[0],why:'Its spot'};
  const have=onHand(i.sku).locs.map(x=>x[0]).filter(l=>LOC[l]?.geo&&!ruleFor(l,i));if(have.length)return{loc:have[0],why:'Already here'};
  const PREF={board:['BK','CL1','CL2','BD'],hardware:['D'],fastener:['HR1','HR2'],handle:['R1','HR2'],pallet:['A','B','C'],packaging:['R0'],molding:['R0'],misc:['R0']};
@@ -568,18 +612,19 @@ function counts(){const po=Object.values(S.pos),out=Object.values(S.outs);
  return{exp:po.filter(waiting).length,expToday:po.filter(p=>waiting(p)&&p.expected&&p.expected<=today()).length,put:po.filter(putLeft).length,
   slips:po.filter(p=>got(p)&&!(p.paper||{}).confirmed).length,
   out:out.filter(o=>o.status!=='done').length,counted:PHYS.filter(l=>sinfo(l.id).counted).length,alerts:alerts().length}}
-const TABS=[['home','Home','home'],['map','Map','map'],['incoming','Incoming','in'],['outgoing','Outgoing','out'],['count','Count','count']];
+const TABS=[['home','Home','home'],['pallets','Pallets','pallet'],['boards','Boards','layers'],['hardware','Hardware','wrench'],['more','More','dots']];
 const TABS_O=[...TABS.slice(0,4),['office','Office','brief']];
-function tabs(){if(!S.ready){$('#tabs').innerHTML='';return}const c=counts(),b={incoming:c.exp+c.put,outgoing:c.out,office:c.slips};
+function tabs(){if(!S.ready){$('#tabs').innerHTML='';return}const c=counts(),b={office:c.slips,more:c.exp+c.put,pallets:pals().filter(p=>p.status==='complete').length};
  $('#tabs').innerHTML=(isOffice()?TABS_O:TABS).map(([r,l,i])=>`<a class="tab" href="#${r}" aria-current="${route===r?'page':'false'}">${ic(i)}<span>${l}</span>${b[r]?`<span class="bd">${b[r]}</span>`:''}</a>`).join('')}
-const menuDef=()=>{const o=isOffice();return [['Do',[['add','Add stock','add'],['take','Grab parts','hand'],['move','Move stock','move'],...(o?[['count','Count','count']]:[])]],
+const menuDef=()=>{const o=isOffice();return [['Do',[['scan','Scan','qr'],['add','Add stock','add'],['take','Grab parts','hand'],['move','Move stock','move']]],
+ ['Go to',[['incoming','Incoming','in'],['outgoing','Outgoing','out'],['count','Count','count'],['map','Map overview','map']]],
  ['Look up',[['find','Find','search'],['items','Parts','box'],['spots','Spots & labels','tag'],['alerts','Alerts','bell']]],
  ['Office',[...(o?[['office','Office','brief'],['import','Import from Excel','sheet']]:[]),['report','Daily report','chart'],['setup','Setup','gear']]]]};
 function openMenu(o){$('#menu').hidden=!o;$('#menuScrim').hidden=!o;$('#menuB').setAttribute('aria-expanded',o);
  if(o){$('#menu').innerHTML=menuDef().map(([h,its],k)=>`${k?'<div class="msep"></div>':''}<div class="mh">${h}</div>${its.map(([id,l,i,c])=>`<button class="mi" role="menuitem" data-m="${id}">${icoB(i,c)}${l}</button>`).join('')}`).join('');$('#menu button').focus()}}
 $('#menuB').onclick=()=>openMenu($('#menu').hidden);$('#menuScrim').onclick=()=>openMenu(false);
 $('#menu').addEventListener('click',e=>{const b=e.target.closest('[data-m]');if(!b)return;openMenu(false);const m=b.dataset.m;
- if(m==='add')addSheet({});else if(m==='take')go('grab');else if(m==='move')moveSheet({});else go(m)});
+ if(m==='add')addSheet({});else if(m==='take')go('grab');else if(m==='move')moveSheet({});else if(m==='scan')scanSheet();else go(m)});
 $('#findB').onclick=()=>go('find');
 addEventListener('keydown',e=>{if(e.key==='Escape'){if(!$('#menu').hidden)openMenu(false);else if(SH.open)closeSheet()}});
 addEventListener('scroll',()=>$('#nav').classList.toggle('scrolled',scrollY>36),{passive:true});
@@ -599,14 +644,14 @@ $('#sheet').addEventListener('picked',e=>SH.picked&&SH.picked(e));
  s.addEventListener('touchend',e=>{if(y0==null)return;const d=e.changedTouches[0].clientY-y0;s.style.transform='';if(d>110&&!e.target.closest('input,select,textarea,button'))closeSheet();y0=null})})();
 
 /* ---------- routing ---------- */
-const ROUTES={home:'Home',map:'Map',incoming:'Incoming',outgoing:'Outgoing',count:'Count',office:'Office',find:'Find',items:'Parts',spots:'Spots & labels',alerts:'Alerts',report:'Daily report',import:'Import',setup:'Setup',grab:'Grab parts'};
+const ROUTES={home:'Home',map:'Map',incoming:'Incoming',outgoing:'Outgoing',count:'Count',office:'Office',pallets:'Pallets',boards:'Boards',hardware:'Hardware',more:'More',pallet:'Pallet',build:'Build pallet',audit:'Audit',hpal:'Hardware pallet',find:'Find',items:'Parts',spots:'Spots & labels',alerts:'Alerts',report:'Daily report',import:'Import',setup:'Setup',grab:'Grab parts'};
 let route='home';const V={live:true};
 function readRoute(){let r=(location.hash||'#home').slice(1);if(!ROUTES[r])r='home';return r}
 addEventListener('hashchange',()=>{if(SH.open){SH.open=false;$('#sheetWrap').hidden=true;document.body.style.overflow=''}render();scrollTo(0,0)});
 function go(r){if(location.hash==='#'+r){render();scrollTo(0,0)}else location.hash=r}
 function render(){const prev=route;route=readRoute();document.body.classList.toggle('mapmode',route==='map');if(prev==='map'&&route!=='map'&&W3)W3.stop();$('#ttl').textContent=ROUTES[route];tabs();V.live=true;const v=$('#view');
  if(!S.ready){v.innerHTML='<p class="empty">Loading…</p>';return}
- ({home:vHome,map:vMap,office:vOffice,incoming:vIncoming,outgoing:vOutgoing,count:vCount,find:vFind,items:vItems,spots:vSpots,alerts:vAlerts,report:vReport,import:vImport,setup:vSetup,grab:vGrab})[route](v)}
+ ({home:vHome,map:vMap,office:vOffice,pallets:vPallets,boards:vBoards,hardware:vHardware,more:vMore,pallet:vPallet,build:vBuild,audit:vAudit,hpal:vHPal,incoming:vIncoming,outgoing:vOutgoing,count:vCount,find:vFind,items:vItems,spots:vSpots,alerts:vAlerts,report:vReport,import:vImport,setup:vSetup,grab:vGrab})[route](v)}
 const title=(t,sub)=>`<div><h1 class="lt">${esc(t)}</h1>${sub?`<p class="lsub">${sub}</p>`:''}</div>`;
 const liveLine=()=>MODE==='live'?`<span class="live on"></span>Live · shared with your team${CANWRITE?'':' · view only'}`:'<span class="live"></span>This device only';
 const backBtn=(label,id)=>`<button class="pill" id="${id}" style="align-self:flex-start;background:none;padding:0;color:var(--tint)">${ic('back')}${esc(label)}</button>`;
@@ -631,7 +676,8 @@ document.addEventListener('input',e=>{const q=e.target.closest('.qp');if(q)qtyTo
 const initQty=root=>$$('.qp',root).forEach(qtyTotal);
 
 /* spot picker: two native wheels, Area then Spot */
-function spotPick(k,sel,opts={}){const z0=sel&&LOC[sel]?LOC[sel].z:(opts.zone||'');
+function spotPick(k,sel,opts={}){if(sel&&hpOf(sel))return `<div class="group" data-sk="${k}"><div class="cell">${icoB('pallet','')}<span class="tx"><b>${esc(hpOf(sel).name)}</b><span class="t2">Hardware pallet at ${esc(hpOf(sel).loc||'—')}</span></span></div><select data-sl hidden><option value="${sel}" selected></option></select></div>`;
+ const z0=sel&&LOC[sel]?LOC[sel].z:(opts.zone||'');
  const zs=[...ZPHYS,...(opts.staging?[zone('VR')]:[])];
  return `<div class="group" data-sk="${k}"><label class="field"><span>Area</span><select data-sz>${!z0?'<option value="">Choose</option>':''}${zs.map(z=>`<option value="${z.id}"${z.id===z0?' selected':''}>${esc(z.name)}</option>`).join('')}</select></label>
   <label class="field"><span>Spot</span><select data-sl>${spotOpts(z0,sel)}</select></label></div>`}
@@ -646,7 +692,7 @@ const PFILT={board:i=>i.cat==='board',pallet:i=>i.cat==='pallet'};
 document.addEventListener('click',e=>{const b=e.target.closest('[data-pp]');if(b){const g=b.closest('.ipick'),r=g.querySelector('[data-pr]');r.hidden=!r.hidden;if(!r.hidden){r.innerHTML=`<label class="field"><span class="sub">${ic('search')}</span><input type="search" data-pq placeholder="Name or part number" style="text-align:left" autocomplete="off"></label><div class="res"></div>`;partRes(g,'');r.querySelector('input').focus()}return}
  const c=e.target.closest('[data-pc]');if(c){const g=c.closest('.ipick');g.dataset.sku=c.dataset.pc;const i=item(c.dataset.pc);g.querySelector('[data-pp]').innerHTML=`<span class="tx"><b>${esc(i.name)}</b><span class="t2">${esc(i.sku)}</span></span>${chev}`;g.querySelector('[data-pr]').hidden=true;g.dispatchEvent(new CustomEvent('picked',{bubbles:true,detail:i.sku}))}});
 document.addEventListener('input',e=>{const q=e.target.closest('[data-pq]');if(q)partRes(q.closest('.ipick'),q.value)});
-function partRes(g,q){q=q.toLowerCase().trim();const f=PFILT[g.dataset.f]||(()=>true);const list=Object.values(S.items).filter(f).filter(i=>!q||(i.sku+' '+i.name+' '+(i.vpn||'')).toLowerCase().includes(q)).sort((a,b)=>a.name.localeCompare(b.name)).slice(0,30);
+function partRes(g,q){q=q.toLowerCase().trim();const f=PFILT[g.dataset.f]||(()=>true);const list=allItems().filter(f).filter(i=>!q||(i.sku+' '+i.name+' '+(i.vpn||'')).toLowerCase().includes(q)).sort((a,b)=>a.name.localeCompare(b.name)).slice(0,30);
  g.querySelector('.res').innerHTML=list.map(i=>`<button type="button" class="cell" data-pc="${esc(i.sku)}"><span class="tx"><b>${esc(i.name)}</b><span class="t2">${esc(i.sku)}</span></span></button>`).join('')||'<p class="empty">No match. Add it under Parts.</p>'}
 const readPart=(root,k)=>root.querySelector(`[data-pk2="${k}"]`)?.dataset.sku||null;
 const field=(label,inner)=>`<label class="field"><span>${label}</span>${inner}</label>`;
@@ -661,24 +707,25 @@ const sw=(id,on,label)=>`<label class="field"><span style="flex:1">${label}</spa
 function spotSheet(loc){const l=LOC[loc];
  openSheet({title:loc,live:true,body:()=>{const m=sinfo(loc),sl=lines(loc),st=locStatus(loc),as=m.assign&&item(m.assign),iss=sl.map(x=>ruleFor(loc,item(x.sku))).filter(Boolean);
   return `<div class="stack"><div class="hero"><p class="sub cap">${esc(zone(l.z).name)} · ${esc(posText(l))}</p>
-   ${sl.length?sl.map(x=>{const i=item(x.sku);return `<p class="big" style="margin-top:8px">${x.qty==null?'<span class="warn">Not counted</span>':esc(fmtQ(i,x.qty))}</p>${fmtTot(i,x.qty)?`<p class="tot">${fmtTot(i,x.qty)}</p>`:''}<p class="nm">${esc(i?i.name:x.sku)}</p><p class="sub fn">${esc(x.sku)}</p>`}).join(''):'<p class="big sub" style="margin-top:8px">Empty</p>'}
+   ${!sl.length&&palAt(loc).length?`<p class="big" style="margin-top:8px">${palAt(loc).length} pallet${palAt(loc).length>1?'s':''}</p>`:sl.length?sl.map(x=>{const i=item(x.sku);return `<p class="big" style="margin-top:8px">${x.qty==null?'<span class="warn">Not counted</span>':esc(fmtQ(i,x.qty))}</p>${fmtTot(i,x.qty)?`<p class="tot">${fmtTot(i,x.qty)}</p>`:''}<p class="nm">${esc(i?i.name:x.sku)}</p><p class="sub fn">${esc(x.sku)}</p>`}).join(''):'<p class="big sub" style="margin-top:8px">Empty</p>'}
    <p style="margin-top:10px">${chipSt(st)}</p>${iss.map(x=>`<p class="bad cap" style="margin-top:8px">${esc(x)}</p>`).join('')}${m.recount?'<p class="warn cap" style="margin-top:8px">Count this spot again</p>':''}</div>
-   <div class="verbs">${verb('add','Add')}${verb('take','Take',!sl.length)}${verb('move','Move',!sl.length)}${verb('count','Count')}</div>
+   ${palAt(loc).length?`<div class="st"><p class="hd">Pallets here</p><div class="group">${palAt(loc).map(p=>`<button class="cell" data-op="${esc(p.id)}">${icoB(p.kind==='hardware'?'wrench':'pallet','')}<span class="tx"><b>${esc(palTitle(p))}</b><span class="t2">${esc(p.kind==='hardware'?lines('HP-'+p.id).map(x=>(x.qty==null?'?':fmtS(item(x.sku),x.qty))+' '+(item(x.sku)?.name||x.sku)).join(', ').slice(0,80):palUnit(p)+' · '+palCount(p)+' items')}</span></span>${chev}</button>`).join('')}</div></div>`:''}
+   <div class="verbs">${verb('add','Add')}${verb('take','Take',!lines(hpOn(loc)?'HP-'+hpOn(loc).id:loc).length)}${verb('move','Move',!lines(hpOn(loc)?'HP-'+hpOn(loc).id:loc).length)}${verb('count','Count')}</div>
    <div class="group"><details class="cell"><summary><span class="tx"><b>Details</b></span>${chev}</summary><div class="dbody"><dl class="kv"><dt>For</dt><dd>${as?esc(as.name):esc(l.purpose)}</dd><dt>Counted</dt><dd>${m.counted?`${ago(m.counted)} · ${esc(nameOf(m.by))}`:'Never'}</dd></dl></div></details>
    ${route!=='map'?`<button class="cell" id="ssMap">${icoB('map','#007AFF')}<span class="tx"><b>Show in 3D</b></span>${chev}</button>`:''}</div></div>`},
-  bind:s=>{const sl=lines(loc),sku=sl[0]?.sku||sinfo(loc).assign;
-   $$('[data-verb]',s).forEach(b=>b.onclick=()=>({add:()=>addSheet({loc,sku}),take:()=>takeSheet({loc,sku}),move:()=>moveSheet({loc,sku}),count:()=>countSheet(loc)})[b.dataset.verb]());
-   const m=$('#ssMap',s);if(m)m.onclick=()=>{selLoc=loc;closeSheet();go('map')}}})}
+  bind:s=>{const hp=hpOn(loc),tg=hp?'HP-'+hp.id:loc,sl=lines(tg),sku=sl[0]?.sku||sinfo(loc).assign;
+   $$('[data-verb]',s).forEach(b=>b.onclick=()=>({add:()=>addSheet({loc:tg,sku}),take:()=>takeSheet({loc:tg,sku}),move:()=>moveSheet({loc:tg,sku}),count:()=>countSheet(loc)})[b.dataset.verb]());
+   $$('[data-op]',s).forEach(b=>b.onclick=()=>openPal(b.dataset.op));const m=$('#ssMap',s);if(m)m.onclick=()=>{closeSheet();whereOf([{phys:loc,src:loc}])}}})}
 const verb=(v,l,dis)=>`<button class="verb" data-verb="${v}" ${dis?'disabled style="opacity:.35"':''}><span class="ico">${ic(v==='count'?'count':v==='move'?'move':v==='take'?'hand':'add')}</span>${l}</button>`;
 function itemSheet(sku){openSheet({title:'Part',live:true,body:()=>{const i=item(sku);if(!i)return '<p class="empty">Part not found.</p>';const o=onHand(sku),oo=onOrder(sku);
   return `<div class="stack"><div class="hero"><p class="nm" style="margin:0">${esc(i.name)}</p><p class="sub fn">${esc(i.sku)}${i.vendor?' · '+esc(i.vendor):''}</p>
    <p class="big" style="margin-top:12px">${o.locs.length?(o.unk&&!o.n?'<span class="warn">Not counted</span>':esc(fmtQ(i,o.n))):'0'}</p>${fmtTot(i,o.n)?`<p class="tot">${fmtTot(i,o.n)}</p>`:''}${oo?`<p class="sub cap" style="margin-top:4px">${esc(fmtQ(i,oo))} on order</p>`:''}</div>
    <div class="verbs">${verb('add','Add')}${verb('take','Take',!o.locs.length)}${verb('move','Move',!o.locs.length)}${verb('count','Count',!o.locs.length&&!homeOf(sku).length)}</div>
-   <div class="st"><p class="hd">Where it is</p><div class="group">${o.locs.length?o.locs.map(([l,q])=>`<button class="cell" data-sl2="${esc(l)}"><span class="tx"><b class="code">${esc(l)}</b><span class="t2">${esc(posText(LOC[l]))}</span></span><span class="val strong">${q==null?'?':esc(fmtQ(i,q))}</span>${chev}</button>`).join(''):'<p class="empty">Not in any spot yet</p>'}</div></div>
+   <div class="st"><p class="hd">Where it is</p><div class="group">${o.locs.length?o.locs.map(([l,q])=>`<button class="cell" data-sl2="${esc(l)}"><span class="tx"><b class="code">${esc(physLoc(l)||l)}</b><span class="t2">${esc(hpOf(l)?'On '+hpOf(l).name:posText(LOC[l]))}</span></span><span class="val strong">${q==null?'?':esc(fmtQ(i,q))}</span>${chev}</button>`).join(''):'<p class="empty">Not in any spot yet</p>'}</div></div>
    ${isOffice()?`<div class="group"><button class="cell" id="isEdit">${icoB('edit','#8E8E93')}<span class="tx"><b>Edit part</b></span>${chev}</button></div>`:''}</div>`},
   bind:s=>{const o=onHand(sku),loc=o.locs[0]?.[0]||homeOf(sku)[0];
    $$('[data-verb]',s).forEach(b=>b.onclick=()=>({add:()=>addSheet({sku,loc:homeOf(sku)[0]||loc}),take:()=>takeSheet({sku,loc}),move:()=>moveSheet({sku,loc}),count:()=>countSheet(loc)})[b.dataset.verb]());
-   $$('[data-sl2]',s).forEach(b=>b.onclick=()=>spotSheet(b.dataset.sl2));const e=$('#isEdit',s);if(e)e.onclick=()=>{closeSheet();IT.edit=sku;go('items')}}})}
+   $$('[data-sl2]',s).forEach(b=>b.onclick=()=>{const l=b.dataset.sl2;LOC[physLoc(l)]?.geo?whereOf([{phys:physLoc(l),src:l,sku,q:lines(l).find(x=>x.sku===sku)?.qty}]):spotSheet(l)});const e=$('#isEdit',s);if(e)e.onclick=()=>{closeSheet();IT.edit=sku;go('items')}}})}
 function addSheet({loc,sku}){openSheet({title:'Add stock',left:loc?`<button id="bk">${ic('back')}</button>`:'',body:`<div class="stack">
   <div class="st"><p class="hd">Part</p>${partPick('ap',sku)}</div>
   <div class="st"><p class="hd">Into</p>${spotPick('as',loc||(sku&&(homeOf(sku)[0]||suggest(item(sku)||{})?.loc)))}</div>
@@ -705,7 +752,7 @@ function takeSheet({loc,sku}){const opts=loc?lines(loc):[];openSheet({title:'Tak
     await W.set('outs',newOutId(),{type:'job',ref:job,status:'done',quick:true,lines:[{sku:p,qty:q,picked:q,from:[f]}],createdBy:whoId(),createdAt:now,doneBy:whoId(),doneAt:now});
     toast(short?`Taken. ${f} needs a recount.`:`Took ${fmtQ(item(p),q)} for ${job}`);closeSheet()})}})}
 function fromPick(k,sku,loc){if(!sku)return '<div class="group"><p class="empty">Choose a part first</p></div>';const src=onHand(sku).locs;if(!src.length)return '<div class="group"><p class="empty">None in stock</p></div>';
- return `<div class="group">${field('Spot',`<select>${src.map(([l,q])=>`<option value="${esc(l)}"${l===loc?' selected':''}>${esc(l)} · ${q==null?'not counted':esc(fmtQ(item(sku),q))}</option>`).join('')}</select>`)}</div>`}
+ return `<div class="group">${field('Spot',`<select>${src.map(([l,q])=>`<option value="${esc(l)}"${l===loc?' selected':''}>${esc(locLabel(l))} · ${q==null?'not counted':esc(fmtQ(item(sku),q))}</option>`).join('')}</select>`)}</div>`}
 function moveSheet({loc,sku}){openSheet({title:'Move stock',left:loc?`<button id="bk">${ic('back')}</button>`:'',body:`<div class="stack">
   <div class="st"><p class="hd">Part</p>${partPick('mp',sku)}</div>
   <div class="st"><p class="hd">From</p><div id="mf">${fromPick('mf',sku,loc)}</div></div>
@@ -719,10 +766,11 @@ function moveSheet({loc,sku}){openSheet({title:'Move stock',left:loc?`<button id
     const w=ruleFor(t,item(p));if(w&&!s.dataset.ok){s.dataset.ok=1;return toast(w+' Tap Move again to confirm.',true)}
     await change(f,p,-q);await change(t,p,q);await logIt({type:'move',sku:p,from:f,to:t,qty:q});toast(`Moved to ${t}`);closeSheet();if(route==='map')selectSpot(t,true)})}})}
 let cDraft=null;
-function countSheet(loc,fromCount){const l=LOC[loc];if(!l)return;const m=sinfo(loc);
+const hpOn=loc=>!lines(loc).length?palAt(loc).find(p=>p.kind==='hardware'):null;
+function countSheet(loc,fromCount,via){{const hp=hpOn(loc);if(hp)return countSheet('HP-'+hp.id,fromCount,loc)}const l=LOC[loc];if(!l)return;const m=sinfo(loc);
  if(!cDraft||cDraft.loc!==loc){const base=lines(loc).map(x=>({sku:x.sku,qty:x.qty}));if(!base.length&&m.assign)base.push({sku:m.assign,qty:null});cDraft={loc,lines:base}}
  const known=lines(loc).some(x=>x.qty!=null);
- openSheet({title:'Count '+loc,body:`<div class="stack"><p class="sub cap" style="text-align:center">${esc(zone(l.z).name)} · ${esc(posText(l))}</p>
+ openSheet({title:'Count '+(via||loc),body:`<div class="stack"><p class="sub cap" style="text-align:center">${via?esc(posText(LOC[via]))+' · on '+esc(l.purpose):esc(zone(l.z).name)+' · '+esc(posText(l))}</p>
   ${cDraft.lines.map((x,k)=>{const i=item(x.sku),w=ruleFor(loc,i);return `<div class="st"><p class="hd" style="display:flex;justify-content:space-between"><span>${esc(i?i.name:x.sku)}</span><button class="pill" data-rm="${k}" style="min-height:24px;padding:0 10px;font-size:13px">Remove</button></p>${w?`<p class="bad fn" style="margin:0 16px">${esc(w)}</p>`:''}${qtyPick(i,'c'+k,x.qty)}</div>`}).join('')||'<div class="group"><p class="empty">Nothing here yet</p></div>'}
   <div class="st"><p class="hd">Add a part that’s here</p>${partPick('ca',null)}</div>
   ${known?`<div class="st"><p class="hd">If it changed, why</p><div class="group">${field('Reason','<select id="cr"><option>Miscount</option><option>Used, not logged</option><option>Damaged</option><option>Found extra</option><option>Moved, not logged</option><option>Other</option></select>')}</div></div>`:''}
@@ -736,9 +784,10 @@ function countSheet(loc,fromCount){const l=LOC[loc];if(!l)return;const m=sinfo(l
    $('#uAdd',s).onclick=()=>guard(async()=>{sync();const cat=$('#uCat',s).value,desc=$('#uDesc',s).value.trim(),n=(S.meta.unk||0)+1,sku='UNK-'+String(n).padStart(4,'0');
     const it={sku,cat,name:`Unknown ${CATS[cat].toLowerCase().replace(/s$/,'')} ${n}${desc?': '+desc:''}`,uom:UNIT[cat],needsId:true,found:loc,min:0};
     const f=$('#uPh',s)&&$('#uPh',s).files[0];if(f&&ASSETS){try{const r=await ASSETS.upload(f);it.photo=r.url;it.photoId=r.id}catch(e){}}
-    await W.set('meta','main',{...S.meta,unk:n});await W.set('items',docId(sku),it);cDraft.lines.push({sku,qty:null});countSheet(loc,fromCount)});
+    await W.set('meta','main',{...S.meta,unk:n});await W.set('unks',docId(sku),it);cDraft.lines.push({sku,qty:null});countSheet(loc,fromCount)});
    const done=async(ls,msg)=>{await saveCount(loc,ls,$('#cr',s)?.value);toast(msg);cDraft=null;
-    if(fromCount){const z=PHYS.filter(x=>x.z===l.z),k=z.findIndex(x=>x.id===loc),n=z.slice(k+1).find(x=>!sinfo(x.id).counted||sinfo(x.id).recount);if(n)return countSheet(n.id,true)}closeSheet()};
+    if(via){const d=clone(S.stock[via]);d.lines=d.lines||[];d.counted=new Date().toISOString();d.by=whoId();delete d.recount;await W.set('stock',via,d)}
+    if(fromCount){const bl=LOC[via]||l,z=PHYS.filter(x=>x.z===bl.z),k=z.findIndex(x=>x.id===(via||loc)),n=z.slice(k+1).find(x=>!sinfo(x.id).counted||sinfo(x.id).recount);if(n)return countSheet(n.id,true)}closeSheet()};
    $('#ce',s).onclick=()=>guard(()=>done([],`${loc} is empty`));
    $('#cs',s).onclick=()=>guard(async()=>{sync();if(!cDraft.lines.length)return toast('Add a part or tap Empty',true);if(cDraft.lines.some(x=>x.qty==null||Number.isNaN(x.qty)))return toast('Enter a count for each part',true);
     await done(cDraft.lines.map(x=>({sku:x.sku,qty:x.qty})),`${loc}: ${cDraft.lines.map(x=>fmtQ(item(x.sku),x.qty)).join(', ')}`)})}})}
@@ -747,24 +796,21 @@ function countSheet(loc,fromCount){const l=LOC[loc];if(!l)return;const m=sinfo(l
    SCREENS
    ========================================================= */
 function vHome(v){const c=counts(),h=new Date().getHours(),greet=h<12?'Good morning':h<17?'Good afternoon':'Good evening';
- const T=(href,icon,col,label,n,act)=>`<${act?'button':'a'} class="tile" ${act?`id="${act}"`:`href="${href}"`}>${icoB(icon,col)}${n!=null&&n!==''?`<span class="n">${n}</span>`:''}<b>${label}</b></${act?'button':'a'}>`;
+ const T=(href,icon,label,n,act)=>`<${act?'button':'a'} class="tile" ${act?`id="${act}"`:`href="${href}"`}>${icoB(icon,'')}${n!=null&&n!==''?`<span class="n">${n}</span>`:''}<b>${label}</b></${act?'button':'a'}>`;
  v.innerHTML=`<div class="stack">${title(greet+(ME?', '+ME.split(' ')[0]:''),liveLine())}
- <button class="search" id="hs">${ic('search')}Search parts or spots</button>
- <div class="tiles">
-  ${T('#incoming','truck','#007AFF','Receive',c.expToday||'')}
-  ${T('','dock','#5856D6','Put away',c.put||'','hPut')}
-  ${T('#grab','hand','#FF9500','Grab parts','')}
-  ${T('#outgoing','list','#AF52DE','Pick lists',c.out||'')}
-  ${T('#count','count','#34C759','Count',pct(c.counted,PHYS.length)+'<small>%</small>')}
-  ${T('#map','map','#30B0C7','3D map','')}
- </div>
+ <div class="hsearch"><button class="search" id="hs">${ic('search')}Search anything</button><button class="btn scanbtn" id="hScan">${ic('qr')}Scan</button></div>
+ <div class="st"><p class="hd">Today</p><div class="tiles">
+  ${T('#incoming','truck','Receive',c.expToday||'')}
+  ${T('','dock','Put away',c.put||'','hPut')}
+  ${T('#outgoing','list','Pick lists',c.out||'')}
+  ${T('#count','count','Count',pct(c.counted,PHYS.length)+'<small>%</small>')}
+ </div></div>
  <div class="group">
   ${isOffice()?`<a class="cell" href="#office">${icoB('brief','')}<span class="tx"><b>Office</b></span><span class="val">${c.slips?c.slips+' slips':''}</span>${chev}</a>`:''}
-  <a class="cell" href="#alerts">${icoB('bell','#FF3B30')}<span class="tx"><b>Alerts</b></span><span class="val">${c.alerts||''}</span>${chev}</a>
-  <button class="cell" id="hAdd">${icoB('add','#34C759')}<span class="tx"><b>Add stock</b></span>${chev}</button>
-  <button class="cell" id="hMove">${icoB('move','#5856D6')}<span class="tx"><b>Move stock</b></span>${chev}</button>
+  <a class="cell" href="#alerts">${icoB('bell','')}<span class="tx"><b>Alerts</b></span><span class="val">${c.alerts||''}</span>${chev}</a>
+  <a class="cell" href="#map">${icoB('map','')}<span class="tx"><b>Map overview</b></span>${chev}</a>
  </div></div>`;
- $('#hs').onclick=()=>go('find');$('#hPut').onclick=()=>{IN.tab='put';IN.id=null;go('incoming')};$('#hAdd').onclick=()=>addSheet({});$('#hMove').onclick=()=>moveSheet({})}
+ $('#hs').onclick=()=>go('find');$('#hScan').onclick=scanSheet;$('#hPut').onclick=()=>{IN.tab='put';IN.id=null;go('incoming')}}
 function alerts(){const a=[];
  Object.values(S.pos).forEach(p=>{if(waiting(p)&&p.expected&&p.expected<today())a.push({g:'Deliveries',t:`${p.po} is late`,s:(p.status==='partial'?'Backorder · ':'')+(p.vendor||''),po:p.id,c:'#FF3B30'});
   if(got(p)&&p.disc&&!p.discOk)a.push({g:'Deliveries',t:`${p.po} had problems`,s:'Short, damaged or wrong',po:p.id,c:'#FF9500'});
@@ -778,15 +824,17 @@ function vAlerts(v){const a=alerts(),G={};a.forEach(x=>(G[x.g]=G[x.g]||[]).push(
 
 /* ---------- Find ---------- */
 let findQ='';
-function vFind(v){v.innerHTML=`<div class="stack">${title('Find')}<label class="search" style="padding-right:4px">${ic('search')}<input id="fq" type="search" value="${esc(findQ)}" placeholder="Part, part #, or spot (D-11-c)" autocomplete="off" style="flex:1;border:0;background:none;font:inherit;color:var(--ink);min-height:44px;outline:none"></label><div id="fr"></div></div>`;
- const q=$('#fq');q.focus();q.oninput=()=>{findQ=q.value;fr()};q.onkeydown=e=>{if(e.key==='Enter'){const l=normLoc(q.value);if(l){q.blur();spotSheet(l)}}};fr()}
+function vFind(v){v.innerHTML=`<div class="stack">${title('Find')}<div class="hsearch"><label class="search" style="padding-right:4px">${ic('search')}<input id="fq" type="search" value="${esc(findQ)}" placeholder="Part, part #, or spot (D-11-c)" autocomplete="off" style="flex:1;border:0;background:none;font:inherit;color:var(--ink);min-height:44px;outline:none"></label><button class="btn scanbtn" id="fScan">${ic('qr')}Scan</button></div><div id="fr"></div></div>`;
+ const q=$('#fq');q.focus();q.oninput=()=>{findQ=q.value;fr()};q.onkeydown=e=>{if(e.key==='Enter'){const r=parseScan(q.value);if(r&&r.kind!=='text'){q.blur();findQ='';routeScan(q.value)}}};$('#fScan').onclick=scanSheet;fr()}
 function fr(){const out=$('#fr'),q=findQ.trim().toLowerCase();
  if(!q){const recent=S.log.slice(0,6).map(e=>e.at||e.to||e.from).filter(x=>x&&LOC[x]?.geo);const r=[...new Set(recent)].slice(0,4);
   out.innerHTML=r.length?`<div class="st"><p class="hd">Recent spots</p><div class="group">${r.map(l=>`<button class="cell" data-l="${l}"><span class="tx"><b class="code">${l}</b><span class="t2">${esc(posText(LOC[l]))}</span></span>${chev}</button>`).join('')}</div></div>`:'';$$('[data-l]',out).forEach(b=>b.onclick=()=>spotSheet(b.dataset.l));return}
- const words=q.split(/\s+/),its=Object.values(S.items).filter(i=>{const h=[i.sku,i.name,i.vendor,i.vpn,i.color,i.finish,i.job,CATS[i.cat]].join(' ').toLowerCase();return words.every(w=>h.includes(w))}).slice(0,40),ex=normLoc(findQ);
+ const words=q.split(/\s+/),its=allItems().filter(i=>{const h=[i.sku,i.name,i.vendor,i.vpn,i.color,i.finish,i.job,CATS[i.cat]].join(' ').toLowerCase();return words.every(w=>h.includes(w))}).slice(0,40),ex=normLoc(findQ);
  out.innerHTML=(ex?`<div class="st"><p class="hd">Spot</p><div class="group"><button class="cell" data-l="${ex}"><span class="tx"><b class="code">${ex}</b><span class="t2">${esc(posText(LOC[ex]))}</span></span>${chipSt(locStatus(ex))}${chev}</button></div></div>`:'')+
- (its.length?`<div class="st"><p class="hd">Parts</p><div class="group">${its.map(i=>{const o=onHand(i.sku);return `<button class="cell" data-i="${esc(i.sku)}"><span class="tx"><b>${esc(i.name)}</b><span class="t2">${esc(i.sku)}${o.locs.length?' · '+esc(o.locs.slice(0,2).map(x=>x[0]).join(', ')):''}</span></span><span class="val">${o.locs.length?(o.unk&&!o.n?'?':esc(fmtQ(i,o.n))):'0'}</span>${chev}</button>`}).join('')}</div></div>`:'')||'<div class="group"><p class="empty">No match</p></div>';
- $$('[data-l]',out).forEach(b=>b.onclick=()=>spotSheet(b.dataset.l));$$('[data-i]',out).forEach(b=>b.onclick=()=>itemSheet(b.dataset.i))}
+ (()=>{const ps=pals().filter(p=>p.status!=='shipped'&&words.every(w=>[palTitle(p),p.unit,p.bldg,p.po,p.loc,p.name,...(p.items||[]).map(x=>x.cab+' '+x.cid)].join(' ').toLowerCase().includes(w))).slice(0,20);
+  return ps.length?`<div class="st"><p class="hd">Pallets</p><div class="group">${ps.map(p=>`<button class="cell" data-p="${p.id}">${icoB(p.kind==='hardware'?'wrench':'pallet','')}<span class="tx"><b>${esc(palTitle(p))}</b><span class="t2">${esc(p.kind==='hardware'?'Hardware pallet':palUnit(p))}</span></span><span class="val code" style="font-size:15px">${esc(p.loc||'—')}</span>${chev}</button>`).join('')}</div></div>`:''})()+
+ (its.length?`<div class="st"><p class="hd">Parts</p><div class="group">${its.map(i=>{const o=onHand(i.sku);return `<button class="cell" data-i="${esc(i.sku)}"><span class="tx"><b>${esc(i.name)}</b><span class="t2">${esc(i.sku)}${o.locs.length?' · '+esc(o.locs.slice(0,2).map(x=>physLoc(x[0])).join(', ')):''}</span></span><span class="val">${o.locs.length?(o.unk&&!o.n?'?':esc(fmtQ(i,o.n))):'0'}</span>${chev}</button>`}).join('')}</div></div>`:'')||'<div class="group"><p class="empty">No match</p></div>';
+ $$('[data-l]',out).forEach(b=>b.onclick=()=>whereOf([{phys:b.dataset.l,src:b.dataset.l}]));$$('[data-i]',out).forEach(b=>b.onclick=()=>partWhere(b.dataset.i));$$('[data-p]',out).forEach(b=>b.onclick=()=>openPal(b.dataset.p))}
 
 /* ---------- 3D map ---------- */
 let W3=null,showStatus=false,mode3='aerial',tourTok=0,touring=false,selLoc=null;
@@ -847,7 +895,8 @@ function init3D(){
  const cube=new T.BoxGeometry(1,1,1),o=new T.Object3D();
  const build=(parts,group)=>{for(const[k,L]of parts){if(!L.length)continue;const im=new T.InstancedMesh(cube,M(k),L.length);
   L.forEach((b,i)=>{o.position.set(b[3],b[4],b[5]);o.scale.set(b[0],b[1],b[2]);o.updateMatrix();im.setMatrixAt(i,o.matrix);if(b[6]!=null)im.setColorAt(i,new T.Color(b[6]))});group.add(im)}};
- const parts=new Map(),part=(k,x,y,z,w,h,d)=>{(parts.get(k)||parts.set(k,[]).get(k)).push([w,h,d,x,y,z])};
+ // structure is grouped per area so one area can be shown alone
+ let PZ='_';const partsBy=new Map(),part=(k,x,y,z,w,h,d)=>{let P=partsBy.get(PZ);if(!P)partsBy.set(PZ,P=new Map());(P.get(k)||P.set(k,[]).get(k)).push([w,h,d,x,y,z])};
  const partF=(k,f,s,t,y,sa,sn,h)=>{const[x,z]=at(f,s,t),[w,d]=dims(f,sa,sn);part(k,x,y+h/2,z,w,h,d)};
  // ground, polished concrete floors, tilt-up walls (cut away on the camera side)
  const ground=new T.Mesh(new T.PlaneGeometry(260,260),new T.MeshStandardMaterial({color:0x8E918D,roughness:1}));ground.rotation.x=-Math.PI/2;ground.position.set(8,-.02,-24);scene.add(ground);
@@ -867,11 +916,11 @@ function init3D(){
  [24,28].forEach(x=>door(x,SH.z1+.05,0));door(SH.x1-.05,-20,-Math.PI/2);door(SH.x1-.05,-30,-Math.PI/2);
  const O=OFFICE;[[O.x0,O.z0,O.x1,O.z0],[O.x0,O.z0,O.x0,O.z1],[O.x1,O.z0,O.x1,O.z1]].forEach(([a,b,c,d])=>{part('c0xE6E2D8',(a+c)/2,.5,(b+d)/2,Math.max(.15,Math.abs(c-a)),1,Math.max(.15,Math.abs(d-b)));part('glass',(a+c)/2,1.8,(b+d)/2,Math.max(.1,Math.abs(c-a)),1.6,Math.max(.1,Math.abs(d-b)));part('c0xE6E2D8',(a+c)/2,2.85,(b+d)/2,Math.max(.15,Math.abs(c-a)),.5,Math.max(.15,Math.abs(d-b)))});
  // safety tape along aisles, contact shadows under structures
- ZPHYS.forEach(z=>{const f=frameOf(z),Z=zoneInfo(z.id);const sl=Math.max(Z.mx[0]-Z.mn[0],Z.mx[2]-Z.mn[2]);
+ ZPHYS.forEach(z=>{PZ=z.id;const f=frameOf(z),Z=zoneInfo(z.id);const sl=Math.max(Z.mx[0]-Z.mn[0],Z.mx[2]-Z.mn[2]);
   part('shadow',Z.c[0],.012,Z.c[2],Z.mx[0]-Z.mn[0]+1.2,.001,Z.mx[2]-Z.mn[2]+1.2);
   if(z.kind==='rack'||z.kind==='cant'){const off=z.kind==='rack'?.35:z.arm+.35,len=sl;const s0=z.kind==='rack'?(z.first-1)*z.bw:0;for(let k=0,sg=.45;k*sg<len;k++)partF(k%2?'c0x1A1A1A':'tape',f,s0+(k+.5)*sg,off,.004,Math.min(sg,len-k*sg),.09,.003)}});
- {const oz=(OPEN.z0+OPEN.z1)/2,ow=OPEN.z0-OPEN.z1;part('tape',4.6+.5,.004,oz,.08,.003,ow);part('tape',4.6-.5,.004,oz,.08,.003,ow)}
- ZPHYS.forEach(z=>{const f=frameOf(z);
+ PZ='_';{const oz=(OPEN.z0+OPEN.z1)/2,ow=OPEN.z0-OPEN.z1;part('tape',4.6+.5,.004,oz,.08,.003,ow);part('tape',4.6-.5,.004,oz,.08,.003,ow)}
+ ZPHYS.forEach(z=>{PZ=z.id;const f=frameOf(z);
   if(z.kind==='rack'){const D=z.deep?2.4:z.depth,top=z.ly[z.levels-1]+1.45,u='c'+z.up,bm='c'+z.beam;
    for(let k=z.first-1;k<=z.last;k++){const s=k*z.bw;partF(u,f,s,0,0,.09,.09,top);partF(u,f,s,-D,0,.09,.09,top);partF('c0x777777',f,s,0,0,.18,.18,.02);partF('c0x777777',f,s,-D,0,.18,.18,.02);for(let y=.6;y<top;y+=1.2)partF(u,f,s,-D/2,y,.035,D,.035)}
    for(let r=z.first;r<=z.last;r++)for(let L=1;L<=z.levels;L++){const s=(r-.5)*z.bw,y=z.ly[L-1];
@@ -888,7 +937,8 @@ function init3D(){
    for(let k=0;k<=z.bays;k++){const s=k*z.bw;partF('c0x1C1E21',f,s,.03,0,.05,.05,top);partF('c0x1C1E21',f,s,z.depth-.03,0,.05,.05,top)}
    for(let b=1;b<=z.bays;b++)for(let s=1;s<=z.shelves;s++){const y=.1+(s-1)*z.sh;partF('c0xC9AE84',f,(b-.5)*z.bw,z.depth/2,y,z.bw-.06,z.depth-.02,.025);partF('c0x1C1E21',f,(b-.5)*z.bw,z.depth-.01,y-.05,z.bw-.06,.03,.06)}}
  });
- const statics=new T.Group();build(parts,statics);scene.add(statics);
+ PZ='_';const ZG={};for(const[zid,P]of partsBy){const g=new T.Group();build(P,g);g.userData.z=zid;ZG[zid]=g;scene.add(g)}
+ let ISO=null;
  const sm=new T.InstancedMesh(cube,new T.MeshStandardMaterial({color:0xffffff,transparent:true,opacity:.62,depthWrite:false}),PHYS.length);
  const hm=new T.InstancedMesh(cube,new T.MeshBasicMaterial({visible:false}),PHYS.length);
  PHYS.forEach((l,i)=>{const g=l.geo;o.position.set(g.x,g.y+g.h/2,g.z);o.scale.set(g.w,g.h,g.d);o.updateMatrix();hm.setMatrixAt(i,o.matrix)});
@@ -897,32 +947,33 @@ function init3D(){
   m.position.set(...Z.c);m.scale.set(Z.mx[0]-Z.mn[0]+.8,Z.mx[1]-Z.mn[1]+1,Z.mx[2]-Z.mn[2]+.8);m.userData.z=z.id;scene.add(m);zoneHits.push(m)});
  const floorHit=new T.Mesh(new T.PlaneGeometry(200,200),new T.MeshBasicMaterial({visible:false}));floorHit.rotation.x=-Math.PI/2;floorHit.position.set(8,0,-24);scene.add(floorHit);
  let content=new T.Group();scene.add(content);
- function buildContent(){scene.remove(content);content.children.forEach(m=>{if(m.geometry&&m.geometry!==cube)m.geometry.dispose();m.dispose&&m.dispose()});content=new T.Group();
-  const G=[],RS=[],ghH=(zn,g)=>Math.min(g.h-.12,zn.kind==='bunk'||zn.kind==='pad'?1.7:zn.kind==='shelf'?g.h*.8:1.0);
-  const cp=new Map(),put=(k,x,y,z,w,h,d,col)=>{(cp.get(k)||cp.set(k,[]).get(k)).push([w,h,d,x,y,z,col])};
-  PHYS.forEach(l=>{const ls=lines(l.id),g=l.geo,zn=zone(l.z);
-   // reserved for a part but empty: outline and floor footprint only
-   if(!ls.length){const a=sinfo(l.id).assign;if(a){const h=ghH(zn,g);RS.push([g.x,g.y+h/2,g.z,g.w*.94,h,g.d*.94,TINT[(item(a)||{}).cat]||TINT.misc])}return}
-   const rack=zn.kind==='rack',n=ls.length,sa=g.sa/n;
-   ls.forEach((x,k)=>{const i=item(x.sku)||{cat:'misc'},so=(k-(n-1)/2)*sa,cx=g.x+g.a[0]*so,cz=g.z+g.a[2]*so;
-    const B=(kind,y,h,sh,col)=>put(kind,cx,y+h/2,cz,(Math.abs(g.a[0])*sa+Math.abs(g.n[0])*g.sn)*sh,h,(Math.abs(g.a[2])*sa+Math.abs(g.n[2])*g.sn)*sh,col);
-    // not counted yet: frosted glass block tinted by part type
-    if(x.qty==null){const h=ghH(zn,g);G.push([cx,g.y+h/2,cz,(Math.abs(g.a[0])*sa+Math.abs(g.n[0])*g.sn)*.92,h,(Math.abs(g.a[2])*sa+Math.abs(g.n[2])*g.sn)*.92,TINT[i.cat]||TINT.misc]);return}
-    let y=g.y;const pal=()=>{B('pallet',y,.14,.95);y+=.14};
-    if(i.cat==='board'){
-     if(zn.kind==='bunk'||zn.kind==='pad'){const u=x.qty==null?2:Math.max(1,Math.min(5,Math.ceil(x.qty/(i.thk==='6mm'?90:45))));for(let j=0;j<u;j++){B('c0xB08A5A',y,.1,.98);y+=.1;B('unit',y,.78,.98);y+=.78}}
-     else{const h=x.qty==null?.18:Math.max(.03,Math.min(g.h-.05,x.qty*(i.thk==='6mm'?.007:.019)));B('edge',y,h,.98);B('top',y+h,.012,.98,i.swatch?parseInt(i.swatch.slice(1),16):0xD8D2C4)}}
-    else if(i.cat==='pallet'){pal();B('wrap',y,Math.min(g.h-.2,1.05),.92)}
-    else if(i.cat==='packaging'){if(rack)pal();B(isCard(i)?'card':'rolls',y,Math.min(g.h-.2,isCard(i)?.55:.8),.92)}
-    else if(i.cat==='molding'){if(rack)pal();B('card',y,Math.min(g.h-.2,.3),.95)}
-    else{if(rack)pal();B('boxes',y,zn.kind==='shelf'?g.h*.8:Math.min(g.h-.2,.8),.9)}
-   })});
-  build(cp,content);
-  const inst=(list,mat,fy)=>{if(!list.length)return;const im=new T.InstancedMesh(cube,mat,list.length);list.forEach((b,i)=>{if(fy){o.position.set(b[0],b[1]-b[4]/2+.006,b[2]);o.scale.set(b[3],.008,b[5])}else{o.position.set(b[0],b[1],b[2]);o.scale.set(b[3],b[4],b[5])}o.updateMatrix();im.setMatrixAt(i,o.matrix);im.setColorAt(i,new T.Color(b[6]))});im.renderOrder=2;content.add(im)};
-  inst(G,M('ghost'));inst(RS,M('foot'),1);
-  const pos=[],cl=[];[...G,...RS].forEach(b=>{const c=new T.Color(b[6]),hs=[b[3]/2,b[4]/2,b[5]/2];
-   for(let ax=0;ax<3;ax++){const o1=(ax+1)%3,o2=(ax+2)%3;for(const s1 of[-1,1])for(const s2 of[-1,1])for(const e of[-1,1]){const p=[0,0,0];p[ax]=e*hs[ax];p[o1]=s1*hs[o1];p[o2]=s2*hs[o2];pos.push(b[0]+p[0],b[1]+p[1],b[2]+p[2]);cl.push(c.r,c.g,c.b)}}});
-  if(pos.length){const eg=new T.BufferGeometry();eg.setAttribute('position',new T.Float32BufferAttribute(pos,3));eg.setAttribute('color',new T.Float32BufferAttribute(cl,3));const ln=new T.LineSegments(eg,M('gline'));ln.renderOrder=3;content.add(ln)}
+ function buildContent(){scene.remove(content);content.traverse(m=>{if(m.geometry&&m.geometry!==cube)m.geometry.dispose()});content=new T.Group();
+  const ghH=(zn,g)=>Math.min(g.h-.12,zn.kind==='bunk'||zn.kind==='pad'?1.7:zn.kind==='shelf'?g.h*.8:1.0);
+  for(const zz of ZPHYS){const G=[],RS=[],cp=new Map(),put=(k,x,y,z,w,h,d,col)=>{(cp.get(k)||cp.set(k,[]).get(k)).push([w,h,d,x,y,z,col])};
+   PHYS.forEach(l=>{if(l.z!==zz.id)return;const ls=renderLines(l.id),g=l.geo,zn=zz;
+    // reserved for a part but empty: outline and floor footprint only
+    if(!ls.length){const a=sinfo(l.id).assign;if(a){const h=ghH(zn,g);RS.push([g.x,g.y+h/2,g.z,g.w*.94,h,g.d*.94,TINT[(item(a)||{}).cat]||TINT.misc])}return}
+    const rack=zn.kind==='rack',n=ls.length,sa=g.sa/n;
+    ls.forEach((x,k)=>{const i=x.sku==='__cab'?{cat:'pallet'}:x.sku==='__hp'?{cat:'hardware'}:item(x.sku)||{cat:'misc'},so=(k-(n-1)/2)*sa,cx=g.x+g.a[0]*so,cz=g.z+g.a[2]*so;
+     const B=(kind,y,h,sh,col)=>put(kind,cx,y+h/2,cz,(Math.abs(g.a[0])*sa+Math.abs(g.n[0])*g.sn)*sh,h,(Math.abs(g.a[2])*sa+Math.abs(g.n[2])*g.sn)*sh,col);
+     // not counted yet: frosted glass block tinted by part type
+     if(x.qty==null){const h=ghH(zn,g);G.push([cx,g.y+h/2,cz,(Math.abs(g.a[0])*sa+Math.abs(g.n[0])*g.sn)*.92,h,(Math.abs(g.a[2])*sa+Math.abs(g.n[2])*g.sn)*.92,TINT[i.cat]||TINT.misc]);return}
+     let y=g.y;const pal=()=>{B('pallet',y,.14,.95);y+=.14};
+     if(i.cat==='board'){
+      if(zn.kind==='bunk'||zn.kind==='pad'){const u=Math.max(1,Math.min(5,Math.ceil(x.qty/(i.thk==='6mm'?90:45))));for(let j=0;j<u;j++){B('c0xB08A5A',y,.1,.98);y+=.1;B('unit',y,.78,.98);y+=.78}}
+      else{const h=Math.max(.03,Math.min(g.h-.05,x.qty*(i.thk==='6mm'?.007:.019)));B('edge',y,h,.98);B('top',y+h,.012,.98,i.swatch?parseInt(i.swatch.slice(1),16):0xD8D2C4)}}
+     else if(i.cat==='pallet'){pal();B('wrap',y,Math.min(g.h-.2,1.05),.92)}
+     else if(i.cat==='packaging'){if(rack)pal();B(isCard(i)?'card':'rolls',y,Math.min(g.h-.2,isCard(i)?.55:.8),.92)}
+     else if(i.cat==='molding'){if(rack)pal();B('card',y,Math.min(g.h-.2,.3),.95)}
+     else{if(rack)pal();B('boxes',y,zn.kind==='shelf'?g.h*.8:Math.min(g.h-.2,.8),.9)}
+    })});
+   const grp=new T.Group();grp.userData.z=zz.id;build(cp,grp);
+   const inst=(list,mat,fy)=>{if(!list.length)return;const im=new T.InstancedMesh(cube,mat,list.length);list.forEach((b,i)=>{if(fy){o.position.set(b[0],b[1]-b[4]/2+.006,b[2]);o.scale.set(b[3],.008,b[5])}else{o.position.set(b[0],b[1],b[2]);o.scale.set(b[3],b[4],b[5])}o.updateMatrix();im.setMatrixAt(i,o.matrix);im.setColorAt(i,new T.Color(b[6]))});im.renderOrder=2;grp.add(im)};
+   inst(G,M('ghost'));inst(RS,M('foot'),1);
+   const pos=[],cl=[];[...G,...RS].forEach(b=>{const c=new T.Color(b[6]),hs=[b[3]/2,b[4]/2,b[5]/2];
+    for(let ax=0;ax<3;ax++){const o1=(ax+1)%3,o2=(ax+2)%3;for(const s1 of[-1,1])for(const s2 of[-1,1])for(const e of[-1,1]){const p=[0,0,0];p[ax]=e*hs[ax];p[o1]=s1*hs[o1];p[o2]=s2*hs[o2];pos.push(b[0]+p[0],b[1]+p[1],b[2]+p[2]);cl.push(c.r,c.g,c.b)}}});
+   if(pos.length){const eg=new T.BufferGeometry();eg.setAttribute('position',new T.Float32BufferAttribute(pos,3));eg.setAttribute('color',new T.Float32BufferAttribute(cl,3));const ln=new T.LineSegments(eg,M('gline'));ln.renderOrder=3;grp.add(ln)}
+   grp.visible=!ISO||ISO===zz.id;content.add(grp)}
   scene.add(content)}
  const selBox=new T.LineSegments(new T.EdgesGeometry(cube),new T.LineBasicMaterial({color:0xFFCC00}));
  const beam=new T.Mesh(new T.CylinderGeometry(.06,.06,1,10),new T.MeshBasicMaterial({color:0xFFCC00,transparent:true,opacity:.6}));scene.add(selBox,beam);
@@ -930,7 +981,7 @@ function init3D(){
  function mark(){const l=selLoc&&LOC[selLoc];selBox.visible=beamOn=!!(l&&l.geo);beam.visible=false;if(!selBox.visible)return;const g=l.geo;
   selBox.position.set(g.x,g.y+g.h/2,g.z);selBox.scale.set(g.w+.1,g.h+.1,g.d+.1);const top=g.y+g.h,bh=Math.max(1,11-top);beam.position.set(g.x,top+bh/2,g.z);beam.scale.set(1,bh,1)}
  function refresh(){buildContent();
-  PHYS.forEach((l,i)=>{const g=l.geo,h=lines(l.id).length?Math.min(g.h,1.3):.05;o.position.set(g.x,g.y+h/2,g.z);o.scale.set(g.w*.97,h,g.d*.97);o.updateMatrix();sm.setMatrixAt(i,o.matrix);sm.setColorAt(i,new T.Color(COL[locStatus(l.id)]))});
+  PHYS.forEach((l,i)=>{const g=l.geo,h=renderLines(l.id).length?Math.min(g.h,1.3):.05,off=ISO&&l.z!==ISO;o.position.set(g.x,g.y+h/2,g.z);o.scale.set(off?1e-4:g.w*.97,off?1e-4:h,off?1e-4:g.d*.97);o.updateMatrix();sm.setMatrixAt(i,o.matrix);sm.setColorAt(i,new T.Color(COL[locStatus(l.id)]))});
   sm.instanceMatrix.needsUpdate=true;if(sm.instanceColor)sm.instanceColor.needsUpdate=true;sm.visible=showStatus;mark()}
  const olay=document.createElement('div');olay.className='olay';let labs=[];const tmp=new T.Vector3();
  function setLabels(list){olay.innerHTML='';labs=list.map(L=>{const e=document.createElement(L.click?'button':'span');e.className='lb '+(L.cls||'');e.textContent=L.text;
@@ -962,28 +1013,31 @@ function init3D(){
  ren.domElement.addEventListener('pointerup',e=>{if(!down||Math.hypot(e.clientX-down[0],e.clientY-down[1])>8)return;const r=ren.domElement.getBoundingClientRect();v2.set((e.clientX-r.left)/r.width*2-1,-(e.clientY-r.top)/r.height*2+1);rc.setFromCamera(v2,cam);
   const now=performance.now(),dbl=now-lastTap<320;lastTap=now;const cur=curZone();
   if(cur==='aerial'){const zh=rc.intersectObjects(zoneHits)[0];if(zh){enterZone(zh.object.userData.z);return}}
-  const h=rc.intersectObject(hm)[0];if(h&&h.instanceId!=null){selectSpot(PHYS[h.instanceId].id);return}
-  const zh=rc.intersectObjects(zoneHits)[0];if(zh&&zh.object.userData.z!==cur){enterZone(zh.object.userData.z);return}
+  const h=rc.intersectObject(hm).find(x=>x.instanceId!=null&&(!ISO||PHYS[x.instanceId].z===ISO));if(h){selectSpot(PHYS[h.instanceId].id);return}
+  const zh=ISO?null:rc.intersectObjects(zoneHits)[0];if(zh&&zh.object.userData.z!==cur){enterZone(zh.object.userData.z);return}
   if(dbl){const f=rc.intersectObject(floorHit)[0];if(f){const p=f.point,d=cam.position.clone().sub(ctrl?ctrl.target:p).setY(0).normalize().multiplyScalar(9);fly([p.x+d.x,5.5,p.z+d.z],[p.x,1,p.z],52,900)}}});
  addEventListener('resize',size);
  refresh();cam.position.set(70,110,110);cam.lookAt(...AER.t);if(ctrl){ctrl.target.set(...AER.t);ctrl.update()}
  const zoom=f=>{if(!ctrl)return;stopTour();const t=ctrl.target.clone(),d=cam.position.clone().sub(t);d.setLength(Math.max(2.5,Math.min(95,d.length()*f)));const q=t.clone().add(d);fly([q.x,q.y,q.z],[t.x,t.y,t.z],cam.fov,320,true)};
- return{ren,olay,size,refresh,fly,mark,setLabels,start,stop,zoom,setStatus:v=>{sm.visible=v}};
+ // show one area alone (the others hide), or everything when z is null
+ const setIso=z=>{if(ISO===z)return;ISO=z;for(const k in ZG)ZG[k].visible=!z||k===z||k==='_';content.children.forEach(g=>g.visible=!z||g.userData.z===z);refresh()};
+ return{ren,olay,size,refresh,fly,mark,setLabels,start,stop,zoom,setIso,setStatus:v=>{sm.visible=v}};
 }
 function refresh3D(){if(W3){W3.refresh();if(route==='map')labelsFor()}}
 const curZone=()=>selLoc&&LOC[selLoc]?.geo?LOC[selLoc].z:mode3;
 function bayName(zid,b){const k=zone(zid).kind;return k==='bunk'?'Bunk '+b:k==='cant'?'Column '+b:'Bay '+b}
 function bayCenter(zid,b){const ls=PHYS.filter(l=>l.z===zid&&l.bay===b);let x=0,z=0,H=0;ls.forEach(l=>{x+=l.geo.x/ls.length;z+=l.geo.z/ls.length;H=Math.max(H,l.geo.y+l.geo.h)});return[x,H+.35,z]}
-const AERN={BD:'Board drop',R0:'Rack 0',R1:'Rack 1',CL1:'Cantilever 1',CL2:'Cantilever 2',BK:'Bunks',HR1:'Hardware',HR2:''};
+const AERN={BD:'Board drop',R0:'Supplies',R1:'Rack 1',CL1:'Cantilever 1',CL2:'Cantilever 2',BK:'Bunks',HR1:'Hardware',HR2:''};
 function labelsFor(){if(!W3)return;const L=[],zid=curZone();
  if(zid==='aerial'){const PR=['D','C','B','A','BK','R0','R1','CL1','CL2','BD','HR1','HR2'];[...ZPHYS].sort((a,b)=>PR.indexOf(a.id)-PR.indexOf(b.id)).forEach((z,k)=>{const Z=zoneInfo(z.id),aisle=z.kind==='rack'&&z.deep;const tx=aisle?z.id:(z.id in AERN?AERN[z.id]:z.name);if(tx)L.push({text:tx,pos:[Z.c[0],Z.mx[1]+1.2,aisle?Z.c[2]+(k%2?-7:3):Z.c[2]],click:()=>enterZone(z.id)})});AREAS.forEach(a=>L.push({text:a[0],pos:[a[1],a[2],a[3]],cls:'area'}))}
  else{const bays=[...new Set(PHYS.filter(l=>l.z===zid).map(l=>l.bay))];if(bays.length>1&&bays.length<=18)bays.forEach(b=>L.push({text:bayName(zid,b),pos:bayCenter(zid,b),cls:'bay',click:()=>flyBay(zid,b)}))}
  W3.setLabels(L)}
 function stopTour(){tourTok++;if(touring){touring=false;mapUI()}}
-function enterZone(id){stopTour();mode3=id;selLoc=null;if(W3){W3.mark();const q=zonePose(id);W3.fly(q.p,q.t,q.fov);labelsFor()}mapUI()}
-function selectSpot(id,noSheet){stopTour();selLoc=id;if(LOC[id]?.geo)mode3=LOC[id].z;if(W3){W3.mark();if(LOC[id]?.geo){const q=spotPose(id);W3.fly(q.p,q.t,q.fov)}labelsFor()}mapUI();if(!noSheet)setTimeout(()=>spotSheet(id),W3?650:0)}
-function goAerial(){stopTour();mode3='aerial';selLoc=null;if(W3){W3.mark();const q=aer();W3.fly(q.p,q.t,q.fov);labelsFor()}mapUI()}
-function flyBay(zid,b){stopTour();mode3=zid;selLoc=null;if(W3){W3.mark();const q=bayPose(zid,b);W3.fly(q.p,q.t,q.fov);labelsFor()}mapUI()}
+let BAY=null;const baysOf=z=>[...new Set(PHYS.filter(l=>l.z===z).map(l=>l.bay))].sort((a,b)=>a-b);
+function enterZone(id){stopTour();WH=null;mode3=id;selLoc=null;BAY=baysOf(id)[0];if(W3){W3.setIso(id);W3.mark();const q=bayPose(id,BAY);W3.fly(q.p,q.t,q.fov);labelsFor()}mapUI()}
+function selectSpot(id,noSheet){stopTour();selLoc=id;if(LOC[id]?.geo){mode3=LOC[id].z;BAY=LOC[id].bay}if(W3){if(LOC[id]?.geo)W3.setIso(LOC[id].z);W3.mark();if(LOC[id]?.geo){const q=spotPose(id);W3.fly(q.p,q.t,q.fov)}labelsFor()}mapUI();if(!noSheet)setTimeout(()=>spotSheet(id),W3?650:0)}
+function goAerial(){stopTour();WH=null;mode3='aerial';selLoc=null;BAY=null;if(W3){W3.setIso(null);W3.mark();const q=aer();W3.fly(q.p,q.t,q.fov);labelsFor()}mapUI()}
+function flyBay(zid,b){stopTour();mode3=zid;selLoc=null;BAY=b;if(W3){W3.setIso(zid);W3.mark();const q=bayPose(zid,b);W3.fly(q.p,q.t,q.fov);labelsFor()}mapUI()}
 async function tour(){const zid=curZone();if(zid==='aerial'||!W3)return;const my=++tourTok;touring=true;selLoc=null;mode3=zid;W3.mark();labelsFor();mapUI();
  for(const b of [...new Set(PHYS.filter(l=>l.z===zid).map(l=>l.bay))]){if(my!==tourTok)return;const q=bayPose(zid,b);await W3.fly(q.p,q.t,q.fov,1400);if(my!==tourTok)return;await new Promise(r=>setTimeout(r,1100))}
  if(my===tourTok){touring=false;mapUI()}}
@@ -992,15 +1046,16 @@ function mapUI(){const st=$('#stage');if(!st)return;const zid=curZone();
  const cur=$('#zc [aria-pressed="true"]');if(cur)cur.scrollIntoView({inline:'center',block:'nearest',behavior:'smooth'});
  let bar=st.querySelector('.mapbar');if(!bar){bar=document.createElement('div');bar.className='mapbar';st.append(bar)}
  const ver=PHYS.filter(l=>['ok','emptyok'].includes(locStatus(l.id))).length;
- bar.innerHTML=zid==='aerial'?`<span class="mb">${ic('check')}${ver} of ${PHYS.length} verified</span>`:`<button class="mb" id="mList">${ic('list')}Spots</button><button class="mb" id="mTour">${ic('play')}${touring?'Stop':'Tour'}</button>${selLoc?`<button class="mb" id="mSpot" style="background:#FFCC00">${esc(selLoc)}</button>`:''}`;
- const l=$('#mList');if(l)l.onclick=()=>spotList(zid);const t=$('#mTour');if(t)t.onclick=()=>touring?stopTour():tour();const sp=$('#mSpot');if(sp)sp.onclick=()=>spotSheet(selLoc)}
+ bar.innerHTML=zid==='aerial'?`<span class="mb">${ic('check')}${ver} of ${PHYS.length} verified</span>`:(()=>{const bs=baysOf(zid),k=bs.indexOf(BAY);return `<button class="mb" id="mPrev" aria-label="Previous" ${k<=0?'disabled style="opacity:.4"':''}>${ic('back')}</button><button class="mb baylbl" id="mSpot">${selLoc?esc(selLoc):BAY!=null?esc(bayName(zid,BAY)):esc(zone(zid).name)}</button><button class="mb" id="mNext" aria-label="Next" ${k>=bs.length-1?'disabled style="opacity:.4"':''}>${ic('chev')}</button><button class="mb" id="mList" aria-label="All spots">${ic('list')}</button>`})();
+ const l=$('#mList');if(l)l.onclick=()=>spotList(zid);const bs=baysOf(zid),k=bs.indexOf(BAY);const pv=$('#mPrev');if(pv)pv.onclick=()=>k>0&&flyBay(zid,bs[k-1]);const nx=$('#mNext');if(nx)nx.onclick=()=>k<bs.length-1&&flyBay(zid,bs[k+1]);
+ const sp=$('#mSpot');if(sp)sp.onclick=()=>selLoc?(WH?whereSheet():spotSheet(selLoc)):spotList(zid)}
 function vMap(v){V.live=false;
  v.innerHTML=`<div class="mapwrap"><div class="zchips" id="zc" role="group" aria-label="Fly to"><button data-z="aerial">${'Overview'}</button>${ZPHYS.map(z=>`<button data-z="${z.id}">${esc(z.short===z.id&&z.kind==='rack'&&z.deep?z.name:z.name)}</button>`).join('')}</div>
   <div id="stage" aria-label="3D warehouse"><div class="legend" id="lg"></div><div class="fab"><button id="fHome" aria-label="Overview">${ic('aerial')}</button><button id="fIn" aria-label="Zoom in">${ic('plus')}</button><button id="fOut" aria-label="Zoom out">${ic('minus')}</button><button id="fEye" aria-label="Status colors" aria-pressed="${showStatus}">${ic('eye')}</button></div></div></div>`;
  const st=$('#stage'),first=!W3;if(!W3)W3=init3D();
  if(!W3){st.insertAdjacentHTML('beforeend','<p class="stagemsg">3D needs an internet connection.</p>')}
  else{st.prepend(W3.ren.domElement);st.append(W3.olay);W3.size();W3.refresh();W3.start();
-  if(selLoc&&LOC[selLoc]?.geo)selectSpot(selLoc,true);else{labelsFor();if(first){const q=aer();W3.fly(q.p,q.t,q.fov,2400)}}}
+  if(WH)showWhere();else if(ISO_NEXT){const z=ISO_NEXT;ISO_NEXT=null;enterZone(z)}else if(selLoc&&LOC[selLoc]?.geo)selectSpot(selLoc,true);else{W3.setIso(null);labelsFor();if(first){const q=aer();W3.fly(q.p,q.t,q.fov,2400)}}}
  $$('#zc [data-z]').forEach(b=>b.onclick=()=>b.dataset.z==='aerial'?goAerial():enterZone(b.dataset.z));
  $('#fHome').onclick=goAerial;$('#fIn').onclick=()=>W3&&W3.zoom(.6);$('#fOut').onclick=()=>W3&&W3.zoom(1.6);$('#fEye').onclick=()=>{showStatus=!showStatus;$('#fEye').setAttribute('aria-pressed',showStatus);if(W3)W3.setStatus(showStatus);legend()};
  legend();mapUI();
@@ -1137,10 +1192,10 @@ function pickSheet(oid,k){const o=S.outs[oid],l=o.lines[k],i=item(l.sku)||{sku:l
    const d=clone(S.outs[oid]);delete d.id;const dl=d.lines[k];dl.picked+=q;if(!dl.from.includes(from))dl.from.push(from);if(d.lines.every(x=>x.picked>=x.qty))d.status='picked';await W.set('outs',oid,d);
    toast(short?`Picked. ${from} needs a recount.`:`Picked ${fmtQ(i,q)}`);closeSheet()})}})}
 let gQ='';
-function vGrab(v){const rows=[];PHYS.filter(l=>(l.z==='D'&&l.L===1)||zone(l.z).kind==='shelf').forEach(l=>lines(l.id).forEach(x=>{const i=item(x.sku);if(i)rows.push({l,x,i})}));
+function vGrab(v){const rows=[];pals().filter(p=>p.kind==='hardware').forEach(p=>lines('HP-'+p.id).forEach(x=>{const i=item(x.sku);if(i)rows.push({l:{id:'HP-'+p.id,lab:p.loc||'—'},x,i})}));PHYS.filter(l=>(l.z==='D'&&l.L===1)||zone(l.z).kind==='shelf').forEach(l=>lines(l.id).forEach(x=>{const i=item(x.sku);if(i)rows.push({l,x,i})}));
  v.innerHTML=`<div class="stack">${title('Grab parts')}<label class="search" style="padding-right:4px">${ic('search')}<input id="gq" type="search" value="${esc(gQ)}" placeholder="Hinge, slide, D-11…" style="flex:1;border:0;background:none;font:inherit;color:var(--ink);min-height:44px;outline:none"></label><div id="gr"></div></div>`;
- const draw=()=>{const q=gQ.toLowerCase(),list=rows.filter(r=>!q||(r.i.name+' '+r.i.sku+' '+r.l.id).toLowerCase().includes(q));
-  $('#gr').innerHTML=`<div class="group">${list.map(r=>`<button class="cell" data-g="${r.l.id}|${esc(r.i.sku)}"><span class="tx"><b>${esc(r.i.name)}</b><span class="t2"><span class="code" style="font-size:15px">${r.l.id}</span> · ${esc(fmtQ(r.i,r.x.qty))}</span></span>${chev}</button>`).join('')||`<p class="empty">${rows.length?'No match':'Nothing on Rack D level 1 or the office racks yet'}</p>`}</div>`;
+ const draw=()=>{const q=gQ.toLowerCase(),list=rows.filter(r=>!q||(r.i.name+' '+r.i.sku+' '+r.l.id+' '+(r.l.lab||'')).toLowerCase().includes(q));
+  $('#gr').innerHTML=`<div class="group">${list.map(r=>`<button class="cell" data-g="${r.l.id}|${esc(r.i.sku)}"><span class="tx"><b>${esc(r.i.name)}</b><span class="t2"><span class="code" style="font-size:15px">${esc(r.l.lab||r.l.id)}</span> · ${r.x.qty==null?'not counted':esc(fmtQ(r.i,r.x.qty))}</span></span>${chev}</button>`).join('')||`<p class="empty">${rows.length?'No match':'No hardware yet. Create a hardware pallet under Hardware.'}</p>`}</div>`;
   $$('[data-g]').forEach(b=>b.onclick=()=>{const[loc,sku]=b.dataset.g.split('|');takeSheet({loc,sku})})};
  $('#gq').oninput=e=>{gQ=e.target.value;draw()};draw()}
 
@@ -1148,13 +1203,13 @@ function vGrab(v){const rows=[];PHYS.filter(l=>(l.z==='D'&&l.L===1)||zone(l.z).k
 let IT={q:'',cat:'all',edit:null};
 const ITF=i=>IT.cat==='all'||(IT.cat==='attn'?(i.needsId||i.needsReview||lowState(i)):IT.cat==='nocost'?!i.cost:i.cat===IT.cat);
 function vItems(v){if(IT.edit!=null&&isOffice())return itemForm(v);IT.edit=null;
- const q=IT.q.toLowerCase(),list=Object.values(S.items).filter(i=>ITF(i)&&(!q||[i.sku,i.name,i.vendor,i.vpn].join(' ').toLowerCase().includes(q))).sort((a,b)=>a.name.localeCompare(b.name));
+ const q=IT.q.toLowerCase(),list=allItems().filter(i=>ITF(i)&&(!q||[i.sku,i.name,i.vendor,i.vpn].join(' ').toLowerCase().includes(q))).sort((a,b)=>a.name.localeCompare(b.name));
  v.innerHTML=`<div class="stack">${title('Parts',`${Object.keys(S.items).length} parts`)}
  <label class="search" style="padding-right:4px">${ic('search')}<input id="iq" type="search" value="${esc(IT.q)}" placeholder="Name or part #" style="flex:1;border:0;background:none;font:inherit;color:var(--ink);min-height:44px;outline:none"></label>
  <div class="row2"><div class="group">${field('Show',`<select id="icat" style="text-align:left"><option value="all">All</option><option value="attn"${IT.cat==='attn'?' selected':''}>Needs review</option><option value="nocost"${IT.cat==='nocost'?' selected':''}>No cost</option>${Object.entries(CATS).map(([k,n])=>`<option value="${k}"${IT.cat===k?' selected':''}>${n}</option>`).join('')}</select>`)}</div>${isOffice()?`<button class="btn" id="iNew">${ic('plus')}New part</button>`:''}</div>
  <div class="group" id="il"></div>
  <div class="group"><button class="cell" id="reo">${icoB('truck','#007AFF')}<span class="tx"><b>Reorder list</b></span><span class="val">${reoList().length||''}</span>${chev}</button></div></div>`;
- const draw=()=>{const q=IT.q.toLowerCase(),list=Object.values(S.items).filter(i=>ITF(i)&&(!q||[i.sku,i.name,i.vendor,i.vpn].join(' ').toLowerCase().includes(q))).sort((a,b)=>a.name.localeCompare(b.name));
+ const draw=()=>{const q=IT.q.toLowerCase(),list=allItems().filter(i=>ITF(i)&&(!q||[i.sku,i.name,i.vendor,i.vpn].join(' ').toLowerCase().includes(q))).sort((a,b)=>a.name.localeCompare(b.name));
   $('#il').innerHTML=list.map(i=>{const o=onHand(i.sku),s=lowState(i);return `<button class="cell" data-e="${esc(i.sku)}">${s?`<span class="dotst" style="background:${s==='out'?'#FF3B30':'#FF9500'}"></span>`:''}<span class="tx"><b>${esc(i.name)}</b><span class="t2">${esc(i.sku)}</span></span><span class="val">${o.locs.length?(o.unk&&!o.n?'?':esc(fmtQ(i,o.n))):'0'}</span>${chev}</button>`}).join('')||'<p class="empty">No parts</p>';
   $$('[data-e]').forEach(b=>b.onclick=()=>itemSheet(b.dataset.e))};draw();
  $('#iq').oninput=e=>{IT.q=e.target.value;draw()};$('#icat').onchange=e=>{IT.cat=e.target.value;draw()};
@@ -1186,12 +1241,13 @@ function itemForm(v){V.live=false;const i=IT.edit?item(IT.edit):{cat:'hardware',
   const n={...i,sku,cat,name,vendor:g('eVen'),vpn:g('eVpn'),uom:g('eUom')||UNIT[cat],pack:pk?{n:pk,q:pq}:null,min:+g('eMin')||0,max:+g('eMax')||0,cost:+g('eCost')||0,needsId:false,needsReview:$('#eRev').checked};
   delete n._id;['thk','color','sides','swatch','style','finish'].forEach(k=>delete n[k]);
   if(cat==='board')Object.assign(n,{thk:g('eThk'),color:g('eCol'),sides:g('eSd'),swatch:$('#eSw').value});if(cat==='handle')Object.assign(n,{style:g('eSt'),finish:g('eFi')});
+  if(i._unk){delete n._unk;await W.set('items',docId(sku),n);await W.del('unks',i._unk);toast('Saved');IT.edit=null;return render()}
   if(IT.edit&&sku!==IT.edit){for(const l in S.stock){const d=clone(S.stock[l]);let ch=false;(d.lines||[]).forEach(x=>{if(x.sku===IT.edit){x.sku=sku;ch=true}});if(d.assign===IT.edit){d.assign=sku;ch=true}if(ch)await W.set('stock',l,d)}await W.del('items',i._id)}
   await W.set('items',docId(sku),n);
   for(const l of homeOf(sku))if(l!==hl){const d=clone(S.stock[l]);delete d.assign;await W.set('stock',l,d)}
   if(hl&&sinfo(hl).assign!==sku){const d=clone(S.stock[hl]);d.lines=d.lines||[];d.assign=sku;await W.set('stock',hl,d)}
   toast('Saved');IT.edit=null;render()});
- const d=$('#eDel');if(d)d.onclick=()=>{const o=onHand(i.sku);if(o.locs.length)return toast(`Still in ${o.locs.length} spot(s)`,true);openSheet({title:'Delete '+i.name+'?',body:'',foot:'<button class="btn red" id="y">Delete</button>',bind:s=>$('#y',s).onclick=()=>guard(async()=>{await W.del('items',i._id);for(const l of homeOf(i.sku)){const x=clone(S.stock[l]);delete x.assign;await W.set('stock',l,x)}IT.edit=null;closeSheet()})})}}
+ const d=$('#eDel');if(d)d.onclick=()=>{const o=onHand(i.sku);if(o.locs.length)return toast(`Still in ${o.locs.length} spot(s)`,true);openSheet({title:'Delete '+i.name+'?',body:'',foot:'<button class="btn red" id="y">Delete</button>',bind:s=>$('#y',s).onclick=()=>guard(async()=>{if(i._unk)await W.del('unks',i._unk);else await W.del('items',i._id);for(const l of homeOf(i.sku)){const x=clone(S.stock[l]);delete x.assign;await W.set('stock',l,x)}IT.edit=null;closeSheet()})})}}
 
 /* ---------- Office ---------- */
 let OFF='hub',JOB='',JOBQ='';
@@ -1208,7 +1264,7 @@ function vOffice(v){if(!isOffice()){v.innerHTML=`<div class="stack">${title('Off
   <button class="cell" id="oNew">${icoB('plus','')}<span class="tx"><b>New PO</b></span>${chev}</button>
   <a class="cell" href="#import">${icoB('sheet','')}<span class="tx"><b>Import from Excel</b></span>${chev}</a>
   <a class="cell" href="#report">${icoB('chart','')}<span class="tx"><b>Daily report</b></span>${chev}</a>
-  <a class="cell" href="#setup">${icoB('gear','')}<span class="tx"><b>People & setup</b></span>${chev}</a></div></div>`;
+  <a class="cell" href="#setup">${icoB('gear','')}<span class="tx"><b>People & setup</b></span>${chev}</a></div>${moreGroups()}</div>`;
  $$('[data-off]').forEach(b=>b.onclick=()=>{OFF=b.dataset.off;render();scrollTo(0,0)});$('#oNew').onclick=()=>newPOSheet()}
 const offBack=()=>{const b=$('#bk');if(b)b.onclick=()=>{OFF='hub';JOB='';render();scrollTo(0,0)}};
 const poCell=(p,t2,right)=>`<button class="cell" data-po2="${esc(p.id)}"><span class="tx"><b>${esc(p.po)}</b><span class="t2">${t2}</span></span>${right||''}${chev}</button>`;
@@ -1272,7 +1328,7 @@ const labelData=ls=>ls.map(l=>({code:l.id,sub:`${zone(l.z).name} · ${posText(l)
 function labelsDoc(list){return `<!doctype html><html><head><meta charset="utf-8"><title>Spot labels</title><style>body{font-family:Arial,sans-serif;margin:10mm}.g{display:grid;grid-template-columns:repeat(3,1fr);gap:4mm}.l{border:2px solid #111;padding:3mm;display:grid;grid-template-columns:24mm 1fr;gap:3mm;align-items:center;break-inside:avoid}.l svg{width:24mm;height:24mm}.c{font-size:22pt;font-weight:700;line-height:1}.s{font-size:8pt;margin-top:1mm}.i{font-size:9pt;font-weight:700;margin-top:1mm}@media print{.np{display:none}}</style></head><body><p class="np"><button onclick="print()">Print</button></p><div class="g">${list.map(b=>`<div class="l">${qr(b.code)}<div><div class="c">${esc(b.code)}</div>${b.item?`<div class="i">${esc(b.item)}</div>`:''}<div class="s">${esc(b.sub)}</div><div class="s">FORCE · GILBERT</div></div></div>`).join('')}</div></body></html>`}
 function labelsSheet(ls){const list=labelData(ls),top=(()=>{try{return window.self===window.top}catch(e){return false}})();
  openSheet({title:`${list.length} labels`,body:`<div class="labels">${list.slice(0,12).map(b=>`<div class="label">${qr(b.code)||'<span></span>'}<div><div class="c">${esc(b.code)}</div>${b.item?`<div class="s"><b>${esc(b.item)}</b></div>`:''}<div class="s">${esc(b.sub)}</div></div></div>`).join('')}</div>${list.length>12?`<p class="ft" style="margin-top:10px">The file has all ${list.length}.</p>`:''}`,
- foot:`<button class="btn" id="go">${top?'Print':'Download to print'}</button>`,bind:s=>$('#go',s).onclick=()=>{if(top){const w=window.open('');if(w){w.document.write(labelsDoc(list));w.document.close()}}else saveFile(`labels-${SPZ}.html`,labelsDoc(list))}})}
+ foot:`<button class="btn" id="go">${ic('sheet')}Save labels PDF</button>`,bind:s=>$('#go',s).onclick=()=>spotLabelsPDF(ls,`labels-${SPZ}.pdf`)})}
 async function saveFile(name,data){if(DLS){try{await DLS.save({filename:name,data});toast('Saved')}catch(e){if(e&&e.code!=='declined')toast('Download didn’t go through',true)}return}
  try{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([data]));a.download=name;document.body.appendChild(a);a.click();a.remove()}catch(e){toast('Downloads are blocked here',true)}}
 function copyText(txt,msg){try{navigator.clipboard.writeText(txt).then(()=>toast(msg||'Copied'),()=>fallbackCopy(txt))}catch(e){fallbackCopy(txt)}}
@@ -1406,6 +1462,270 @@ function pinSheet(){const has=!!sget(PKEY);openSheet({title:has?'Enter office PI
   if(has&&v!==sget(PKEY))return toast('Wrong PIN',true);if(!has)sset(PKEY,v);sset(OKEY,'1');closeSheet();toast('Office mode on');render()}}})}
 function rollout(){const lab=ZPHYS.filter(z=>(S.meta.labels||{})[z.id]).length,cnt=PHYS.filter(l=>sinfo(l.id).counted).length,des=PHYS.filter(l=>sinfo(l.id).assign).length,nonPal=Object.values(S.items).filter(i=>i.cat!=='pallet'),mins=nonPal.filter(i=>i.min>0).length;
  return [['Spots with a part set',des,PHYS.filter(l=>!['A','B','C'].includes(l.z)).length],['Areas labeled',lab,ZPHYS.length],['Spots counted',cnt,PHYS.length],['Parts with reorder point',mins,nonPal.length]].map(([t,a,b])=>`<div class="cell"><span class="tx"><b>${t}</b></span><span class="val">${a} / ${b}</span></div>`).join('')}
+
+/* =========================================================
+   V6: PALLETS · HARDWARE PALLETS · SCANNING · SECTIONS
+   Cabinet pallets keep the old app's stickers: "Pallet:<24 hex>" on the sheet,
+   8 text lines on each cabinet. Hardware pallets get "FORCE:HW:<id>" labels made here.
+   ========================================================= */
+const pals=()=>Object.values(S.pals);
+const palAt=loc=>pals().filter(p=>p.loc===loc&&p.status!=='shipped');
+const hpOf=loc=>loc&&loc.startsWith('HP-')?S.pals[loc.slice(3)]:null;
+function hpLocs(){pals().forEach(p=>{if(p.kind!=='hardware')return;const id='HP-'+p.id;LOC[id]={id,z:'HPAL',purpose:p.name||'Hardware pallet',hp:p.id};KEYS[key(id)]=id})}
+const physLoc=loc=>{const h=hpOf(loc);return h?h.loc:loc};
+function locLabel(loc){const h=hpOf(loc);if(h)return `${h.name||'Hardware pallet'} · ${h.loc||'no spot'}`;return loc}
+const hex24=()=>Math.floor(Date.now()/1000).toString(16).padStart(8,'0')+[...crypto.getRandomValues(new Uint8Array(8))].map(b=>b.toString(16).padStart(2,'0')).join('');
+const palTitle=p=>p.kind==='hardware'?(p.name||'Hardware pallet'):(p.job||(p.sheet&&p.sheet.job)||'Pallet '+p.id.slice(-5).toUpperCase());
+const palUnit=p=>p.unit||p.bldg||(p.sheet&&p.sheet.group)||'';
+const palCount=p=>p.items&&p.items.length?p.items.length:(p.sheet&&(p.sheet.total||p.sheet.items?.reduce((a,x)=>a+(+x.qty||0),0)))||0;
+const palKnown=p=>p.kind==='hardware'?lines('HP-'+p.id).every(x=>x.qty!=null):(p.items&&p.items.length)||(p.sheet&&p.sheet.items&&p.sheet.items.length);
+function renderLines(loc){const out=[...lines(loc)];palAt(loc).forEach(p=>{if(p.kind==='hardware'){const ls=lines('HP-'+p.id);if(ls.length)out.push(...ls);else out.push({sku:'__hp',qty:null})}else out.push({sku:'__cab',qty:palKnown(p)?palCount(p)||1:null})});return out}
+
+/* ---------- scanning ---------- */
+function parseCab(t){const L=String(t).split(/\r?\n/).map(x=>x.trim()).filter(Boolean);if(L.length<8)return null;const[job,po,bldg,unit,type,color,cab,cid]=L;if(!/^\d{3,}$/.test(cid))return null;
+ return{job,po,bldg,unit,type,color,cab,cid,key:docId(po+'|'+cid)}}
+function parseScan(t){t=String(t||'').replace(/\u0000/g,'').trim();if(!t)return null;let m=t.match(/^Pallet:\s*([0-9a-f]{24})$/i);if(m)return{kind:'pallet',id:m[1].toLowerCase()};
+ m=t.match(/^FORCE:HW:(\S+)$/i);if(m)return{kind:'hw',id:m[1]};m=t.match(/^FORCE:SPOT:(\S+)$/i);if(m&&normLoc(m[1]))return{kind:'spot',loc:normLoc(m[1])};
+ const c=parseCab(t);if(c)return{kind:'cab',cab:c};const l=normLoc(t);if(l)return{kind:'spot',loc:l};return{kind:'text',q:t}}
+const cabPallet=k=>pals().find(p=>p.status!=='shipped'&&(p.items||[]).some(x=>x.key===k));
+let jsqrP=null;function loadJsQR(){return jsqrP||(jsqrP=new Promise((ok,no)=>{const s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js';s.onload=()=>ok(window.jsQR);s.onerror=()=>{jsqrP=null;no(new Error('jsqr'))};document.head.append(s)}))}
+async function decodePhoto(file){const J=await loadJsQR(),url=URL.createObjectURL(file);try{const img=await new Promise((ok,no)=>{const i=new Image();i.onload=()=>ok(i);i.onerror=no;i.src=url});
+ for(const max of [1400,2200,900]){const k=Math.min(1,max/Math.max(img.naturalWidth,img.naturalHeight)),w=Math.round(img.naturalWidth*k),h=Math.round(img.naturalHeight*k),c=document.createElement('canvas');c.width=w;c.height=h;const g=c.getContext('2d');g.drawImage(img,0,0,w,h);
+  const r=J(g.getImageData(0,0,w,h).data,w,h,{inversionAttempts:'attemptBoth'});if(r&&r.data)return r.data}return null}finally{URL.revokeObjectURL(url)}}
+// A Bluetooth scanner "types" the code and presses Enter, once per line on cabinet stickers: wait for a quiet moment, then read the whole burst as one scan.
+const scanBox=(id,ph)=>`<div class="scanbox"><textarea id="${id}" rows="1" placeholder="${esc(ph||'Scan, or type a code and press return')}" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Scan or type a code"></textarea><label class="btn gray scanphoto">${ic('qr')}Photo<input type="file" accept="image/*" capture="environment" hidden data-photo="${id}"></label></div>`;
+function bindScan(root,id,onCode){const t=$('#'+id,root);if(!t)return;let tm=0;const go=()=>{const v=t.value;if(!v.trim())return;t.value='';onCode(v)};
+ t.addEventListener('input',()=>{clearTimeout(tm);if(/\n\s*$/.test(t.value))tm=setTimeout(go,280)});
+ const ph=root.querySelector(`[data-photo="${id}"]`);if(ph)ph.onchange=async()=>{const f=ph.files[0];ph.value='';if(!f)return;toast('Reading code…');try{const d=await decodePhoto(f);if(d)onCode(d);else toast('No code found. Get closer and keep it flat.',true)}catch(e){toast('Couldn’t load the code reader. Check the connection.',true)}};
+ setTimeout(()=>t.focus(),320)}
+function scanSheet(){openSheet({title:'Scan',body:`<div class="stack">${scanBox('scanIn')}<p class="ft">Cabinet sticker, pallet sheet, hardware pallet label or spot label. Use the scanner, the Photo button, or type it.</p></div>`,bind:s=>bindScan(s,'scanIn',v=>{closeSheet();routeScan(v)})})}
+function routeScan(v){const r=parseScan(v);if(!r)return;
+ if(r.kind==='pallet'){const p=S.pals[r.id];if(p)return openPal(p.id);return onboardSheet(r.id)}
+ if(r.kind==='hw'){if(S.pals[r.id])return openPal(r.id);return toast('That hardware label isn’t in the app',true)}
+ if(r.kind==='cab'){const p=cabPallet(r.cab.key);if(p){PV.hl=r.cab.key;return openPal(p.id)}return openSheet({title:r.cab.cab,body:`<div class="stack"><div class="hero"><p class="nm" style="margin:0">${esc(r.cab.cab)} · ${esc(r.cab.type)}</p><p class="sub cap">${esc(r.cab.job)} · ${esc(r.cab.bldg)} · ${esc(r.cab.color)}</p></div><div class="group"><p class="empty">Not on a pallet in this app yet.</p></div></div>`,foot:`<button class="btn" id="y">${ic('plus')}Start a pallet with it</button>`,bind:s=>{$('#y',s).onclick=()=>{BUILD={size:'single',cabs:[r.cab],pal:null};closeSheet();go('build')}}})}
+ if(r.kind==='spot')return whereOf([{phys:r.loc,src:r.loc}]);
+ findQ=r.q;go('find')}
+
+/* ---------- PDFs (saved, then printed from Files) ---------- */
+let pdfP=null;function loadPDF(){return pdfP||(pdfP=new Promise((ok,no)=>{const s=document.createElement('script');s.src='https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';s.onload=()=>ok(window.jspdf.jsPDF);s.onerror=()=>{pdfP=null;no(new Error('pdf'))};document.head.append(s)}))}
+function qrDraw(doc,text,x,y,size){const q=qrcode(0,'M');q.addData(text);q.make();const n=q.getModuleCount(),c=size/n;doc.setFillColor(0,0,0);for(let r=0;r<n;r++)for(let k=0;k<n;k++)if(q.isDark(r,k))doc.rect(x+k*c,y+r*c,c+.004,c+.004,'F')}
+async function savePDF(name,draw){try{const J=await loadPDF(),doc=new J({unit:'in',format:'letter'});draw(doc);await saveFile(name,doc.output('blob'))}catch(e){console.error(e);toast('Couldn’t make the PDF. Check the connection.',true)}}
+function palRows(p){if(p.items&&p.items.length){const M=new Map();p.items.forEach(x=>{const k=x.cab;const o=M.get(k)||{item:k,qty:0,building:x.bldg||p.bldg||'',unit:x.unit||p.unit||''};o.qty++;M.set(k,o)});return[...M.values()]}
+ return((p.sheet&&p.sheet.items)||[]).map(x=>({item:x.item,qty:+x.qty||1,building:x.building||p.bldg||'',unit:p.unit||''}))}
+function palletPDF(p){const rows=palRows(p),code=p.code||('Pallet:'+p.id);savePDF(`pallet-${(p.job||'').replace(/\W+/g,'-').slice(0,24)}-${p.id.slice(-5)}.pdf`,doc=>{
+ doc.setFont('helvetica','bold');doc.setFontSize(20);doc.text(String(p.job||'Pallet'),.6,.85);doc.setFontSize(15);doc.text(String(p.bldg||''),.6,1.2);doc.text(String(p.po||''),.6,1.52);
+ doc.setFont('helvetica','normal');doc.setFontSize(10);doc.text(`${p.size==='double'?'Double':'Single'} pallet · ${p.id.slice(-5).toUpperCase()}`,.6,1.8);qrDraw(doc,code,6.3,.5,1.6);
+ let y=2.45;doc.setFont('helvetica','bold');doc.setFontSize(12);doc.text('Item',.6,y);doc.text('Quantity',3.6,y);doc.text('Building',4.6,y);doc.text('Unit',7.3,y);doc.setLineWidth(.01);doc.line(.6,y+.1,7.9,y+.1);
+ doc.setFont('helvetica','normal');doc.setFontSize(11);let tot=0;rows.forEach(r=>{y+=.32;if(y>10.2){doc.addPage();y=.8}doc.text(String(r.item).slice(0,38),.6,y);doc.text(String(r.qty),3.9,y);doc.text(String(r.building).slice(0,40),4.6,y);doc.text(String(r.unit),7.3,y);doc.setDrawColor(200);doc.line(.6,y+.1,7.9,y+.1);tot+=r.qty});
+ y+=.4;doc.setFont('helvetica','bold');doc.text('Total Quantity',.6,y);doc.text(String(tot),3.9,y)})}
+function hwLabelPDF(p){const code='FORCE:HW:'+p.id;savePDF(`hardware-${(p.name||'pallet').replace(/\W+/g,'-').slice(0,30)}.pdf`,doc=>{
+ doc.setDrawColor(0);doc.setLineWidth(.03);doc.roundedRect(.5,.5,7.5,4.8,.15,.15);doc.setFont('helvetica','bold');doc.setFontSize(10);doc.text('FORCE · HARDWARE PALLET',.8,.95);
+ doc.setFontSize(34);doc.text(doc.splitTextToSize(String(p.name||'Hardware pallet'),4.3).slice(0,3),.8,1.7);doc.setFont('helvetica','normal');doc.setFontSize(18);doc.text('Spot '+(p.loc||'—'),.8,4.2);doc.setFontSize(11);doc.text(new Date().toLocaleDateString(),.8,4.7);qrDraw(doc,code,5.2,1.1,2.5)})}
+function spotLabelsPDF(list,name){savePDF(name,doc=>{list.forEach((l,i)=>{const k=i%10;if(i&&!k)doc.addPage();const c=k%2,r=Math.floor(k/2),x=.16+c*4.19,y=.5+r*2;
+ doc.setDrawColor(180);doc.setLineWidth(.01);doc.roundedRect(x+.05,y+.05,3.9,1.9,.1,.1);qrDraw(doc,'FORCE:SPOT:'+l.id,x+.2,y+.25,1.5);doc.setFont('helvetica','bold');doc.setFontSize(26);doc.text(l.id,x+1.9,y+.95);
+ doc.setFont('helvetica','normal');doc.setFontSize(9);doc.text(doc.splitTextToSize(`${zone(l.z).name} · ${posText(l)}`,1.95),x+1.9,y+1.3)})})}
+
+/* ---------- directions + where it is (search → map) ---------- */
+function dirText(loc){const l=LOC[loc];if(!l||!l.geo)return '';const z=zone(l.z),w2=['A','B','C','D'].includes(z.id);
+ const aisle={D:'aisle between Rack D and Aisle C',C:'aisle between Rack D and Aisle C',B:'aisle between Aisles B and A',A:'aisle between Aisles B and A'}[z.id];
+ return [w2?'Warehouse 2':'Warehouse 1, through the opening',aisle,z.kind==='rack'||z.kind==='shelf'?`${z.name}, bay ${l.bay}`:z.name,posText(l)].filter(Boolean).join(' → ')}
+let WH=null;
+function whereOf(entries,i=0){entries=entries.filter(e=>LOC[e.phys]?.geo);if(!entries.length)return toast('Not in a rack spot yet',true);WH={entries,i};if(route==='map')showWhere();else go('map')}
+function partWhere(sku){const o=onHand(sku);const es=o.locs.map(([loc,q])=>({phys:physLoc(loc),src:loc,sku,q})).filter(e=>LOC[e.phys]?.geo);if(!es.length)return itemSheet(sku);whereOf(es)}
+function showWhere(){if(!WH)return;const e=WH.entries[WH.i];selectSpot(e.phys,true);setTimeout(()=>whereSheet(),W3?700:0)}
+function whereSheet(){const E=WH.entries,e=E[WH.i],l=LOC[e.phys],i=e.sku&&item(e.sku),pl=palAt(e.phys);
+ openSheet({title:i?i.name:e.phys,live:true,body:()=>`<div class="stack">${E.length>1?`<div class="pills" role="group" aria-label="Places">${E.map((x,k)=>`<button class="pill" data-wi="${k}" aria-pressed="${k===WH.i}" style="${k===WH.i?'background:var(--tint);color:#fff':''}">${esc(locLabel(x.src))}${x.q!=null?' · '+esc(fmtQ(item(x.sku),x.q)):''}</button>`).join('')}</div>`:''}
+  <div class="hero"><p class="code" style="font-size:22px">${esc(e.phys)}</p>${e.sku?`<p class="big" style="margin-top:6px">${e.q==null?'<span class="warn">Not counted</span>':esc(fmtQ(i,e.q))}</p>${fmtTot(i,e.q)?`<p class="tot">${fmtTot(i,e.q)}</p>`:''}`:''}${hpOf(e.src)?`<p class="sub cap">On ${esc(hpOf(e.src).name)}</p>`:''}</div>
+  <div class="dir">${ic('map')}<span>${esc(dirText(e.phys))}</span></div>
+  ${e.sku?`<div class="verbs">${verb('add','Add')}${verb('take','Take',e.q===0)}${verb('move','Move')}${verb('count','Count')}</div>`:''}
+  <div class="group">${pl.map(p=>`<button class="cell" data-op="${esc(p.id)}">${icoB(p.kind==='hardware'?'wrench':'pallet','')}<span class="tx"><b>${esc(palTitle(p))}</b><span class="t2">${esc(palUnit(p)||(p.kind==='hardware'?'Hardware pallet':''))}</span></span>${chev}</button>`).join('')}<button class="cell" id="wSpot">${icoB('tag','')}<span class="tx"><b>Spot details</b></span>${chev}</button></div></div>`,
+  bind:s=>{$$('[data-wi]',s).forEach(b=>b.onclick=()=>{WH.i=+b.dataset.wi;closeSheet();showWhere()});$$('[data-op]',s).forEach(b=>b.onclick=()=>openPal(b.dataset.op));$('#wSpot',s).onclick=()=>spotSheet(e.phys);
+   $$('[data-verb]',s).forEach(b=>b.onclick=()=>({add:()=>addSheet({loc:e.src,sku:e.sku}),take:()=>takeSheet({loc:e.src,sku:e.sku}),move:()=>moveSheet({loc:e.src,sku:e.sku}),count:()=>countSheet(e.src)})[b.dataset.verb]())}})}
+
+/* ---------- pallets: open, onboard, build, store, ship, audit ---------- */
+let PV={id:null,hl:null},BUILD=null,AUD={z:'A',seen:{},odd:[]};
+function openPal(id){PV.id=id;if(route===(S.pals[id]?.kind==='hardware'?'hpal':'pallet'))render();else go(S.pals[id]?.kind==='hardware'?'hpal':'pallet')}
+const palErr=(p,loc)=>{const l=LOC[loc];if(!l||!['A','B','C'].includes(l.z))return 'Cabinet pallets go in Aisles A, B or C.';if(p.size==='double'&&l.L!==4)return 'Double pallets go on level 4 only.';if(p.size!=='double'&&l.L===4)return 'Level 4 is for double pallets.';
+ const o=palAt(loc).find(x=>x.id!==p.id);if(o)return `${loc} already holds ${palTitle(o)}.`;if(lines(loc).length)return `${loc} has stock in it.`;return null};
+function palSuggest(p){const ok=PHYS.filter(l=>!palErr(p,l.id)),job=p.job;const mine=pals().filter(x=>x.id!==p.id&&x.job&&x.job===job&&x.loc).map(x=>LOC[x.loc]).filter(Boolean);
+ const sc=l=>{if(mine.length)return Math.min(...mine.map(m=>(m.z===l.z?0:50)+Math.abs(m.bay-l.bay)*2+Math.abs(m.L-l.L)));return 'ABC'.indexOf(l.z)*100+l.bay*2+l.L};return ok.sort((a,b)=>sc(a)-sc(b)).slice(0,3).map(l=>l.id)}
+function onboardSheet(hex){const p={id:hex,kind:'cabinet',size:'single'};openSheet({title:'New to this app',body:`<div class="stack"><p class="sub" style="text-align:center">This pallet sheet came from the old app. Save where it sits now; its contents can be added later.</p>
+  <div class="st"><p class="hd">Pallet</p>${segm('obs',['Single','Double'],'Single')}</div><div class="st"><p class="hd">Where is it</p><div id="obsp">${palSpotPick(p,'ob')}</div></div></div>`,
+  foot:`<div class="row2"><button class="btn gray" id="nos">Not in a rack</button><button class="btn" id="y">${ic('check')}Save spot</button></div>`,
+  bind:s=>{bindPalSpot(s,'ob',p);$$('[data-seg="obs"] [data-sv]',s).forEach(b=>b.addEventListener('click',()=>{p.size=b.dataset.sv.toLowerCase();$('#obsp',s).innerHTML=palSpotPick(p,'ob');bindPalSpot(s,'ob',p)}));
+   const save=loc=>guard(async()=>{const now=new Date().toISOString();await W.set('pals',hex,{kind:'cabinet',code:'Pallet:'+hex,legacy:true,size:p.size,status:loc?'stored':'complete',loc:loc||null,items:[],createdAt:now,by:whoId(),storedAt:loc?now:null});
+    if(loc)await logIt({type:'store',ref:'Pallet:'+hex,to:loc});closeSheet();toast(loc?`Saved at ${loc}`:'Saved');openPal(hex)});
+   $('#y',s).onclick=()=>{const loc=readPalSpot(s,'ob');if(!loc)return toast('Choose or scan the spot',true);const e=palErr(p,loc);if(e)return toast(e,true);save(loc)};$('#nos',s).onclick=()=>save(null)}})}
+function palSpotPick(p,k){const sg=palSuggest(p),zs=['A','B','C'];return `${sg.length?`<div class="pills">${sg.map(l=>`<button type="button" class="pill" data-sg="${k}" data-l="${l}">${l}</button>`).join('')}</div>`:''}
+ <div class="group" data-sk="${k}"><label class="field"><span>Aisle</span><select data-pz>${zs.map(z=>`<option value="${z}">${esc(zone(z).name)}</option>`).join('')}</select></label><label class="field"><span>Spot</span><select data-sl>${palSpotOpts(p,'A')}</select></label></div>${scanBox(k+'Scan','Or scan the spot label')}`}
+function palSpotOpts(p,z){const ls=PHYS.filter(l=>l.z===z&&!palErr(p,l.id));return `<option value="">${ls.length?'Choose':'No open spots'}</option>`+ls.map(l=>`<option value="${l.id}">${l.id} · level ${l.L}, bay ${l.bay}</option>`).join('')}
+function bindPalSpot(s,k,p){const g=$(`[data-sk="${k}"]`,s);if(!g)return;g.querySelector('[data-pz]').onchange=e=>{g.querySelector('[data-sl]').innerHTML=palSpotOpts(p,e.target.value)};
+ $$(`[data-sg="${k}"]`,s).forEach(b=>b.onclick=()=>{const l=LOC[b.dataset.l];g.querySelector('[data-pz]').value=l.z;g.querySelector('[data-sl]').innerHTML=palSpotOpts(p,l.z);g.querySelector('[data-sl]').value=l.id;$$(`[data-sg="${k}"]`,s).forEach(x=>x.setAttribute('aria-pressed',x===b))});
+ bindScan(s,k+'Scan',v=>{const r=parseScan(v);if(!r||r.kind!=='spot')return toast('That isn’t a spot label',true);const e=palErr(p,r.loc);if(e)return toast(e,true);const l=LOC[r.loc];g.querySelector('[data-pz]').value=l.z;g.querySelector('[data-sl]').innerHTML=palSpotOpts(p,l.z);g.querySelector('[data-sl]').value=r.loc;toast(r.loc+' selected')})}
+const readPalSpot=(s,k)=>$(`[data-sk="${k}"] [data-sl]`,s)?.value||null;
+function storeSheet(id){const p=S.pals[id];openSheet({title:p.loc?'Move pallet':'Store pallet',body:`<div class="stack"><div class="hero"><p class="nm" style="margin:0">${esc(palTitle(p))}</p><p class="sub cap">${esc(palUnit(p))} · ${p.size==='double'?'Double — level 4':'Single — levels 1–3'}</p></div>${palSpotPick(p,'st')}</div>`,
+ foot:`<button class="btn" id="y">${ic('check')}${p.loc?'Move here':'Store here'}</button>`,bind:s=>{bindPalSpot(s,'st',p);$('#y',s).onclick=()=>{const loc=readPalSpot(s,'st');if(!loc)return toast('Choose or scan the spot',true);const e=palErr(p,loc);if(e)return toast(e,true);
+  guard(async()=>{const d=await fresh('pals',id);const from=d.loc;Object.assign(d,{loc,status:'stored',storedAt:new Date().toISOString()});await W.set('pals',id,d);await logIt({type:from?'move':'store',ref:p.code,from:from||undefined,to:loc,job:p.job});closeSheet();toast(`${palTitle(p)} → ${loc}`)})}}})}
+function vPallet(v){const p=S.pals[PV.id];if(!p){v.innerHTML='<p class="empty">Pallet not found.</p>';return}const rows=palRows(p),o=isOffice(),known=palKnown(p);
+ v.innerHTML=`<div class="stack">${backBtn('Pallets','bk')}${title(palTitle(p),`${esc(palUnit(p))}${p.po?' · '+esc(p.po):''}`)}
+ <div class="pills"><span class="chip">${p.size==='double'?'Double':'Single'}</span><span class="chip">${{building:'Building',complete:'Ready to store',stored:'Stored',shipped:'Shipped'}[p.status]||p.status}</span>${p.legacy?'<span class="chip">From old app</span>':''}<span class="chip">${palCount(p)} item${palCount(p)===1?'':'s'}</span></div>
+ <div class="group">${p.loc?`<button class="cell" id="pWhere">${icoB('map','')}<span class="tx"><b class="code">${esc(p.loc)}</b><span class="t2">${esc(dirText(p.loc))}</span></span>${chev}</button>`:'<div class="cell"><span class="tx"><b>Not in a rack</b></span></div>'}</div>
+ ${p.status!=='shipped'?`<div class="row2"><button class="btn" id="pStore">${ic('pallet')}${p.loc?'Move':'Store'}</button><button class="btn gray" id="pPdf">${ic('sheet')}Pallet sheet</button></div>`:''}
+ <div class="st"><p class="hd">On this pallet${p.sheet&&!(p.items||[]).length?' · from sheet photo':''}</p><div class="group">${rows.length?rows.map(r=>`<div class="cell"${PV.hl&&(p.items||[]).some(x=>x.key===PV.hl&&x.cab===r.item)?' style="background:var(--tintbg)"':''}><span class="tx"><b>${esc(r.item)}</b><span class="t2">${esc(r.building)}${r.unit?' · '+esc(r.unit):''}</span></span><span class="val strong">${r.qty}</span></div>`).join(''):`<p class="empty">Contents not added yet</p>`}</div></div>
+ ${p.status!=='shipped'?`<div class="group"><button class="cell" id="pAdd">${icoB('qr','')}<span class="tx"><b>${known?'Scan more cabinets':'Add contents by scanning cabinets'}</b></span>${chev}</button>${!known&&SAMPLE?`<label class="cell" style="cursor:pointer">${icoB('eye','')}<span class="tx"><b>Read the pallet sheet from a photo</b><span class="t2">Claude reads the item list</span></span>${chev}<input type="file" accept="image/*" capture="environment" hidden id="pPhoto"></label>`:''}
+  ${p.loc?`<button class="cell" id="pShip">${icoB('truck','')}<span class="tx"><b>Ship this pallet</b></span>${chev}</button>`:''}${o?`<button class="cell" id="pDel" style="color:var(--red)"><span class="tx"><b>Delete pallet</b></span></button>`:''}</div>`:''}</div>`;
+ $('#bk').onclick=()=>{PV.hl=null;go('pallets')};const w=$('#pWhere');if(w)w.onclick=()=>whereOf([{phys:p.loc,src:p.loc}]);
+ const st=$('#pStore');if(st)st.onclick=()=>storeSheet(p.id);const pd=$('#pPdf');if(pd)pd.onclick=()=>palletPDF(p);
+ const ad=$('#pAdd');if(ad)ad.onclick=()=>{BUILD={size:p.size,cabs:[],pal:p.id};go('build')};
+ const ph=$('#pPhoto');if(ph)ph.onchange=()=>{const f=ph.files[0];ph.value='';if(f)readSheetPhoto(p.id,f)};
+ const sh=$('#pShip');if(sh)sh.onclick=()=>shipSheet(p.job,[p.id]);
+ const dl=$('#pDel');if(dl)dl.onclick=()=>openSheet({title:'Delete this pallet?',body:'<p class="sub" style="text-align:center">Its sheet QR stops working in this app.</p>',foot:'<button class="btn red" id="y">Delete</button>',bind:s=>{$('#y',s).onclick=()=>guard(async()=>{await W.del('pals',p.id);closeSheet();go('pallets')})}})}
+async function readSheetPhoto(id,file){if(!SAMPLE)return;toast('Reading the sheet…');try{
+ const r=await SAMPLE.json(`The image is a photo of a printed cabinet pallet sheet from a cabinet shop. Read it exactly. Return JSON only: {"job": string (the first title line), "group": string (the line like "Group 48 - [Casita Unit 1065]"), "po": string (the line starting "PO#"), "unit": string (the unit number from the last column, e.g. "1065"), "items": [{"item": string (Item column), "qty": number (Quantity column), "building": string (Building column)}], "total": number (Total Quantity)}. Use "" or 0 for anything you cannot read; never guess item names.`,{images:[file],modelTier:'default'});
+ if(!r||!Array.isArray(r.items)||!r.items.length)return toast('Couldn’t read the items. Try a straighter, closer photo.',true);
+ await guard(async()=>{const d=await fresh('pals',id);Object.assign(d,{sheet:{job:r.job||'',group:r.group||'',po:r.po||'',items:r.items.map(x=>({item:String(x.item||'').slice(0,60),qty:+x.qty||1,building:String(x.building||'').slice(0,80)})),total:+r.total||0},job:d.job||r.job||'',bldg:d.bldg||r.group||'',po:d.po||r.po||'',unit:d.unit||r.unit||''});await W.set('pals',id,d);toast(`Read ${r.items.length} lines. Check them against the sheet.`)})}
+ catch(e){console.error(e);toast(e&&e.code==='not_granted'?'Allow Claude to read photos for this page first.':'Couldn’t read the photo',true)}}
+function vBuild(v){if(!BUILD)BUILD={size:'single',cabs:[],pal:null};const B=BUILD,base=B.pal?S.pals[B.pal]:null,all=[...((base&&base.items)||[]),...B.cabs],first=all[0];
+ const warn=c=>first&&c!==first&&(c.job!==first.job||c.unit!==first.unit||c.bldg!==first.bldg)?`Different ${c.job!==first.job?'job':c.unit!==first.unit?'unit':'building'}`:'';
+ v.innerHTML=`<div class="stack">${backBtn(base?palTitle(base):'Pallets','bk')}${title(base?'Add cabinets':'Build pallet',first?`${esc(first.job)} · ${esc(first.bldg)}`:'Scan each cabinet sticker')}
+ ${base?'':`<div class="st"><p class="hd">Pallet</p>${segm('bsz',['Single','Double'],B.size==='double'?'Double':'Single')}</div>`}
+ ${scanBox('bScan','Scan a cabinet sticker')}
+ <div class="statg"><div class="stat"><b>${B.cabs.length}</b><span>${base?'added now':'scanned'}</span></div><div class="stat"><b>${all.length}</b><span>on the pallet</span></div></div>
+ <div class="group">${B.cabs.length?B.cabs.map((c,k)=>`<div class="cell"><span class="tx"><b>${esc(c.cab)}</b><span class="t2">${esc(c.type)} · ${esc(c.color)} · unit ${esc(c.unit)}${warn(c)?` · <span class="warn">${warn(c)}</span>`:''}</span></span><button class="pill" data-rmc="${k}" style="min-height:32px">Remove</button></div>`).reverse().join(''):'<p class="empty">Nothing scanned yet</p>'}</div>
+ <button class="btn" id="bDone" ${B.cabs.length?'':'disabled'}>${ic('check')}${base?'Add to pallet':'Complete pallet'}</button></div>`;
+ $('#bk').onclick=()=>{if(B.cabs.length&&!B.ok){B.ok=1;return toast('Tap back again to drop these scans',true)}BUILD=null;base?openPal(base.id):go('pallets')};
+ $$('[data-seg="bsz"] [data-sv]').forEach(b=>b.addEventListener('click',()=>{B.size=b.dataset.sv.toLowerCase()}));
+ $$('[data-rmc]').forEach(b=>b.onclick=()=>{B.cabs.splice(+b.dataset.rmc,1);render()});
+ bindScan(v,'bScan',val=>{const r=parseScan(val);if(!r)return;if(r.kind!=='cab')return toast(r.kind==='pallet'?'That’s a pallet sheet. Scan cabinet stickers here.':'That isn’t a cabinet sticker',true);
+  const c=r.cab;if(all.some(x=>x.key===c.key))return toast(`${c.cab} is already scanned`,true);const other=cabPallet(c.key);if(other&&other.id!==B.pal)toast(`${c.cab} was on ${palTitle(other)}; it moves here`,true);
+  B.cabs.push({...c,from:other&&other.id!==B.pal?other.id:undefined});const w=warn(c);if(w)toast(`${c.cab}: ${w.toLowerCase()} than the first cabinet`,true);else toast(`${c.cab} added · ${B.cabs.length}`);render()});
+ $('#bDone').onclick=()=>guard(async()=>{const cabs=B.cabs.map(({from,...c})=>c);
+  for(const oid of [...new Set(B.cabs.map(c=>c.from).filter(Boolean))]){const d=await fresh('pals',oid);d.items=(d.items||[]).filter(x=>!cabs.some(c=>c.key===x.key));await W.set('pals',oid,d)}
+  if(base){const d=await fresh('pals',base.id);d.items=[...(d.items||[]),...cabs];const f=d.items[0];Object.assign(d,{job:d.job||f.job,po:d.po||f.po,bldg:d.bldg||f.bldg,unit:d.unit||f.unit});await W.set('pals',base.id,d);await logIt({type:'palletize',ref:d.code,qty:cabs.length,job:d.job});BUILD=null;toast(`${cabs.length} added`);openPal(base.id);return}
+  const id=hex24(),f=cabs[0],now=new Date().toISOString();await W.set('pals',id,{kind:'cabinet',code:'Pallet:'+id,size:B.size,status:'complete',loc:null,job:f.job,po:f.po,bldg:f.bldg,unit:f.unit,items:cabs,createdAt:now,by:whoId()});
+  await logIt({type:'palletize',ref:'Pallet:'+id,qty:cabs.length,job:f.job});BUILD=null;toast('Pallet complete');PV.id=id;go('pallet');setTimeout(()=>openSheet({title:'Pallet complete',body:`<p class="sub" style="text-align:center">Save the pallet sheet to print it, then store the pallet.</p>`,foot:`<div class="row2"><button class="btn gray" id="a">${ic('sheet')}Pallet sheet</button><button class="btn" id="b">${ic('pallet')}Store it</button></div>`,bind:s=>{$('#a',s).onclick=()=>palletPDF(S.pals[id]);$('#b',s).onclick=()=>storeSheet(id)}}),200)})}
+function shipSheet(job,only){const list=pals().filter(p=>p.kind!=='hardware'&&p.status!=='shipped'&&p.loc&&(only?only.includes(p.id):p.job===job));
+ openSheet({title:only?'Ship pallet':'Ship '+(job||'pallets'),body:`<div class="stack"><div class="group">${list.map(p=>`<label class="field"><span style="flex:1">${esc(palTitle(p))}<br><small class="sub">${esc(palUnit(p))} · ${esc(p.loc)}</small></span><span class="switch"><input type="checkbox" data-sp2="${p.id}" checked><i></i></span></label>`).join('')||'<p class="empty">No stored pallets</p>'}</div></div>`,
+ foot:list.length?`<button class="btn" id="y">${ic('truck')}Mark shipped</button>`:'',bind:s=>{const y=$('#y',s);if(y)y.onclick=()=>guard(async()=>{const ids=$$('[data-sp2]',s).filter(x=>x.checked).map(x=>x.dataset.sp2);if(!ids.length)return toast('Choose a pallet',true);const now=new Date().toISOString();
+  for(const id of ids){const d=await fresh('pals',id);const from=d.loc;Object.assign(d,{status:'shipped',loc:null,shippedAt:now,shippedFrom:from});await W.set('pals',id,d);await logIt({type:'ship',ref:d.code,from,job:d.job})}
+  await W.set('outs',newOutId(),{type:'ship',ref:job||palTitle(S.pals[ids[0]]),status:'done',quick:true,lines:ids.map(id=>({sku:'Pallet '+id.slice(-5).toUpperCase(),qty:1,picked:1,from:[S.pals[id].shippedFrom||'']})),createdBy:whoId(),createdAt:now,doneBy:whoId(),doneAt:now});
+  closeSheet();toast(`${ids.length} pallet${ids.length>1?'s':''} shipped`)})}})}
+function vAudit(v){const z=AUD.z,here=pals().filter(p=>p.loc&&LOC[p.loc]?.z===z),seen=AUD.seen,miss=here.filter(p=>!seen[p.id]);
+ v.innerHTML=`<div class="stack">${backBtn('Pallets','bk')}${title('Audit an aisle','Scan every pallet sheet you see')}
+ <div class="group">${field('Aisle',`<select id="az">${['A','B','C'].map(x=>`<option value="${x}"${x===z?' selected':''}>${esc(zone(x).name)}</option>`).join('')}</select>`)}</div>
+ ${scanBox('aScan','Scan a pallet sheet')}
+ <div class="statg"><div class="stat"><b>${here.filter(p=>seen[p.id]).length}</b><span>Found where recorded</span></div><div class="stat"><b>${miss.length}</b><span>Not seen yet</span></div></div>
+ ${AUD.odd.length?`<div class="st"><p class="hd">Needs a fix · ${AUD.odd.length}</p><div class="group">${AUD.odd.map((o,k)=>`<button class="cell" data-odd="${k}"><span class="dotst" style="background:var(--orange)"></span><span class="tx"><b>${esc(o.t)}</b><span class="t2">${esc(o.s)}</span></span>${chev}</button>`).join('')}</div></div>`:''}
+ <div class="st"><p class="hd">Not seen yet · ${miss.length}</p><div class="group">${miss.map(p=>`<button class="cell" data-mp="${p.id}"><span class="tx"><b>${esc(palTitle(p))}</b><span class="t2">${esc(p.loc)} · ${esc(palUnit(p))}</span></span>${chev}</button>`).join('')||'<p class="empty">Every recorded pallet in this aisle was scanned</p>'}</div></div>
+ <button class="btn gray" id="aReset">Start over</button></div>`;
+ $('#bk').onclick=()=>go('pallets');$('#az').onchange=e=>{AUD={z:e.target.value,seen:{},odd:[]};render()};$('#aReset').onclick=()=>{AUD={z,seen:{},odd:[]};render()};
+ $$('[data-mp]').forEach(b=>b.onclick=()=>openPal(b.dataset.mp));$$('[data-odd]').forEach(b=>b.onclick=()=>{const o=AUD.odd[+b.dataset.odd];o.hex?onboardSheet(o.hex):storeSheet(o.id)});
+ bindScan(v,'aScan',val=>{const r=parseScan(val);if(!r||r.kind!=='pallet')return toast('Scan the pallet sheet',true);const p=S.pals[r.id];
+  if(!p){if(!AUD.odd.some(o=>o.hex===r.id))AUD.odd.push({hex:r.id,t:'Unknown pallet',s:'Not in this app yet · tap to add'});toast('Unknown pallet',true)}
+  else if(LOC[p.loc]?.z===z){seen[p.id]=1;toast(`${palTitle(p)} ✓ ${p.loc}`)}
+  else{if(!AUD.odd.some(o=>o.id===p.id))AUD.odd.push({id:p.id,t:palTitle(p),s:`Recorded at ${p.loc||'no spot'} · tap to set the spot`});toast(`${palTitle(p)} is recorded at ${p.loc||'no spot'}`,true)}render()})}
+
+/* ---------- hardware pallets ---------- */
+const hwSpots=()=>PHYS.filter(l=>(l.z==='D'&&l.L===1)||['HR1','HR2','R1','R0'].includes(l.z));
+function hwSpotSel(id,sel){return `<select id="${id}"><option value="">Choose</option>${hwSpots().map(l=>`<option value="${l.id}"${l.id===sel?' selected':''}>${l.id} · ${esc(zone(l.z).name)}${palAt(l.id).length?' · has '+palAt(l.id).length+' pallet':''}</option>`).join('')}</select>`}
+function newHPSheet(){let n=1;openSheet({title:'New hardware pallet',body:`<div class="stack"><div class="group">${field('Name','<input id="hpN" placeholder="Slides 16 in., white" autocomplete="off">')}${field('Spot',hwSpotSel('hpS',''))}</div>
+  <div id="hpL" class="stack">${hpLine(0)}</div><button class="btn gray" id="hpAdd">${ic('plus')}Add another part</button><p class="ft">One part per pallet, or several for a Misc pallet.</p></div>`,
+  foot:`<button class="btn" id="go">${ic('check')}Create pallet</button>`,
+  bind:s=>{$('#hpAdd',s).onclick=()=>$('#hpL',s).insertAdjacentHTML('beforeend',hpLine(n++));
+   SH.picked=(e=>{const g=e.target.closest('[data-hl]');if(g){g.querySelector('.qwrap').innerHTML=qtyPick(item(e.detail),'hq'+g.dataset.hl,null);initQty(g);const nm=$('#hpN',s);if(!nm.value)nm.value=item(e.detail).name}});
+   $('#go',s).onclick=()=>guard(async()=>{const name=$('#hpN',s).value.trim(),loc=$('#hpS',s).value;if(!name)return toast('Name the pallet',true);if(!loc)return toast('Choose its spot',true);
+    const ls=[];for(const g of $$('[data-hl]',s)){const k=g.dataset.hl,sku=readPart(g,'hp'+k),q=readQty(g,'hq'+k);if(!sku&&q==null)continue;if(!sku)return toast('Choose a part for each line',true);ls.push({sku,qty:Number.isNaN(q)?null:q})}
+    const id='h'+uid().slice(-9),now=new Date().toISOString();await W.set('pals',id,{kind:'hardware',name,code:'FORCE:HW:'+id,loc,status:'stored',createdAt:now,by:whoId()});
+    await W.set('stock','HP-'+id,{lines:ls,counted:ls.length&&ls.every(x=>x.qty!=null)?now:null,by:whoId()});for(const x of ls)if(x.qty)await logIt({type:'add',sku:x.sku,to:'HP-'+id,qty:x.qty,reason:'New pallet'});
+    closeSheet();toast(name+' created');PV.id=id;go('hpal');setTimeout(()=>openSheet({title:'Print its label',body:'<p class="sub" style="text-align:center">Save the label PDF, print it, and stick it on the pallet.</p>',foot:`<button class="btn" id="y">${ic('sheet')}Save label PDF</button>`,bind:x=>{$('#y',x).onclick=()=>{hwLabelPDF(S.pals[id]);closeSheet()}}}),200)})}})}
+const hpLine=k=>`<div class="st" data-hl="${k}"><p class="hd">Part ${k+1}</p>${partPick('hp'+k,null)}<div class="qwrap"></div></div>`;
+function vHPal(v){const p=S.pals[PV.id];if(!p){v.innerHTML='<p class="empty">Pallet not found.</p>';return}const loc='HP-'+p.id,ls=lines(loc),one=ls.length===1?ls[0]:null,i1=one&&item(one.sku);
+ v.innerHTML=`<div class="stack">${backBtn('Hardware','bk')}${title(p.name||'Hardware pallet',ls.length>1?`${ls.length} parts · Misc pallet`:'')}
+ <div class="group"><button class="cell" id="hWhere">${icoB('map','')}<span class="tx"><b class="code">${esc(p.loc||'No spot')}</b><span class="t2">${esc(dirText(p.loc))}</span></span>${chev}</button></div>
+ ${one?`<div class="hero"><p class="big">${one.qty==null?'<span class="warn">Not counted</span>':esc(fmtQ(i1,one.qty))}</p>${fmtTot(i1,one.qty)?`<p class="tot">${fmtTot(i1,one.qty)}</p>`:''}<p class="nm">${esc(i1?i1.name:one.sku)}</p></div>`:''}
+ <div class="verbs">${verb('add','Add')}${verb('take','Take',!ls.length)}${verb('move','Move',!ls.length)}${verb('count','Count')}</div>
+ ${ls.length>1||!ls.length?`<div class="st"><p class="hd">On this pallet</p>${ls.length>6?`<label class="search" style="padding-right:4px;margin-bottom:8px">${ic('search')}<input id="hq" type="search" placeholder="Find on this pallet" style="flex:1;border:0;background:none;font:inherit;color:var(--ink);min-height:44px;outline:none"></label>`:''}<div class="group" id="hl">${ls.map(x=>{const i=item(x.sku);return `<button class="cell" data-hs="${esc(x.sku)}"><span class="tx"><b>${esc(i?i.name:x.sku)}</b><span class="t2">${esc(x.sku)}</span></span><span class="val strong">${x.qty==null?'?':esc(fmtQ(i,x.qty))}</span>${chev}</button>`}).join('')||'<p class="empty">Nothing on it yet</p>'}</div></div>`:''}
+ <div class="group"><button class="cell" id="hMove">${icoB('move','')}<span class="tx"><b>Move pallet to another spot</b></span>${chev}</button><button class="cell" id="hLbl">${icoB('qr','')}<span class="tx"><b>Save label PDF</b></span>${chev}</button>${isOffice()?`<button class="cell" id="hRen">${icoB('edit','')}<span class="tx"><b>Rename</b></span>${chev}</button><button class="cell" id="hDel" style="color:var(--red)"><span class="tx"><b>Delete pallet</b></span></button>`:''}</div></div>`;
+ $('#bk').onclick=()=>go('hardware');$('#hWhere').onclick=()=>p.loc&&whereOf([{phys:p.loc,src:loc,sku:one?.sku,q:one?.qty}]);
+ const sku=one?.sku;$$('[data-verb]').forEach(b=>b.onclick=()=>({add:()=>addSheet({loc,sku}),take:()=>takeSheet({loc,sku}),move:()=>moveSheet({loc,sku}),count:()=>countSheet(loc)})[b.dataset.verb]());
+ $$('[data-hs]').forEach(b=>b.onclick=()=>{const k=b.dataset.hs;openSheet({title:item(k)?.name||k,body:`<div class="verbs">${verb('add','Add')}${verb('take','Take')}${verb('move','Move')}${verb('count','Count')}</div>`,bind:s=>$$('[data-verb]',s).forEach(x=>x.onclick=()=>({add:()=>addSheet({loc,sku:k}),take:()=>takeSheet({loc,sku:k}),move:()=>moveSheet({loc,sku:k}),count:()=>countSheet(loc)})[x.dataset.verb]())})});
+ const hq=$('#hq');if(hq)hq.oninput=()=>{const q=hq.value.toLowerCase();$$('#hl [data-hs]').forEach(b=>b.hidden=!b.textContent.toLowerCase().includes(q))};
+ $('#hMove').onclick=()=>openSheet({title:'Move '+(p.name||'pallet'),body:`<div class="group">${field('To',hwSpotSel('hmS',''))}</div>`,foot:`<button class="btn" id="y">${ic('move')}Move</button>`,bind:s=>{$('#y',s).onclick=()=>guard(async()=>{const to=$('#hmS',s).value;if(!to)return toast('Choose a spot',true);const d=await fresh('pals',p.id);const from=d.loc;d.loc=to;await W.set('pals',p.id,d);await logIt({type:'move',ref:d.code,from,to});closeSheet();toast(`Moved to ${to}`)})}});
+ $('#hLbl').onclick=()=>hwLabelPDF(p);
+ const rn=$('#hRen');if(rn)rn.onclick=()=>openSheet({title:'Rename',body:`<div class="group">${field('Name',`<input id="rnN" value="${esc(p.name||'')}">`)}</div>`,foot:'<button class="btn" id="y">Save</button>',bind:s=>{$('#y',s).onclick=()=>guard(async()=>{const d=await fresh('pals',p.id);d.name=$('#rnN',s).value.trim()||d.name;await W.set('pals',p.id,d);closeSheet()})}});
+ const dl=$('#hDel');if(dl)dl.onclick=()=>{if(ls.some(x=>x.qty))return toast('Take or move its contents first',true);openSheet({title:'Delete this pallet?',body:'',foot:'<button class="btn red" id="y">Delete</button>',bind:s=>{$('#y',s).onclick=()=>guard(async()=>{await W.del('pals',p.id);await W.del('stock',loc);closeSheet();go('hardware')})}})}}
+
+/* ---------- one template for the three sections ---------- */
+function section(v,{name,count,unit,b1,b2,chips,tiles,list,extra}){
+ v.innerHTML=`<div class="stack">${title(name,`<b style="color:var(--ink);font:700 17px var(--round)">${count}</b>&nbsp;${unit}`)}
+ <div class="row2">${b1}${b2}</div>
+ <div class="chips3">${chips.map(c=>`<button class="chip3" data-ch="${c.id}">${c.dot?`<i style="background:${c.dot}"></i>`:''}<b>${c.n===''?ic(c.icon||'chev','style="width:24px;height:24px;color:var(--tint)"'):c.n}</b><span>${c.label}</span></button>`).join('')}</div>
+ <div class="st"><p class="hd">Areas · tap to see it on the map</p><div class="areas">${tiles.map(t=>`<button class="area" data-ar="${t.z}"><b>${esc(t.name)}</b><span>${t.sub}</span>${t.bar!=null?`<i class="abar"><i style="width:${t.bar}%"></i></i>`:''}</button>`).join('')}</div></div>
+ ${extra||''}
+ <div class="st"><p class="hd">${list.title}</p><label class="search" style="padding-right:4px">${ic('search')}<input id="secq" type="search" value="${esc(SECQ[route]||'')}" placeholder="${list.ph}" style="flex:1;border:0;background:none;font:inherit;color:var(--ink);min-height:44px;outline:none"></label><div class="group" id="secl" style="margin-top:8px"></div></div></div>`;
+ $$('[data-ar]').forEach(b=>b.onclick=()=>{mode3=b.dataset.ar;selLoc=null;WH=null;ISO_NEXT=b.dataset.ar;go('map')});
+ const draw=()=>{const q=(SECQ[route]||'').toLowerCase().trim(),rows=list.rows().filter(r=>!q||r.hay.toLowerCase().includes(q));$('#secl').innerHTML=rows.slice(0,80).map(r=>r.html).join('')||`<p class="empty">${list.empty}</p>`;list.bind&&list.bind()};
+ $('#secq').oninput=e=>{SECQ[route]=e.target.value;draw()};draw()}
+let SECQ={},ISO_NEXT=null;
+const pct0=(a,b)=>b?Math.round(a/b*100):0;
+function vPallets(v){const P=pals().filter(p=>p.kind!=='hardware'),stored=P.filter(p=>p.status==='stored'),building=P.filter(p=>p.status==='building'),ready=P.filter(p=>p.status==='complete'),unk=P.filter(p=>p.status!=='shipped'&&!palKnown(p));
+ const cap=z=>PHYS.filter(l=>l.z===z).length;
+ section(v,{name:'Pallets',count:stored.length,unit:'stored',
+  b1:`<button class="btn" id="sB1">${ic('qr')}Build pallet</button>`,b2:`<button class="btn gray" id="sB2">${ic('pallet')}Store pallet</button>`,
+  chips:[{id:'ready',n:ready.length,label:'Ready to store',dot:'#FF9500'},{id:'unk',n:unk.length,label:'Contents missing',dot:'#AF52DE'},{id:'audit',n:'',icon:'count',label:'Audit an aisle',dot:''}],
+  tiles:['A','B','C'].map(z=>{const n=stored.filter(p=>LOC[p.loc]?.z===z).length;return{z,name:zone(z).name,sub:`${n} pallets · ${pct0(n,cap(z))}% full`,bar:pct0(n,cap(z))}}),
+  extra:`<div class="group"><button class="cell" id="sShip">${icoB('truck','')}<span class="tx"><b>Ship a job</b></span>${chev}</button></div>`,
+  list:{title:'Pallets by job',ph:'Job, unit, PO, cabinet',empty:P.length?'No match':'No pallets yet. Build one, or scan an old pallet sheet.',
+   rows:()=>P.filter(p=>p.status!=='shipped').sort((a,b)=>(a.job||'~').localeCompare(b.job||'~')||(a.unit||'').localeCompare(b.unit||'')).map(p=>({hay:[p.job,p.unit,p.bldg,p.po,p.loc,p.id,...(p.items||[]).map(x=>x.cab+' '+x.cid)].join(' '),
+    html:`<button class="cell" data-pl="${p.id}"><span class="dotst" style="background:${p.status==='stored'?'#34C759':p.status==='complete'?'#FF9500':'#8E8E93'}"></span><span class="tx"><b>${esc(palTitle(p))}</b><span class="t2">${esc(palUnit(p))} · ${palCount(p)} items${palKnown(p)?'':' · <span class="warn">contents missing</span>'}</span></span><span class="val code" style="font-size:15px">${esc(p.loc||'—')}</span>${chev}</button>`})),
+   bind:()=>$$('[data-pl]').forEach(b=>b.onclick=()=>openPal(b.dataset.pl))}});
+ $('#sB1').onclick=()=>{BUILD={size:'single',cabs:[],pal:null};go('build')};
+ $('#sB2').onclick=()=>{const r=pals().filter(p=>p.kind!=='hardware'&&p.status==='complete');openSheet({title:'Store pallet',body:`<div class="stack">${scanBox('stScan','Scan the pallet sheet')}${r.length?`<div class="st"><p class="hd">Ready to store</p><div class="group">${r.map(p=>`<button class="cell" data-rs="${p.id}"><span class="tx"><b>${esc(palTitle(p))}</b><span class="t2">${esc(palUnit(p))}</span></span>${chev}</button>`).join('')}</div></div>`:''}</div>`,
+  bind:s=>{$$('[data-rs]',s).forEach(b=>b.onclick=()=>storeSheet(b.dataset.rs));bindScan(s,'stScan',val=>{const x=parseScan(val);if(!x||x.kind!=='pallet')return toast('Scan the pallet sheet',true);S.pals[x.id]?storeSheet(x.id):onboardSheet(x.id)})}})};
+ $('#sShip').onclick=()=>{const jobs=[...new Set(pals().filter(p=>p.kind!=='hardware'&&p.loc&&p.status!=='shipped').map(p=>p.job).filter(Boolean))].sort();openSheet({title:'Ship a job',body:`<div class="group">${jobs.map(j=>`<button class="cell" data-sj="${esc(j)}"><span class="tx"><b>${esc(j)}</b><span class="t2">${pals().filter(p=>p.job===j&&p.loc&&p.status!=='shipped').length} pallets stored</span></span>${chev}</button>`).join('')||'<p class="empty">No stored pallets with a job</p>'}</div>`,bind:s=>$$('[data-sj]',s).forEach(b=>b.onclick=()=>shipSheet(b.dataset.sj))})};
+ $$('[data-ch]').forEach(b=>b.onclick=()=>{const c=b.dataset.ch;if(c==='audit'){AUD={z:'A',seen:{},odd:[]};return go('audit')}SECQ.pallets='';const list=c==='ready'?ready:unk;openSheet({title:c==='ready'?'Ready to store':'Contents missing',body:`<div class="group">${list.map(p=>`<button class="cell" data-pl2="${p.id}"><span class="tx"><b>${esc(palTitle(p))}</b><span class="t2">${esc(p.loc||'not stored')} · ${esc(palUnit(p))}</span></span>${chev}</button>`).join('')||'<p class="empty">None</p>'}</div>`,bind:s=>$$('[data-pl2]',s).forEach(x=>x.onclick=()=>openPal(x.dataset.pl2))})})}
+const BCOL={w:'#F1EFEA',c:'#C98B5A',m:'#7FA86B'};
+function bunkCell(l){const ls=lines(l.id),n=ls.reduce((a,x)=>a+(x.qty||0),0),st=locStatus(l.id),k=l.bunk===4?'m':l.purpose.includes('white')?'w':'c';
+ return `<button class="bk ${st==='wrong'?'bad':''}" data-bk="${l.id}" style="--bc:${BCOL[k]}"><b>${ls.length?(ls.some(x=>x.qty==null)?'?':fmt(n)):'–'}</b><span>${l.col}</span></button>`}
+function vBoards(v){const B=allItems().filter(i=>i.cat==='board'),sheets=B.reduce((a,i)=>a+onHand(i.sku).n,0),spots=PHYS.filter(l=>SECT.boards.includes(l.z));
+ const zsub=z=>{const ls=spots.filter(l=>l.z===z),u=ls.filter(l=>lines(l.id).length).length;return `${u} of ${ls.length} in use`};
+ section(v,{name:'Boards',count:fmt(sheets),unit:'sheets',
+  b1:`<button class="btn" id="sB1">${ic('in')}Receive</button>`,b2:`<button class="btn gray" id="sB2">${ic('box')}Send to saw</button>`,
+  chips:[{id:'low',n:B.filter(lowState).length,label:'Low colors',dot:'#FF9500'},{id:'unc',n:spots.filter(l=>locStatus(l.id)==='uncounted').length,label:'Not counted',dot:'#FF9F0A'},{id:'wrong',n:spots.filter(l=>locStatus(l.id)==='wrong').length,label:'Wrong spot',dot:'#FF3B30'}],
+  tiles:SECT.boards.map(z=>({z,name:zone(z).name,sub:zsub(z)})),
+  extra:`<div class="st"><p class="hd">Bunks · columns 1–4</p><div class="group bkgrid">${[1,2,3,4].map(b=>`<div class="bkrow"><span class="bkn">Bunk ${b}</span>${[1,2,3,4].map(c=>bunkCell(LOC[`BK${b}-${c}`])).join('')}</div>`).join('')}<div class="bkkey"><span><i style="background:${BCOL.w}"></i>White</span><span><i style="background:${BCOL.c}"></i>Colored</span><span><i style="background:${BCOL.m}"></i>6 mm</span></div></div></div>`,
+  list:{title:'Boards by color',ph:'Color, thickness, part #',empty:'No boards in the parts list yet',
+   rows:()=>B.sort((a,b)=>(a.color||a.name).localeCompare(b.color||b.name)).map(i=>{const o=onHand(i.sku);return{hay:[i.name,i.sku,i.color,i.thk].join(' '),html:`<button class="cell" data-pw="${esc(i.sku)}">${i.swatch?`<span class="sw" style="background:${esc(i.swatch)};width:22px;height:22px;border-radius:6px"></span>`:''}<span class="tx"><b>${esc(i.name)}</b><span class="t2">${esc(i.thk||'')} · ${o.locs.map(x=>x[0]).slice(0,3).join(', ')||'not in a spot'}</span></span><span class="val">${o.locs.length?(o.unk&&!o.n?'?':esc(fmtQ(i,o.n))):'0'}</span>${chev}</button>`}}),
+   bind:()=>$$('[data-pw]').forEach(b=>b.onclick=()=>partWhere(b.dataset.pw))}});
+ $('#sB1').onclick=()=>{IN={tab:'exp',id:null,step:null};go('incoming')};$('#sB2').onclick=()=>outForm('saw');
+ $$('[data-bk]').forEach(b=>b.onclick=()=>spotSheet(b.dataset.bk));
+ $$('[data-ch]').forEach(b=>b.onclick=()=>{const c=b.dataset.ch;const list=c==='low'?B.filter(lowState).map(i=>({t:i.name,s:fmtQ(i,onHand(i.sku).n)+' left',f:()=>itemSheet(i.sku)})):spots.filter(l=>locStatus(l.id)===(c==='unc'?'uncounted':'wrong')).map(l=>({t:l.id,s:posText(l),f:()=>spotSheet(l.id)}));
+  openSheet({title:b.querySelector('span').textContent,body:`<div class="group">${list.map((x,k)=>`<button class="cell" data-li="${k}"><span class="tx"><b>${esc(x.t)}</b><span class="t2">${esc(x.s)}</span></span>${chev}</button>`).join('')||'<p class="empty">None</p>'}</div>`,bind:s=>$$('[data-li]',s).forEach(x=>x.onclick=()=>list[+x.dataset.li].f())})})}
+function vHardware(v){const HP=pals().filter(p=>p.kind==='hardware'),spots=hwSpots(),its=allItems().filter(i=>['hardware','handle','fastener','packaging','molding','misc'].includes(i.cat));
+ const zsub=z=>z==='D'?`${HP.filter(p=>LOC[p.loc]?.z==='D').length} pallets on level 1`:`${spots.filter(l=>l.z===z&&lines(l.id).length).length} of ${spots.filter(l=>l.z===z).length} in use`;
+ const hwLocs=new Set([...spots.map(l=>l.id),...HP.map(p=>'HP-'+p.id)]);
+ section(v,{name:'Hardware',count:HP.length,unit:`pallet${HP.length===1?'':'s'}`,
+  b1:`<a class="btn" href="#grab">${ic('hand')}Grab parts</a>`,b2:`<button class="btn gray" id="sB2">${ic('plus')}New pallet</button>`,
+  chips:[{id:'low',n:its.filter(lowState).length,label:'Low',dot:'#FF9500'},{id:'unc',n:[...hwLocs].filter(l=>lines(l).some(x=>x.qty==null)).length,label:'Not counted',dot:'#FF9F0A'},{id:'rec',n:[...hwLocs].filter(l=>sinfo(l).recount).length,label:'Recount',dot:'#AF52DE'}],
+  tiles:SECT.hardware.map(z=>({z,name:zone(z).name+(z==='D'?' · level 1':''),sub:zsub(z)})),
+  list:{title:'Pallets and parts',ph:'Pallet or part name',empty:'Nothing yet. Create a hardware pallet.',
+   rows:()=>[...HP.sort((a,b)=>(a.name||'').localeCompare(b.name||'')).map(p=>{const ls=lines('HP-'+p.id),one=ls.length===1&&ls[0];return{hay:[p.name,p.loc,...ls.map(x=>x.sku+' '+(item(x.sku)?.name||''))].join(' '),html:`<button class="cell" data-hp="${p.id}">${icoB('pallet','')}<span class="tx"><b>${esc(p.name)}</b><span class="t2">${esc(p.loc||'no spot')} · ${ls.length>1?ls.length+' parts':one?esc(item(one.sku)?.name||one.sku):'empty'}</span></span><span class="val">${one?(one.qty==null?'?':esc(fmtS(item(one.sku),one.qty))):''}</span>${chev}</button>`}}),
+    ...spots.filter(l=>l.z!=='D').flatMap(l=>lines(l.id).map(x=>{const i=item(x.sku);return{hay:[l.id,x.sku,i?.name].join(' '),html:`<button class="cell" data-pw="${esc(x.sku)}"><span class="tx"><b>${esc(i?i.name:x.sku)}</b><span class="t2"><span class="code" style="font-size:14px">${l.id}</span> · ${esc(zone(l.z).name)}</span></span><span class="val">${x.qty==null?'?':esc(fmtQ(i,x.qty))}</span>${chev}</button>`}}))],
+   bind:()=>{$$('[data-hp]').forEach(b=>b.onclick=()=>openPal(b.dataset.hp));$$('[data-pw]').forEach(b=>b.onclick=()=>partWhere(b.dataset.pw))}}});
+ $('#sB2').onclick=newHPSheet;
+ $$('[data-ch]').forEach(b=>b.onclick=()=>{const c=b.dataset.ch;const list=c==='low'?its.filter(lowState).map(i=>({t:i.name,s:fmtQ(i,onHand(i.sku).n)+' left',f:()=>itemSheet(i.sku)})):[...hwLocs].filter(l=>c==='unc'?lines(l).some(x=>x.qty==null):sinfo(l).recount).map(l=>({t:locLabel(l),s:hpOf(l)?'Hardware pallet':posText(LOC[l]),f:()=>hpOf(l)?openPal(hpOf(l).id):spotSheet(l)}));
+  openSheet({title:b.querySelector('span').textContent,body:`<div class="group">${list.map((x,k)=>`<button class="cell" data-li="${k}"><span class="tx"><b>${esc(x.t)}</b><span class="t2">${esc(x.s)}</span></span>${chev}</button>`).join('')||'<p class="empty">None</p>'}</div>`,bind:s=>$$('[data-li]',s).forEach(x=>x.onclick=()=>list[+x.dataset.li].f())})})}
+const fmtS=(i,q)=>{const pk=packOf(i);return pk&&q>=pk.q?`${Math.floor(q/pk.q)} ${pk.n==='box'?'bx':pk.n}`:`${fmt(q)} ${uom(i)}`};
+const MORE=[['Moving',[['incoming','Incoming','in'],['outgoing','Outgoing','out'],['grab','Grab parts','hand']]],['Checking',[['count','Count','count'],['audit','Audit an aisle','pallet'],['alerts','Alerts','bell']]],['Looking up',[['find','Find','search'],['map','Map overview','map'],['items','Parts','box'],['spots','Spots & labels','tag']]],['Reports & setup',[['report','Daily report','chart'],['setup','Setup','gear']]]];
+const moreGroups=()=>MORE.map(([h,its])=>`<div class="st"><p class="hd">${h}</p><div class="group">${its.map(([r,l,i])=>`<a class="cell" href="#${r}">${icoB(i,'')}<span class="tx"><b>${l}</b></span>${chev}</a>`).join('')}</div></div>`).join('');
+function vMore(v){v.innerHTML=`<div class="stack">${title('More')}${moreGroups()}</div>`;$$('a[href="#audit"]').forEach(a=>a.onclick=()=>{AUD={z:'A',seen:{},odd:[]}})}
+/* one-time move to the v6 layout: Rack D level 1 front spots c/d become a/b, and spot stock there becomes hardware pallets */
+async function migrateV6(){if(S.meta.v6||!isOffice()||!CANWRITE)return;const old=Object.keys(S.stock).filter(k=>/^D-1\d+-(c|d)$/.test(k));
+ for(const k of old){const d=clone(S.stock[k]),nk=k.replace(/-c$/,'-a').replace(/-d$/,'-b');const ls=d.lines||[];
+  if(ls.length){const id='h'+uid().slice(-9),i=item(ls[0].sku);await W.set('pals',id,{kind:'hardware',name:i?i.name:ls[0].sku,code:'FORCE:HW:'+id,loc:nk,status:'stored',createdAt:new Date().toISOString(),by:whoId(),migrated:k});
+   await W.set('stock','HP-'+id,{lines:ls,counted:d.counted||null,by:d.by||null});}
+  const nd={lines:[]};if(d.assign)nd.assign=d.assign;await W.set('stock',nk,nd);await W.del('stock',k)}
+ await W.set('meta','main',{...S.meta,v6:true})}
 
 boot();
 </script>

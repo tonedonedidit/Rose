@@ -1,6 +1,6 @@
 # Force Gilbert Inventory: v6 plan (revised for review)
 
-**Status: waiting for your review. Nothing in this plan is built yet.**
+**Status: built and tested (Oct 28, 2026). Build report at the bottom.**
 Order: (1) you review this plan and answer the questions at the bottom → (2) you say "go" → (3) I build → (4) I review my own build and run a full test of every flow, then report what passed, what failed, and what's still missing.
 
 ---
@@ -123,3 +123,32 @@ The report lists what passed, what failed, and what's still missing.
 - **F. Wi-Fi.** Is there reliable Wi-Fi or cell signal in Warehouse 2 by the racks?
 - **G. Bay 1.** For Rack D and Aisles A–C, is bay 1 at the end nearest the hole in the wall?
 - **H. Shelves.** Do Hardware racks 1 & 2 (screws, nails) and Rack 1 (handles) also get pallet-style QR labels, or stay tracked by shelf spot?
+
+
+---
+
+## Your answers (Oct 28)
+Each worker has a tablet or their own phone. The old app ("Force Inventory") scanned with the device camera. Pallet sheets print on a regular printer, and cabinet stickers print on sticker sheets in the office. There are 100+ cabinet pallets in the racks. Goal: replace the old app (fallback: hardware only). Wi-Fi is good by the racks. Bay 1 = D-11, C-15, B-15, A-11. Hardware racks and Rack 1 are tracked by a designated spot per item plus a spot QR label.
+
+## 13. Build report
+**Tested on a simulated iPhone (390 pt), light and dark mode: 62 of 62 v6 checks passed, plus the earlier Office/receiving suite. Zero console errors and no sideways scrolling on any screen.**
+
+| Area | Verified |
+|---|---|
+| Rack D move | D-11-c→D-11-a, D-11-d→D-11-b, D-12-c→D-12-a, D-13-c→D-13-a; old codes still resolve. Done on the live data in one atomic batch; the 3 slide spots became hardware pallets (1,000 pcs kept). |
+| Scanning | An 8-line cabinet sticker typed by a scanner = one scan. Duplicate caught. Different unit warned. **Photos of your real pallet sheet and cabinet sticker decode** (the Photo button). |
+| Pallets | Built from 3 cabinets → pallet sheet PDF → stored at a suggested spot. A double pallet is refused on levels 1–3. An unknown old sheet (`Pallet:6aba…`) is saved "location first". Scanning a cabinet opens its pallet. Audit and ship work. |
+| Hardware | New pallet + label PDF. Moving it keeps its contents. Grab parts pulls from the pallet. Scanning its label opens it. Count on a Rack D spot counts the pallet. |
+| Map | Search → shows only Rack D and glides to D-11-a with directions. An area tile starts at bay 1; Next goes to bay 2. |
+| Roles | Floor gets the More tab, with no New/Edit part. **Live database refuses part edits from floor accounts** (checked on the real store). |
+| Office | Backorders, slips, reorder → Make PO, job usage, value, Excel import (title rows, totals, remembered layout). |
+
+**Not testable here (needs real people or devices):**
+- Two people pulling at the same instant: the lock is built, but only shows under real simultaneous use.
+- Claude reading a pallet-sheet photo: needs your consent in the live page.
+- Printing from the iPad to your printer.
+- A real Bluetooth scanner: the burst handling is tested; the device isn't.
+
+**Still open:**
+- Workers need to be signed in to claude.ai (Team plan seats, or a shared account per tablet) for saves to work. Today the app is private to you; share it from the page's Share menu (Contributor = floor, Editor = office).
+- The old app's export, if it has one, would load the 100+ pallets' contents in one step.
