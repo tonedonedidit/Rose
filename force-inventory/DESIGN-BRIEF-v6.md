@@ -9,7 +9,7 @@ Split the app into **three storage sections that each work the same way**: Palle
 | Pallets section | Aisles A, B, C. **Levels 1–3: single pallets. Level 4: double pallets only** (a+b, c+d), which already matches the spot codes, e.g. A-44-c+d. |
 | Boards section | Bunks 1–4, Cantilever 1 & 2, Board drop |
 | Hardware section | Rack D level 1, Hardware racks 1 & 2, **Rack 1 (excess handles)** |
-| Rack 0 | Stays molding, misc and cardboard. Shown inside Hardware as "Supplies · Rack 0" (see open question 1). |
+| Rack 0 | **Labeled "Supplies"** everywhere (map, search, spot codes stay R0-…). Holds molding, misc and cardboard on top. Shown as the Supplies area inside the Hardware section. |
 | Pallet identity | Every cabinet has a QR sticker printed by the office (type, job, phase, building, floor, unit, color). A pallet is built by **scanning each cabinet into it**. The finished pallet gets a **printed sheet** with its own QR code, listing every item, quantity, building, unit and job name. |
 | Bottom bar | My call, by the formula below |
 | Office data | Stephen and Roman have the sheets. Questions for them are in a separate form. |
@@ -35,7 +35,7 @@ Every section screen has the same five rows, in this order:
 | **1. Header** (name + one key number) | Pallets · 38 stored | Boards · 412 sheets | Hardware · 61 parts |
 | **2. Two primary buttons** | **Build pallet** · Store pallet | **Receive boards** · Send to saw | **Grab parts** · Put away |
 | **3. Status strip** (3 chips, tappable) | Building 2 · Ready to store 3 · Shipping today 4 | Low colors 2 · Not counted 9 · Wrong bunk 1 | Low 5 · Not counted 12 · Recount 1 |
-| **4. Areas** (mini map tiles, tap = map glides there) | Aisle A · B · C, with % full | Bunks 1–4 · Cantilever 1 · 2 · Drop | Rack D · Hardware 1 · 2 · Rack 1 · Rack 0 |
+| **4. Areas** (mini map tiles, tap = map glides there) | Aisle A · B · C, with % full | Bunks 1–4 · Cantilever 1 · 2 · Drop | Rack D · Hardware 1 · 2 · Rack 1 · Supplies |
 | **5. List** (search within section) | Pallets by job | Boards by color / thickness | Parts by name |
 
 Same spacing, same component sizes, same order. Learn one section and you know all three.
@@ -69,7 +69,7 @@ Same spacing, same component sizes, same order. Learn one section and you know a
 
 ## Hardware
 - **Grab parts** stays the fastest path: tap a part, set quantity, enter the job, and you're done.
-- **Rack D level 1 boxes** show box count and pieces. **Rack 1** groups handles by style and finish. **Rack 0** shows supplies, with cardboard on top.
+- **Rack D level 1 boxes** show box count and pieces. **Rack 1** groups handles by style and finish. **Supplies (Rack 0)** shows molding and misc, with cardboard on top.
 - Reorder points live here (office-only to edit).
 
 ## Connected: every object links to its neighbors
@@ -85,5 +85,5 @@ Same spacing, same component sizes, same order. Learn one section and you know a
 4. Everything still works at 390 pt, in light and dark mode, with zero errors, and the existing data stays compatible.
 
 ## Open questions (in the office form for Stephen and Roman, plus these for you)
-1. Rack 0 under Hardware as "Supplies," or should it be its own small section?
-2. Can you scan one cabinet sticker with the iPhone Camera and send me the text that pops up? That tells me exactly what the QR holds.
+1. ~~Rack 0~~ Decided: labeled **Supplies**.
+2. **Keep the old QR codes.** The iPhone Camera shows "no data" but the old app reads them, so they likely hold an ID in the old app's own format. Needed: close photos of a cabinet sticker and a pallet label, the old app's name, and a screenshot of what it shows after a scan. Copying the data in by hand is the last resort.
