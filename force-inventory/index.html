@@ -442,7 +442,7 @@ const IC={
  count:'<rect x="5" y="4" width="14" height="17" rx="3"/><path d="M9 3h6v3H9zM9 13l2 2 4-4"/>',box:'<path d="M3 7l9-4 9 4-9 4zM3 7v10l9 4 9-4V7M12 11v10"/>',
  tag:'<path d="M3 12V4h8l10 10-8 8z"/><circle cx="7.5" cy="7.5" r="1.5"/>',chart:'<path d="M5 20V11M12 20V5M19 20v-6"/>',sheet:'<rect x="4" y="3" width="16" height="18" rx="3"/><path d="M4 9h16M4 15h16M10 3v18"/>',
  gear:'<circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9L7 7M17 17l2.1 2.1M4.9 19.1L7 17M17 7l2.1-2.1"/>',
- chev:'<path d="M9 6l6 6-6 6"/>',back:'<path d="M15 6l-6 6 6 6"/>',check:'<path d="M5 12l5 5 9-10"/>',plus:'<path d="M12 5v14M5 12h14"/>',minus:'<path d="M5 12h14"/>',x:'<path d="M6 6l12 12M18 6L6 18"/>',
+ chev:'<path d="M9 6l6 6-6 6"/>',brief:'<rect x="3" y="7" width="18" height="13" rx="3"/><path d="M9 7V5a2 2 0 012-2h2a2 2 0 012 2v2M3 13h18"/>',dollar:'<path d="M12 3v18M17 7.5c0-1.9-2.2-3-5-3s-5 1.1-5 3 2.2 2.7 5 3.2 5 1.4 5 3.3-2.2 3-5 3-5-1.1-5-3"/>',back:'<path d="M15 6l-6 6 6 6"/>',check:'<path d="M5 12l5 5 9-10"/>',plus:'<path d="M12 5v14M5 12h14"/>',minus:'<path d="M5 12h14"/>',x:'<path d="M6 6l12 12M18 6L6 18"/>',
  search:'<circle cx="11" cy="11" r="7"/><path d="M16.5 16.5L21 21"/>',bell:'<path d="M6 16V11a6 6 0 0112 0v5l2 2H4z"/><path d="M10 21h4"/>',
  hand:'<path d="M8 13V5a2 2 0 014 0v6M12 11V4a2 2 0 014 0v8M16 12V7a2 2 0 014 0v7a7 7 0 01-7 7h-1a7 7 0 01-6-3l-3-5a2 2 0 013-2l2 2"/>',
  truck:'<path d="M2 6h11v10H2zM13 10h5l3 3v3h-8"/><circle cx="6" cy="18" r="2"/><circle cx="17" cy="18" r="2"/>',list:'<path d="M9 6h11M9 12h11M9 18h11M4 6h.01M4 12h.01M4 18h.01"/>',
@@ -458,7 +458,7 @@ const chev=`<span class="chev">${ic('chev')}</span>`;
    falls back to this device only when opened as a plain file.
    ========================================================= */
 const S={items:{},stock:{},pos:{},outs:{},log:[],meta:{},ready:false};
-let DB=null,USER=null,UID=null,ME='',CANWRITE=true,MODE='loading',ASSETS=null,DLS=null;
+let DB=null,USER=null,UID=null,ME='',CANWRITE=true,MODE='loading',ASSETS=null,DLS=null,OWNER=false;
 const PROF={},LKEY='force-wms-v3-local',NKEY='force-inv-who';
 function loadLocal(){try{const d=JSON.parse(sget(LKEY)||'null');if(d&&d.v===3)Object.assign(S,d.S)}catch(e){}}
 function saveLocal(){sset(LKEY,JSON.stringify({v:3,S:{items:S.items,stock:S.stock,pos:S.pos,outs:S.outs,log:S.log.slice(0,2000),meta:S.meta}}))}
@@ -476,7 +476,7 @@ async function boot(){
  let db=null,user=null;
  try{if(window.claude&&claude.use)[db,user]=await Promise.all([claude.use('db'),claude.use('user')])}catch(e){}
  USER=user;
- if(user){try{UID=await user.id()}catch(e){}try{const m=await user.me();ME=m&&m.name||''}catch(e){}try{if(await user.can('data.write')===false)CANWRITE=false}catch(e){}}
+ if(user){try{UID=await user.id()}catch(e){}try{const m=await user.me();ME=m&&m.name||''}catch(e){}try{if(await user.can('data.write')===false)CANWRITE=false}catch(e){}try{OWNER=!!(await user.isOwner())}catch(e){}}
  if(db){DB=db;MODE='live';subscribe();try{claude.use('assets').then(a=>ASSETS=a,()=>{});claude.use('downloads').then(d=>DLS=d,()=>{})}catch(e){}}
  else{MODE='local';loadLocal();S.ready=true;onData()}
 }
@@ -491,6 +491,10 @@ function subscribe(){
  DB.doc('meta/main').onSnapshot(d=>{S.meta=d.exists?d.data():{};onData()},err);
 }
 const whoId=()=>UID||('name:'+(sget(NKEY)||'Unnamed'));
+/* Office role: the page owner, plus anyone an office user adds under Setup. This-device mode uses a PIN.
+   Enforced by the app (buttons hidden), not a hard lock: every change is still logged with who made it. */
+const OKEY='force-office',PKEY='force-office-pin';
+function isOffice(){return MODE==='local'?sget(OKEY)==='1':OWNER||(S.meta.office||[]).includes(UID)}
 function nameOf(id){if(!id)return 'Someone';if(id.startsWith('name:'))return id.slice(5);if(id===UID)return ME||'You';return PROF[id]?.name||'Someone'}
 let profT=0;function resolveNames(){if(!USER||!USER.profiles)return;clearTimeout(profT);profT=setTimeout(async()=>{
  const ids=new Set();S.log.slice(0,200).forEach(e=>e.who&&ids.add(e.who));Object.values(S.pos).forEach(p=>[p.createdBy,p.receivedBy,p.paper?.by,p.paper?.cby].forEach(x=>x&&ids.add(x)));Object.values(S.outs).forEach(o=>[o.createdBy,o.doneBy].forEach(x=>x&&ids.add(x)));Object.values(S.stock).forEach(s=>s.by&&ids.add(s.by));
@@ -508,7 +512,15 @@ const packOf=i=>i&&i.pack&&i.pack.q>1?i.pack:null;
 function fmtQ(i,q){if(q==null)return 'Not counted';const u=uom(i),pk=packOf(i);if(!pk||q<pk.q)return `${fmt(q)} ${u}`;const p=Math.floor(q/pk.q),r=q%pk.q;return `${fmt(p)} ${p===1?pk.n:plural(pk.n)}${r?` + ${fmt(r)}`:''}`}
 const fmtTot=(i,q)=>packOf(i)&&q!=null&&q>=packOf(i).q?`${fmt(q)} ${uom(i)}`:'';
 function onHand(sku){let n=0,unk=0;const locs=[];for(const loc in S.stock)for(const l of lines(loc))if(l.sku===sku){locs.push([loc,l.qty]);if(l.qty==null)unk++;else n+=l.qty}return{n,unk,locs:locs.sort((a,b)=>(b[1]??-1)-(a[1]??-1))}}
-function onOrder(sku){let n=0;Object.values(S.pos).forEach(p=>{if(p.status==='open')(p.lines||[]).forEach(l=>{if(l.sku===sku)n+=l.ordered||0})});return n}
+const got=p=>(p.lines||[]).some(l=>(l.received||0)>0);
+const boLeft=(p,l)=>p.closedShort?0:Math.max(0,(l.ordered||0)-(l.received||0));
+const putLeft=p=>(p.lines||[]).some(l=>(l.put||0)<(l.received||0));
+// open: nothing in yet · partial: some in, rest on backorder · received: all in, put-away left · done
+function poStatus(d){const L=d.lines||[];if(!got(d))return d.closedShort?'done':'open';
+ const allIn=d.closedShort||L.every(l=>(l.received||0)>=(l.ordered||0)),allPut=L.every(l=>(l.put||0)>=(l.received||0));
+ return !allIn?'partial':allPut?'done':'received'}
+const waiting=p=>p.status==='open'||p.status==='partial';
+function onOrder(sku){let n=0;Object.values(S.pos).forEach(p=>{if(waiting(p))(p.lines||[]).forEach(l=>{if(l.sku===sku)n+=boLeft(p,l)})});return n}
 function homeOf(sku){return Object.keys(S.stock).filter(k=>S.stock[k].assign===sku)}
 function ruleFor(loc,i){if(!i)return null;const l=LOC[loc];if(!l||!l.geo)return null;const a=sinfo(loc).assign;if(a&&a!==i.sku)return `Set aside for ${item(a)?.name||a}.`;
  const z=zone(l.z);if(z.kind==='bunk')return bunkRule(i,l.bunk,l.col);return z.rule?z.rule(i,l.L):null}
@@ -543,16 +555,18 @@ function suggest(i){const h=homeOf(i.sku).filter(l=>LOC[l]);if(h.length)return{l
    ========================================================= */
 let toastT=0;function toast(m,bad){const t=$('#toast');t.innerHTML=(bad?'':ic('check'))+esc(m);t.hidden=false;clearTimeout(toastT);toastT=setTimeout(()=>t.hidden=true,2600)}
 function counts(){const po=Object.values(S.pos),out=Object.values(S.outs);
- return{exp:po.filter(p=>p.status==='open').length,expToday:po.filter(p=>p.status==='open'&&p.expected<=today()).length,put:po.filter(p=>p.status==='received').length,
+ return{exp:po.filter(waiting).length,expToday:po.filter(p=>waiting(p)&&p.expected&&p.expected<=today()).length,put:po.filter(putLeft).length,
+  slips:po.filter(p=>got(p)&&!(p.paper||{}).confirmed).length,
   out:out.filter(o=>o.status!=='done').length,counted:PHYS.filter(l=>sinfo(l.id).counted).length,alerts:alerts().length}}
 const TABS=[['home','Home','home'],['map','Map','map'],['incoming','Incoming','in'],['outgoing','Outgoing','out'],['count','Count','count']];
-function tabs(){if(!S.ready){$('#tabs').innerHTML='';return}const c=counts(),b={incoming:c.exp+c.put,outgoing:c.out};
- $('#tabs').innerHTML=TABS.map(([r,l,i])=>`<a class="tab" href="#${r}" aria-current="${route===r?'page':'false'}">${ic(i)}<span>${l}</span>${b[r]?`<span class="bd">${b[r]}</span>`:''}</a>`).join('')}
-const MENU=[['Do',[['add','Add stock','add','#34C759'],['take','Grab parts','hand','#FF9500'],['move','Move stock','move','#5856D6']]],
- ['Look up',[['find','Find','search','#8E8E93'],['items','Parts','box','#007AFF'],['spots','Spots & labels','tag','#30B0C7'],['alerts','Alerts','bell','#FF3B30']]],
- ['Office',[['report','Daily report','chart','#AF52DE'],['import','Import from Excel','sheet','#34C759'],['setup','Setup','gear','#8E8E93']]]];
+const TABS_O=[...TABS.slice(0,4),['office','Office','brief']];
+function tabs(){if(!S.ready){$('#tabs').innerHTML='';return}const c=counts(),b={incoming:c.exp+c.put,outgoing:c.out,office:c.slips};
+ $('#tabs').innerHTML=(isOffice()?TABS_O:TABS).map(([r,l,i])=>`<a class="tab" href="#${r}" aria-current="${route===r?'page':'false'}">${ic(i)}<span>${l}</span>${b[r]?`<span class="bd">${b[r]}</span>`:''}</a>`).join('')}
+const menuDef=()=>{const o=isOffice();return [['Do',[['add','Add stock','add'],['take','Grab parts','hand'],['move','Move stock','move'],...(o?[['count','Count','count']]:[])]],
+ ['Look up',[['find','Find','search'],['items','Parts','box'],['spots','Spots & labels','tag'],['alerts','Alerts','bell']]],
+ ['Office',[...(o?[['office','Office','brief'],['import','Import from Excel','sheet']]:[]),['report','Daily report','chart'],['setup','Setup','gear']]]]};
 function openMenu(o){$('#menu').hidden=!o;$('#menuScrim').hidden=!o;$('#menuB').setAttribute('aria-expanded',o);
- if(o){$('#menu').innerHTML=MENU.map(([h,its],k)=>`${k?'<div class="msep"></div>':''}<div class="mh">${h}</div>${its.map(([id,l,i,c])=>`<button class="mi" role="menuitem" data-m="${id}">${icoB(i,c)}${l}</button>`).join('')}`).join('');$('#menu button').focus()}}
+ if(o){$('#menu').innerHTML=menuDef().map(([h,its],k)=>`${k?'<div class="msep"></div>':''}<div class="mh">${h}</div>${its.map(([id,l,i,c])=>`<button class="mi" role="menuitem" data-m="${id}">${icoB(i,c)}${l}</button>`).join('')}`).join('');$('#menu button').focus()}}
 $('#menuB').onclick=()=>openMenu($('#menu').hidden);$('#menuScrim').onclick=()=>openMenu(false);
 $('#menu').addEventListener('click',e=>{const b=e.target.closest('[data-m]');if(!b)return;openMenu(false);const m=b.dataset.m;
  if(m==='add')addSheet({});else if(m==='take')go('grab');else if(m==='move')moveSheet({});else go(m)});
@@ -575,14 +589,14 @@ $('#sheet').addEventListener('picked',e=>SH.picked&&SH.picked(e));
  s.addEventListener('touchend',e=>{if(y0==null)return;const d=e.changedTouches[0].clientY-y0;s.style.transform='';if(d>110&&!e.target.closest('input,select,textarea,button'))closeSheet();y0=null})})();
 
 /* ---------- routing ---------- */
-const ROUTES={home:'Home',map:'Map',incoming:'Incoming',outgoing:'Outgoing',count:'Count',find:'Find',items:'Parts',spots:'Spots & labels',alerts:'Alerts',report:'Daily report',import:'Import',setup:'Setup',grab:'Grab parts'};
+const ROUTES={home:'Home',map:'Map',incoming:'Incoming',outgoing:'Outgoing',count:'Count',office:'Office',find:'Find',items:'Parts',spots:'Spots & labels',alerts:'Alerts',report:'Daily report',import:'Import',setup:'Setup',grab:'Grab parts'};
 let route='home';const V={live:true};
 function readRoute(){let r=(location.hash||'#home').slice(1);if(!ROUTES[r])r='home';return r}
 addEventListener('hashchange',()=>{if(SH.open){SH.open=false;$('#sheetWrap').hidden=true;document.body.style.overflow=''}render();scrollTo(0,0)});
 function go(r){if(location.hash==='#'+r){render();scrollTo(0,0)}else location.hash=r}
 function render(){const prev=route;route=readRoute();if(prev==='map'&&route!=='map'&&W3)W3.stop();$('#ttl').textContent=ROUTES[route];tabs();V.live=true;const v=$('#view');
  if(!S.ready){v.innerHTML='<p class="empty">Loading…</p>';return}
- ({home:vHome,map:vMap,incoming:vIncoming,outgoing:vOutgoing,count:vCount,find:vFind,items:vItems,spots:vSpots,alerts:vAlerts,report:vReport,import:vImport,setup:vSetup,grab:vGrab})[route](v)}
+ ({home:vHome,map:vMap,office:vOffice,incoming:vIncoming,outgoing:vOutgoing,count:vCount,find:vFind,items:vItems,spots:vSpots,alerts:vAlerts,report:vReport,import:vImport,setup:vSetup,grab:vGrab})[route](v)}
 const title=(t,sub)=>`<div><h1 class="lt">${esc(t)}</h1>${sub?`<p class="lsub">${sub}</p>`:''}</div>`;
 const liveLine=()=>MODE==='live'?`<span class="live on"></span>Live · shared with your team${CANWRITE?'':' · view only'}`:'<span class="live"></span>This device only';
 const backBtn=(label,id)=>`<button class="pill" id="${id}" style="align-self:flex-start;background:none;padding:0;color:var(--tint)">${ic('back')}${esc(label)}</button>`;
@@ -651,10 +665,10 @@ function itemSheet(sku){openSheet({title:'Part',live:true,body:()=>{const i=item
    <p class="big" style="margin-top:12px">${o.locs.length?(o.unk&&!o.n?'<span class="warn">Not counted</span>':esc(fmtQ(i,o.n))):'0'}</p>${fmtTot(i,o.n)?`<p class="tot">${fmtTot(i,o.n)}</p>`:''}${oo?`<p class="sub cap" style="margin-top:4px">${esc(fmtQ(i,oo))} on order</p>`:''}</div>
    <div class="verbs">${verb('add','Add')}${verb('take','Take',!o.locs.length)}${verb('move','Move',!o.locs.length)}${verb('count','Count',!o.locs.length&&!homeOf(sku).length)}</div>
    <div class="st"><p class="hd">Where it is</p><div class="group">${o.locs.length?o.locs.map(([l,q])=>`<button class="cell" data-sl2="${esc(l)}"><span class="tx"><b class="code">${esc(l)}</b><span class="t2">${esc(posText(LOC[l]))}</span></span><span class="val strong">${q==null?'?':esc(fmtQ(i,q))}</span>${chev}</button>`).join(''):'<p class="empty">Not in any spot yet</p>'}</div></div>
-   <div class="group"><button class="cell" id="isEdit">${icoB('edit','#8E8E93')}<span class="tx"><b>Edit part</b></span>${chev}</button></div></div>`},
+   ${isOffice()?`<div class="group"><button class="cell" id="isEdit">${icoB('edit','#8E8E93')}<span class="tx"><b>Edit part</b></span>${chev}</button></div>`:''}</div>`},
   bind:s=>{const o=onHand(sku),loc=o.locs[0]?.[0]||homeOf(sku)[0];
    $$('[data-verb]',s).forEach(b=>b.onclick=()=>({add:()=>addSheet({sku,loc:homeOf(sku)[0]||loc}),take:()=>takeSheet({sku,loc}),move:()=>moveSheet({sku,loc}),count:()=>countSheet(loc)})[b.dataset.verb]());
-   $$('[data-sl2]',s).forEach(b=>b.onclick=()=>spotSheet(b.dataset.sl2));$('#isEdit',s).onclick=()=>{closeSheet();IT.edit=sku;go('items')}}})}
+   $$('[data-sl2]',s).forEach(b=>b.onclick=()=>spotSheet(b.dataset.sl2));const e=$('#isEdit',s);if(e)e.onclick=()=>{closeSheet();IT.edit=sku;go('items')}}})}
 function addSheet({loc,sku}){openSheet({title:'Add stock',left:loc?`<button id="bk">${ic('back')}</button>`:'',body:`<div class="stack">
   <div class="st"><p class="hd">Part</p>${partPick('ap',sku)}</div>
   <div class="st"><p class="hd">Into</p>${spotPick('as',loc||(sku&&(homeOf(sku)[0]||suggest(item(sku)||{})?.loc)))}</div>
@@ -735,15 +749,16 @@ function vHome(v){const c=counts(),h=new Date().getHours(),greet=h<12?'Good morn
   ${T('#map','map','#30B0C7','3D map','')}
  </div>
  <div class="group">
+  ${isOffice()?`<a class="cell" href="#office">${icoB('brief','')}<span class="tx"><b>Office</b></span><span class="val">${c.slips?c.slips+' slips':''}</span>${chev}</a>`:''}
   <a class="cell" href="#alerts">${icoB('bell','#FF3B30')}<span class="tx"><b>Alerts</b></span><span class="val">${c.alerts||''}</span>${chev}</a>
   <button class="cell" id="hAdd">${icoB('add','#34C759')}<span class="tx"><b>Add stock</b></span>${chev}</button>
   <button class="cell" id="hMove">${icoB('move','#5856D6')}<span class="tx"><b>Move stock</b></span>${chev}</button>
  </div></div>`;
  $('#hs').onclick=()=>go('find');$('#hPut').onclick=()=>{IN.tab='put';IN.id=null;go('incoming')};$('#hAdd').onclick=()=>addSheet({});$('#hMove').onclick=()=>moveSheet({})}
 function alerts(){const a=[];
- Object.values(S.pos).forEach(p=>{if(p.status==='open'&&p.expected&&p.expected<today())a.push({g:'Deliveries',t:`${p.po} is late`,s:p.vendor||'',po:p.id,c:'#FF3B30'});
-  if(p.status!=='open'&&p.disc&&!p.discOk)a.push({g:'Deliveries',t:`${p.po} had problems`,s:'Short, damaged or wrong',po:p.id,c:'#FF9500'});
-  if(p.status!=='open'&&!(p.paper&&p.paper.confirmed))a.push({g:'Paperwork',t:`${p.po} slip`,s:p.paper&&p.paper.handed?'Office to confirm':'Not handed in',po:p.id,c:'#007AFF'})});
+ Object.values(S.pos).forEach(p=>{if(waiting(p)&&p.expected&&p.expected<today())a.push({g:'Deliveries',t:`${p.po} is late`,s:(p.status==='partial'?'Backorder · ':'')+(p.vendor||''),po:p.id,c:'#FF3B30'});
+  if(got(p)&&p.disc&&!p.discOk)a.push({g:'Deliveries',t:`${p.po} had problems`,s:'Short, damaged or wrong',po:p.id,c:'#FF9500'});
+  if(got(p)&&!(p.paper&&p.paper.confirmed))a.push({g:'Paperwork',t:`${p.po} slip`,s:p.paper&&p.paper.handed?'Office to confirm':'Not handed in',po:p.id,c:'#007AFF'})});
  PHYS.forEach(l=>{const st=locStatus(l.id);if(st==='recount')a.push({g:'Spots',t:`Recount ${l.id}`,s:'Took more than it showed',loc:l.id,c:'#AF52DE'});if(st==='wrong')a.push({g:'Spots',t:`${l.id} wrong part`,s:lines(l.id).map(x=>ruleFor(l.id,item(x.sku))).find(Boolean)||'',loc:l.id,c:'#FF3B30'})});
  Object.values(S.items).forEach(i=>{const s=lowState(i);if(s)a.push({g:'Reorder',t:`${i.name}`,s:`${s==='out'?'Out':'Low'} · ${fmtQ(i,onHand(i.sku).n)} left`,sku:i.sku,c:s==='out'?'#FF3B30':'#FF9500'});if(i.needsId)a.push({g:'Name these',t:i.name,s:'Found in a count',sku:i.sku,c:'#FF9500'})});
  return a}
@@ -1000,57 +1015,69 @@ function vCount(v){const ls=PHYS.filter(l=>l.z===CZ),done=ls.filter(l=>sinfo(l.i
 
 /* ---------- Incoming ---------- */
 let IN={tab:'exp',id:null,step:null};
-const POST={open:['Expected','#007AFF'],received:['Put away next','#FF9500'],done:['Done','#34C759']};
-const poQty=p=>(p.lines||[]).map(l=>`${fmtQ(item(l.sku),l.ordered)} ${item(l.sku)?.name||l.desc||l.sku}`).join(', ');
+const POST={open:['Expected','#007AFF'],partial:['Backorder','#AF52DE'],received:['Put away next','#FF9500'],done:['Done','#34C759']};
 function vIncoming(v){
  if(IN.id&&S.pos[IN.id]){if(IN.step==='receive')return vReceive(v);return vPO(v)}
- IN.id=null;const all=Object.values(S.pos),tabs={exp:all.filter(p=>p.status==='open'),put:all.filter(p=>p.status==='received'),done:all.filter(p=>p.status==='done')};
- const list=tabs[IN.tab].sort((a,b)=>(a.expected||'').localeCompare(b.expected||''));if(IN.tab==='done')list.reverse();
+ IN.id=null;const all=Object.values(S.pos),o=isOffice(),tabs={exp:all.filter(waiting),put:all.filter(putLeft),done:all.filter(p=>p.status==='done')};
+ const list=tabs[IN.tab].sort((a,b)=>(a.expected||'9').localeCompare(b.expected||'9'));if(IN.tab==='done')list.sort((a,b)=>(b.receivedAt||'').localeCompare(a.receivedAt||''));
+ const when=p=>p.status==='open'?(p.expected&&p.expected<today()?'<span class="bad">Late</span>':dday(p.expected)):p.status==='partial'?`${(p.lines||[]).filter(l=>boLeft(p,l)>0).length} on backorder`:dday(ymd(p.receivedAt));
  v.innerHTML=`<div class="stack">${title('Incoming')}
- <div class="row2"><button class="btn" id="newPO">${ic('plus')}New PO</button><a class="btn gray" href="#import">${ic('sheet')}Import</a></div>
+ ${o?`<div class="row2"><button class="btn" id="newPO">${ic('plus')}New PO</button><a class="btn gray" href="#import">${ic('sheet')}Import</a></div>`:''}
  <div class="seg" role="group" aria-label="Show"><button data-t="exp" aria-pressed="${IN.tab==='exp'}">Expected<small>${tabs.exp.length}</small></button><button data-t="put" aria-pressed="${IN.tab==='put'}">Put away<small>${tabs.put.length}</small></button><button data-t="done" aria-pressed="${IN.tab==='done'}">Done</button></div>
- <div class="group">${list.length?list.map(p=>`<button class="cell" data-po="${esc(p.id)}"><span class="dotst" style="background:${POST[p.status][1]}"></span><span class="tx"><b>${esc(p.po)}</b><span class="t2">${esc(p.vendor||'No vendor')} · ${p.status==='open'?(p.expected<today()?'<span class="bad">Late</span>':dday(p.expected)):dday(ymd(p.receivedAt))}</span></span>${p.disc&&p.status!=='open'?'<span class="chip" style="color:var(--orange)">Problem</span>':''}${p.example?'<span class="chip">Example</span>':''}${chev}</button>`).join(''):`<p class="empty">${IN.tab==='exp'?'Nothing expected':IN.tab==='put'?'Nothing to put away':'Nothing yet'}</p>`}</div></div>`;
+ <div class="group">${list.length?list.map(p=>`<button class="cell" data-po="${esc(p.id)}"><span class="dotst" style="background:${(POST[p.status]||POST.open)[1]}"></span><span class="tx"><b>${esc(p.po)}</b><span class="t2">${esc(p.vendor||'No vendor')} · ${when(p)}</span></span>${p.disc&&got(p)?'<span class="chip" style="color:var(--orange)">Problem</span>':''}${p.example?'<span class="chip">Example</span>':''}${chev}</button>`).join(''):`<p class="empty">${IN.tab==='exp'?'Nothing expected':IN.tab==='put'?'Nothing to put away':'Nothing yet'}</p>`}</div></div>`;
  $$('[data-t]').forEach(b=>b.onclick=()=>{IN.tab=b.dataset.t;render()});
  $$('[data-po]').forEach(b=>b.onclick=()=>{IN={...IN,id:b.dataset.po,step:null};render();scrollTo(0,0)});
- $('#newPO').onclick=newPOSheet}
-function vPO(v){const p=S.pos[IN.id],pp=p.paper||{},steps=[['Ordered',1],['Delivered',p.status!=='open'],['Paperwork',pp.confirmed],['Put away',p.status==='done']];
- v.innerHTML=`<div class="stack">${backBtn('Incoming','bk')}${title(p.po,`${esc(p.vendor||'No vendor')} · ${p.status==='open'?'Due '+dday(p.expected):'Delivered '+dt(p.receivedAt)}`)}
+ const n=$('#newPO');if(n)n.onclick=()=>newPOSheet()}
+function vPO(v){const p=S.pos[IN.id],pp=p.paper||{},o=isOffice(),st=p.status,rec=got(p),
+  steps=[['Ordered',1],['Delivered',rec],['Paperwork',pp.confirmed],['Put away',st==='done']];
+ const sub=st==='open'?(p.expected?'Due '+dday(p.expected):'No due date'):(st==='partial'?'Part delivered ':'Delivered ')+dt(p.receivedAt);
+ v.innerHTML=`<div class="stack">${backBtn('Incoming','bk')}${title(p.po,`${esc(p.vendor||'No vendor')} · ${sub}`)}
  <div class="dots">${steps.map(s=>`<span class="${s[1]?'on':''}">${s[0]}</span>`).join('')}</div>
  ${p.example?'<div class="banner">Example delivery for testing.</div>':''}
- <div class="st"><p class="hd">Items</p><div class="group">${(p.lines||[]).map((l,k)=>{const i=item(l.sku),left=(l.received||0)-(l.put||0);return `<button class="cell" data-ln="${k}" ${p.status==='received'&&left>0?'':'disabled'}><span class="tx"><b>${esc(i?i.name:l.desc||l.sku)}</b><span class="t2">${p.status==='open'?'Ordered '+esc(fmtQ(i,l.ordered)):`Got ${esc(fmtQ(i,l.received))}${l.received!==l.ordered?` of ${esc(fmtQ(i,l.ordered))}`:''}${l.cond&&l.cond!=='Good'?' · '+esc(l.cond):''}`}</span></span>${p.status==='received'?(left>0?`<span class="val strong">${esc(fmtQ(i,left))}</span>${chev}`:'<span class="good">'+ic('check')+'</span>'):''}</button>`}).join('')}</div>${p.status==='received'?'<p class="ft">Tap an item to put it away.</p>':''}</div>
- ${p.status!=='open'?`<div class="st"><p class="hd">Paperwork</p><div class="group">${sw('ppH',pp.handed,'Slip given to office')}${sw('ppC',pp.confirmed,'Office has it')}${p.disc?sw('dOk',p.discOk,'Office saw the problems'):''}</div></div>`:''}
+ ${p.closedShort?`<div class="banner">Closed short · ${esc(p.closedShort.reason||'')} · ${esc(nameOf(p.closedShort.by))}</div>`:''}
+ <div class="st"><p class="hd">Items</p><div class="group">${(p.lines||[]).map((l,k)=>{const i=item(l.sku),left=(l.received||0)-(l.put||0),bo=boLeft(p,l);
+  return `<button class="cell" data-ln="${k}" ${left>0?'':'disabled'}><span class="tx"><b>${esc(i?i.name:l.desc||l.sku)}</b><span class="t2">${!l.received?'Ordered '+esc(fmtQ(i,l.ordered)):`Got ${esc(fmtQ(i,l.received))}${l.received<l.ordered?` of ${esc(fmtQ(i,l.ordered))}`:''}${l.cond&&l.cond!=='Good'?' · '+esc(l.cond):''}`}${bo&&l.received?` · <span class="warn">${esc(fmtQ(i,bo))} on backorder</span>`:''}</span></span>${left>0?`<span class="val strong">${esc(fmtQ(i,left))}</span>${chev}`:l.received?'<span class="good">'+ic('check')+'</span>':''}</button>`}).join('')}</div>${putLeft(p)?'<p class="ft">Tap an item to put it away.</p>':''}</div>
+ ${waiting(p)?`<button class="btn" id="poRecv">${ic('truck')}${st==='partial'?'Check in the rest':'Check in delivery'}</button>`:''}
+ ${rec?`<div class="st"><p class="hd">Paperwork</p><div class="group">${sw('ppH',pp.handed,'Slip given to office')}${o?sw('ppC',pp.confirmed,'Office has it'):`<div class="cell"><span class="tx"><b>Office has it</b></span><span class="val">${pp.confirmed?'Yes':'Not yet'}</span></div>`}${p.disc&&o?sw('dOk',p.discOk,'Office saw the problems'):''}</div></div>`:''}
  ${p.slip?`<div class="st"><p class="hd">Packing slip</p><div class="group" style="padding:12px"><a href="${esc(p.slip)}" target="_blank" rel="noopener"><img class="photo" src="${esc(p.slip)}" alt="Packing slip for ${esc(p.po)}"></a></div></div>`:''}
- ${p.status==='open'?`<button class="btn" id="poRecv">${ic('truck')}Check in delivery</button>`:''}
- <div class="group"><button class="cell" id="poDel" style="color:var(--red)"><span class="tx"><b>Delete PO</b></span></button></div></div>`;
+ ${o?`<div class="group">${st==='partial'?`<button class="cell" id="poShort"><span class="tx"><b>Close short</b><span class="t2">Stop waiting for the backorder</span></span>${chev}</button>`:''}<button class="cell" id="poDel" style="color:var(--red)"><span class="tx"><b>Delete PO</b></span></button></div>`:''}</div>`;
  $('#bk').onclick=()=>{IN.id=null;render()};
- const upd=patch=>guard(async()=>{const d=clone(S.pos[IN.id]);delete d.id;Object.assign(d,patch);await W.set('pos',IN.id,d)});
+ const upd=patch=>guard(async()=>{const d=clone(S.pos[IN.id]);delete d.id;Object.assign(d,patch);d.status=poStatus(d);await W.set('pos',IN.id,d)});
  const h=$('#ppH');if(h)h.onchange=()=>upd({paper:{...pp,handed:h.checked,by:whoId(),at:new Date().toISOString()}});
  const c=$('#ppC');if(c)c.onchange=()=>upd({paper:{...pp,confirmed:c.checked,cby:whoId(),cat:new Date().toISOString()}});
- const o=$('#dOk');if(o)o.onchange=()=>upd({discOk:o.checked});
+ const dk=$('#dOk');if(dk)dk.onchange=()=>upd({discOk:dk.checked});
  const r=$('#poRecv');if(r)r.onclick=()=>{IN.step='receive';render();scrollTo(0,0)};
  $$('[data-ln]:not([disabled])').forEach(b=>b.onclick=()=>putSheet(IN.id,+b.dataset.ln));
- $('#poDel').onclick=()=>openSheet({title:'Delete '+p.po+'?',body:'<p class="sub" style="text-align:center;padding:8px">Stock already received stays where it is.</p>',foot:'<button class="btn red" id="y">Delete</button>',bind:s=>{$('#y',s).onclick=()=>guard(async()=>{await W.del('pos',IN.id);IN.id=null;closeSheet();toast('Deleted')})}})}
-function vReceive(v){V.live=false;const p=S.pos[IN.id];
- v.innerHTML=`<div class="stack">${backBtn(p.po,'bk')}${title('Check in')}
- ${(p.lines||[]).map((l,k)=>{const i=item(l.sku);return `<div class="st"><p class="hd">${esc(i?i.name:l.desc||l.sku)} · ordered ${esc(fmtQ(i,l.ordered))}</p><div class="group" style="padding:14px">${qtyPick(i,'r'+k,l.ordered)}</div>${segm('rc'+k,['Good','Damaged','Wrong item'],'Good')}</div>`}).join('')}
+ const sh=$('#poShort');if(sh)sh.onclick=()=>openSheet({title:'Close '+p.po+' short?',body:`<div class="stack"><p class="sub" style="text-align:center">The missing items come off “on order”.</p><div class="group">${field('Why','<select id="csr"><option>Vendor can’t ship</option><option>Cancelled</option><option>Reordered on a new PO</option><option>Other</option></select>')}</div></div>`,
+  foot:'<button class="btn" id="y">Close short</button>',bind:s=>{$('#y',s).onclick=()=>{upd({closedShort:{reason:$('#csr',s).value,by:whoId(),at:new Date().toISOString()}});closeSheet();toast(p.po+' closed short')}}});
+ const del=$('#poDel');if(del)del.onclick=()=>openSheet({title:'Delete '+p.po+'?',body:'<p class="sub" style="text-align:center;padding:8px">Stock already received stays where it is.</p>',foot:'<button class="btn red" id="y">Delete</button>',bind:s=>{$('#y',s).onclick=()=>guard(async()=>{await W.del('pos',IN.id);IN.id=null;closeSheet();toast('Deleted')})}})}
+function vReceive(v){V.live=false;const p=S.pos[IN.id],rem=l=>Math.max(0,(l.ordered||0)-(l.received||0)),again=got(p);
+ v.innerHTML=`<div class="stack">${backBtn(p.po,'bk')}${title(again?'Check in the rest':'Check in')}
+ ${(p.lines||[]).map((l,k)=>{if(!rem(l))return '';const i=item(l.sku);return `<div class="st"><p class="hd">${esc(i?i.name:l.desc||l.sku)} · ${again?'still due':'ordered'} ${esc(fmtQ(i,rem(l)))}</p><div class="group" style="padding:14px">${qtyPick(i,'r'+k,rem(l))}</div>${segm('rc'+k,['Good','Damaged','Wrong item'],'Good')}</div>`}).join('')}
  ${ASSETS?`<div class="st"><p class="hd">Packing slip photo</p><div class="group" style="padding:12px 16px"><input id="slip" type="file" accept="image/*" capture="environment"></div></div>`:''}
+ <p class="ft">Came short? Enter what actually came. The rest stays on backorder.</p>
  <button class="btn" id="rGo">${ic('check')}Mark delivered</button></div>`;
  initQty(v);$('#bk').onclick=()=>{IN.step=null;render()};
- $('#rGo').onclick=()=>guard(async()=>{const d=clone(p);delete d.id;let disc=false;
-  for(const[k,l]of d.lines.entries()){const q=readQty(v,'r'+k);if(q==null||Number.isNaN(q))return toast('Enter what came for each item',true);l.received=q;l.cond=readSeg(v,'rc'+k)||'Good';l.put=0;if(q!==l.ordered||l.cond!=='Good')disc=true}
+ $('#rGo').onclick=()=>guard(async()=>{const d=clone(p);delete d.id;let disc=false;const inn=[];
+  for(const[k,l]of d.lines.entries()){const r=rem(l);if(!r)continue;const q=readQty(v,'r'+k);if(q==null||Number.isNaN(q))return toast('Enter what came for each item',true);
+   l.received=(l.received||0)+q;l.put=l.put||0;const cond=readSeg(v,'rc'+k)||'Good';if(q||cond!=='Good')l.cond=cond;if(q!==r||cond!=='Good')disc=true;if(q>0)inn.push([l.sku,q])}
+  if(!inn.length)return toast('Nothing came? Leave it expected.',true);
   const f=$('#slip')&&$('#slip').files[0];if(f&&ASSETS){try{const r=await ASSETS.upload(f);d.slip=r.url;d.slipId=r.id}catch(e){toast('Photo didn’t upload',true)}}
-  for(const l of d.lines)if(l.received>0){await change('RECEIVING',l.sku,l.received);await logIt({type:'receive',sku:l.sku,to:'RECEIVING',qty:l.received,ref:d.po})}
-  Object.assign(d,{status:d.lines.some(l=>l.received>0)?'received':'done',receivedAt:new Date().toISOString(),receivedBy:whoId(),disc,paper:d.paper||{}});
-  await W.set('pos',IN.id,d);toast(`${d.po} delivered`);IN.step=null;render();scrollTo(0,0)})}
+  for(const[sku,q]of inn){await change('RECEIVING',sku,q);await logIt({type:'receive',sku,to:'RECEIVING',qty:q,ref:d.po})}
+  // each delivery brings its own slip; keep the earlier one on record
+  if(again&&d.paper&&(d.paper.handed||d.paper.confirmed)){d.paperLog=[...(d.paperLog||[]),d.paper];d.paper={}}
+  Object.assign(d,{receivedAt:new Date().toISOString(),receivedBy:whoId(),disc:!!(d.disc||disc),deliveries:(d.deliveries||0)+1,paper:d.paper||{}});d.status=poStatus(d);
+  await W.set('pos',IN.id,d);toast(d.status==='partial'?`${d.po} checked in · rest on backorder`:`${d.po} delivered`);IN.step=null;render();scrollTo(0,0)})}
 function putSheet(poId,k){const p=S.pos[poId],l=p.lines[k],i=item(l.sku)||{sku:l.sku,name:l.sku,cat:'misc'},left=(l.received||0)-(l.put||0),sg=suggest(i);
  openSheet({title:'Put away',body:`<div class="stack"><div class="hero"><p class="big">${esc(fmtQ(i,left))}</p><p class="nm">${esc(i.name)}</p></div>
   <div class="st"><p class="hd">Into${sg?' · '+esc(sg.why):''}</p>${spotPick('pt',sg&&sg.loc)}</div><div class="st"><p class="hd">How many</p>${qtyPick(i,'pq',left)}</div></div>`,
   foot:`<button class="btn" id="go">${ic('check')}Put away</button>`,
   bind:s=>{initQty(s);$('#go',s).onclick=()=>guard(async()=>{const to=readSpot(s,'pt'),q=readQty(s,'pq');if(!to)return toast('Choose a spot',true);if(!q)return toast('Enter how many',true);if(q>left)return toast(`Only ${fmtQ(i,left)} left`,true);
    await change('RECEIVING',i.sku,-q);await change(to,i.sku,q);await logIt({type:'putaway',sku:i.sku,from:'RECEIVING',to,qty:q,ref:p.po});
-   const d=clone(S.pos[poId]);delete d.id;d.lines[k].put=(d.lines[k].put||0)+q;if(d.lines.every(x=>(x.put||0)>=(x.received||0)))d.status='done';await W.set('pos',poId,d);toast(`${fmtQ(i,q)} → ${to}`);closeSheet()})}})}
-function newPOSheet(){const L=[{sku:null}];openSheet({title:'New PO',body:()=>`<div class="stack"><div class="group">${field('PO #','<input id="nPO" placeholder="Required" autocomplete="off">')}${field('Vendor','<input id="nV" placeholder="Supplier">')}${field('Due','<input id="nD" type="date" value="'+today()+'">')}</div>
-  <div id="nL" class="stack">${L.map((x,k)=>poLine(k)).join('')}</div><button class="btn gray" id="nAdd">${ic('plus')}Add item</button></div>`,
+   const d=clone(S.pos[poId]);delete d.id;d.lines[k].put=(d.lines[k].put||0)+q;d.status=poStatus(d);await W.set('pos',poId,d);toast(`${fmtQ(i,q)} → ${to}`);closeSheet()})}})}
+function newPOSheet(pre={}){const L=pre.lines&&pre.lines.length?pre.lines:[{}];
+ openSheet({title:'New PO',body:()=>`<div class="stack"><div class="group">${field('PO #','<input id="nPO" placeholder="Required" autocomplete="off">')}${field('Vendor',`<input id="nV" placeholder="Supplier" value="${esc(pre.vendor||'')}">`)}${field('Due',`<input id="nD" type="date" value="${pre.vendor?'':today()}">`)}</div>
+  <div id="nL" class="stack">${L.map((x,k)=>poLine(k,x.sku,x.q)).join('')}</div><button class="btn gray" id="nAdd">${ic('plus')}Add item</button></div>`,
   foot:`<button class="btn" id="go">Save PO</button>`,
   bind:s=>{initQty(s);let n=L.length;$('#nAdd',s).onclick=()=>{$('#nL',s).insertAdjacentHTML('beforeend',poLine(n++))};
    SH.picked=(e=>{const g=e.target.closest('[data-pl]');if(g){g.querySelector('.qwrap').innerHTML=qtyPick(item(e.detail),'nq'+g.dataset.pl,null);initQty(g)}});
@@ -1058,7 +1085,7 @@ function newPOSheet(){const L=[{sku:null}];openSheet({title:'New PO',body:()=>`<
     const ls=[];for(const g of $$('[data-pl]',s)){const k=g.dataset.pl,sku=readPart(g,'np'+k),q=readQty(g,'nq'+k);if(!sku&&!q)continue;if(!sku||!q)return toast('Each item needs a part and a quantity',true);ls.push({sku,desc:item(sku)?.name||sku,ordered:q,received:null,put:0})}
     if(!ls.length)return toast('Add an item',true);
     await W.set('pos',id,{po,vendor:$('#nV',s).value.trim(),expected:$('#nD',s).value,status:'open',lines:ls,createdBy:whoId(),createdAt:new Date().toISOString()});toast(po+' added');closeSheet()})}})}
-const poLine=k=>`<div class="st" data-pl="${k}"><p class="hd">Item ${k+1}</p>${partPick('np'+k,null)}<div class="qwrap"></div></div>`;
+const poLine=(k,sku,q)=>`<div class="st" data-pl="${k}"><p class="hd">Item ${k+1}</p>${partPick('np'+k,sku||null)}<div class="qwrap">${sku?qtyPick(item(sku),'nq'+k,q??null):''}</div></div>`;
 
 /* ---------- Outgoing ---------- */
 const OT={job:['Job pull','Hardware or handles for a job','Handed off','hand','#FF9500'],saw:['To the saw','Sheets to cut','Delivered','box','#34C759'],ship:['Ship pallets','Cabinet pallets on a truck','Shipped','truck','#007AFF'],rtv:['Return to vendor','Wrong or damaged items','Sent back','back','#FF3B30']};
@@ -1106,18 +1133,19 @@ function vGrab(v){const rows=[];PHYS.filter(l=>(l.z==='D'&&l.L===1)||zone(l.z).k
 
 /* ---------- Parts ---------- */
 let IT={q:'',cat:'all',edit:null};
-function vItems(v){if(IT.edit!=null)return itemForm(v);
- const q=IT.q.toLowerCase(),list=Object.values(S.items).filter(i=>(IT.cat==='all'||(IT.cat==='attn'?(i.needsId||i.needsReview||lowState(i)):i.cat===IT.cat))&&(!q||[i.sku,i.name,i.vendor,i.vpn].join(' ').toLowerCase().includes(q))).sort((a,b)=>a.name.localeCompare(b.name));
+const ITF=i=>IT.cat==='all'||(IT.cat==='attn'?(i.needsId||i.needsReview||lowState(i)):IT.cat==='nocost'?!i.cost:i.cat===IT.cat);
+function vItems(v){if(IT.edit!=null&&isOffice())return itemForm(v);IT.edit=null;
+ const q=IT.q.toLowerCase(),list=Object.values(S.items).filter(i=>ITF(i)&&(!q||[i.sku,i.name,i.vendor,i.vpn].join(' ').toLowerCase().includes(q))).sort((a,b)=>a.name.localeCompare(b.name));
  v.innerHTML=`<div class="stack">${title('Parts',`${Object.keys(S.items).length} parts`)}
  <label class="search" style="padding-right:4px">${ic('search')}<input id="iq" type="search" value="${esc(IT.q)}" placeholder="Name or part #" style="flex:1;border:0;background:none;font:inherit;color:var(--ink);min-height:44px;outline:none"></label>
- <div class="row2"><div class="group">${field('Show',`<select id="icat" style="text-align:left"><option value="all">All</option><option value="attn"${IT.cat==='attn'?' selected':''}>Needs review</option>${Object.entries(CATS).map(([k,n])=>`<option value="${k}"${IT.cat===k?' selected':''}>${n}</option>`).join('')}</select>`)}</div><button class="btn" id="iNew">${ic('plus')}New part</button></div>
+ <div class="row2"><div class="group">${field('Show',`<select id="icat" style="text-align:left"><option value="all">All</option><option value="attn"${IT.cat==='attn'?' selected':''}>Needs review</option><option value="nocost"${IT.cat==='nocost'?' selected':''}>No cost</option>${Object.entries(CATS).map(([k,n])=>`<option value="${k}"${IT.cat===k?' selected':''}>${n}</option>`).join('')}</select>`)}</div>${isOffice()?`<button class="btn" id="iNew">${ic('plus')}New part</button>`:''}</div>
  <div class="group" id="il"></div>
  <div class="group"><button class="cell" id="reo">${icoB('truck','#007AFF')}<span class="tx"><b>Reorder list</b></span><span class="val">${reoList().length||''}</span>${chev}</button></div></div>`;
- const draw=()=>{const q=IT.q.toLowerCase(),list=Object.values(S.items).filter(i=>(IT.cat==='all'||(IT.cat==='attn'?(i.needsId||i.needsReview||lowState(i)):i.cat===IT.cat))&&(!q||[i.sku,i.name,i.vendor,i.vpn].join(' ').toLowerCase().includes(q))).sort((a,b)=>a.name.localeCompare(b.name));
+ const draw=()=>{const q=IT.q.toLowerCase(),list=Object.values(S.items).filter(i=>ITF(i)&&(!q||[i.sku,i.name,i.vendor,i.vpn].join(' ').toLowerCase().includes(q))).sort((a,b)=>a.name.localeCompare(b.name));
   $('#il').innerHTML=list.map(i=>{const o=onHand(i.sku),s=lowState(i);return `<button class="cell" data-e="${esc(i.sku)}">${s?`<span class="dotst" style="background:${s==='out'?'#FF3B30':'#FF9500'}"></span>`:''}<span class="tx"><b>${esc(i.name)}</b><span class="t2">${esc(i.sku)}</span></span><span class="val">${o.locs.length?(o.unk&&!o.n?'?':esc(fmtQ(i,o.n))):'0'}</span>${chev}</button>`}).join('')||'<p class="empty">No parts</p>';
   $$('[data-e]').forEach(b=>b.onclick=()=>itemSheet(b.dataset.e))};draw();
  $('#iq').oninput=e=>{IT.q=e.target.value;draw()};$('#icat').onchange=e=>{IT.cat=e.target.value;draw()};
- $('#iNew').onclick=()=>{IT.edit='';render()};$('#reo').onclick=reoSheet}
+ const nw=$('#iNew');if(nw)nw.onclick=()=>{IT.edit='';render()};$('#reo').onclick=()=>{if(isOffice()){OFF='reorder';go('office')}else reoSheet()}}
 function reoList(){return Object.values(S.items).filter(lowState).map(i=>{const n=onHand(i.sku).n,oo=onOrder(i.sku);return{i,n,oo,need:Math.max(0,(i.max||i.min*2)-n-oo)}})}
 function reoSheet(){const r=reoList();openSheet({title:'Reorder',body:`<div class="group">${r.map(x=>`<div class="cell"><span class="tx"><b>${esc(x.i.name)}</b><span class="t2">${esc(x.i.vendor||'')} ${esc(x.i.vpn||x.i.sku)} · have ${fmt(x.n)}${x.oo?`, ${fmt(x.oo)} coming`:''}</span></span><span class="val strong">${fmt(x.need)}</span></div>`).join('')||'<p class="empty">Nothing to reorder</p>'}</div>`,
  foot:r.length?`<button class="btn" id="cp">Copy for email</button>`:'',bind:s=>{const c=$('#cp',s);if(c)c.onclick=()=>copyText(['REORDER '+today(),...r.map(x=>`${x.i.vendor||''}\t${x.i.vpn||x.i.sku}\t${x.i.name}\t${x.need} ${uom(x.i)}`)].join('\n'),'Copied')}})}
@@ -1151,6 +1179,70 @@ function itemForm(v){V.live=false;const i=IT.edit?item(IT.edit):{cat:'hardware',
   if(hl&&sinfo(hl).assign!==sku){const d=clone(S.stock[hl]);d.lines=d.lines||[];d.assign=sku;await W.set('stock',hl,d)}
   toast('Saved');IT.edit=null;render()});
  const d=$('#eDel');if(d)d.onclick=()=>{const o=onHand(i.sku);if(o.locs.length)return toast(`Still in ${o.locs.length} spot(s)`,true);openSheet({title:'Delete '+i.name+'?',body:'',foot:'<button class="btn red" id="y">Delete</button>',bind:s=>$('#y',s).onclick=()=>guard(async()=>{await W.del('items',i._id);for(const l of homeOf(i.sku)){const x=clone(S.stock[l]);delete x.assign;await W.set('stock',l,x)}IT.edit=null;closeSheet()})})}}
+
+/* ---------- Office ---------- */
+let OFF='hub',JOB='',JOBQ='';
+const money=n=>'$'+Math.round(n||0).toLocaleString();
+const moneyK=n=>n>=1e6?'$'+(n/1e6).toFixed(1)+'M':n>=1e4?'$'+Math.round(n/1e3)+'k':money(n);
+const costOf=(sku,q)=>(item(sku)?.cost||0)*(q||0);
+function vOffice(v){if(!isOffice()){v.innerHTML=`<div class="stack">${title('Office')}<div class="group"><p class="empty">Office only. Ask the owner to add you under Setup.</p></div></div>`;return}
+ if(OFF==='today')return offToday(v);if(OFF==='reorder')return offReorder(v);if(OFF==='jobs')return offJobs(v);if(OFF==='value')return offValue(v);
+ const c=counts(),arrived=Object.values(S.pos).filter(p=>p.receivedAt&&ymd(p.receivedAt)===today()).length,val=invValue(),wk=jobList().filter(j=>(Date.now()-new Date(j.t))/864e5<7).length;
+ const T=(id,icon,label,n,sub)=>`<button class="tile" data-off="${id}">${icoB(icon,'')}<span class="n">${n}</span><b>${label}<br><small class="sub" style="font-weight:500;font-size:13px">${sub}</small></b></button>`;
+ v.innerHTML=`<div class="stack">${title('Office',liveLine())}
+ <div class="tiles">${T('today','truck','Today',arrived,c.slips?`${c.slips} slip${c.slips>1?'s':''} open`:'Slips all in')}${T('reorder','list','Reorder',reoList().length,'Low parts')}${T('jobs','hand','Usage by job',wk,'Jobs this week')}${T('value','dollar','Value',moneyK(val.total),'Counted stock')}</div>
+ <div class="group">
+  <button class="cell" id="oNew">${icoB('plus','')}<span class="tx"><b>New PO</b></span>${chev}</button>
+  <a class="cell" href="#import">${icoB('sheet','')}<span class="tx"><b>Import from Excel</b></span>${chev}</a>
+  <a class="cell" href="#report">${icoB('chart','')}<span class="tx"><b>Daily report</b></span>${chev}</a>
+  <a class="cell" href="#setup">${icoB('gear','')}<span class="tx"><b>People & setup</b></span>${chev}</a></div></div>`;
+ $$('[data-off]').forEach(b=>b.onclick=()=>{OFF=b.dataset.off;render();scrollTo(0,0)});$('#oNew').onclick=()=>newPOSheet()}
+const offBack=()=>{const b=$('#bk');if(b)b.onclick=()=>{OFF='hub';JOB='';render();scrollTo(0,0)}};
+const poCell=(p,t2,right)=>`<button class="cell" data-po2="${esc(p.id)}"><span class="tx"><b>${esc(p.po)}</b><span class="t2">${t2}</span></span>${right||''}${chev}</button>`;
+const openPO=id=>{IN={tab:'exp',id,step:null};go('incoming')};
+function offToday(v){const P=Object.values(S.pos),td=today(),pp=p=>p.paper||{};
+ const conf=P.filter(p=>got(p)&&pp(p).handed&&!pp(p).confirmed),notH=P.filter(p=>got(p)&&!pp(p).handed),arr=P.filter(p=>p.receivedAt&&ymd(p.receivedAt)===td),
+  due=P.filter(p=>waiting(p)&&p.expected&&p.expected<=td),bo=P.filter(p=>p.status==='partial');
+ const sec=(t,list,row,empty)=>`<div class="st"><p class="hd">${t} · ${list.length}</p><div class="group">${list.length?list.map(row).join(''):`<p class="empty">${empty}</p>`}</div></div>`;
+ v.innerHTML=`<div class="stack">${backBtn('Office','bk')}${title('Today',dday(td))}
+ ${sec('Slips to confirm',conf,p=>`<div class="cell"><span class="tx"><b>${esc(p.po)}</b><span class="t2">${esc(p.vendor||'')} · handed in by ${esc(nameOf(pp(p).by))} ${pp(p).at?tm(pp(p).at):''}</span></span><button class="pill" data-cf="${esc(p.id)}">${ic('check')}Got it</button></div>`,'None waiting')}
+ ${sec('Slips not handed in',notH,p=>poCell(p,`Received by ${esc(nameOf(p.receivedBy))} · ${dt(p.receivedAt)}`),'All handed in')}
+ ${sec('Arrived today',arr,p=>poCell(p,`${esc(p.vendor||'')} · ${esc(nameOf(p.receivedBy))} · ${tm(p.receivedAt)}`,p.disc?'<span class="chip" style="color:var(--orange)">Problem</span>':''),'Nothing yet today')}
+ ${sec('Due or late',due,p=>poCell(p,`${esc(p.vendor||'')} · ${p.expected<td?'<span class="bad">Late</span>':'Due today'}`),'Nothing due')}
+ ${sec('Backorders',bo,p=>poCell(p,`${esc(p.vendor||'')} · ${(p.lines||[]).filter(l=>boLeft(p,l)>0).length} item(s) still coming`),'No backorders')}</div>`;
+ offBack();$$('[data-po2]').forEach(b=>b.onclick=()=>openPO(b.dataset.po2));
+ $$('[data-cf]').forEach(b=>b.onclick=()=>guard(async()=>{const id=b.dataset.cf,d=clone(S.pos[id]);delete d.id;d.paper={...(d.paper||{}),confirmed:true,cby:whoId(),cat:new Date().toISOString()};await W.set('pos',id,d);toast(d.po+' slip confirmed')}))}
+function offReorder(v){const r=reoList(),G={};r.forEach(x=>{const k=x.i.vendor||'No vendor';(G[k]=G[k]||[]).push(x)});
+ v.innerHTML=`<div class="stack">${backBtn('Office','bk')}${title('Reorder',`${r.length} part${r.length===1?'':'s'} at or below reorder point`)}
+ ${r.length?Object.entries(G).map(([vn,xs],k)=>`<div class="st"><p class="hd">${esc(vn)} · ${xs.length}</p><div class="group">${xs.map(x=>`<button class="cell" data-i="${esc(x.i.sku)}"><span class="tx"><b>${esc(x.i.name)}</b><span class="t2">${esc(x.i.vpn||x.i.sku)} · have ${esc(fmtQ(x.i,x.n))}${x.oo?` · ${esc(fmtQ(x.i,x.oo))} coming`:''}</span></span><span class="val strong">${esc(fmtQ(x.i,x.need))}</span></button>`).join('')}</div>
+  <div class="row2"><button class="btn gray" data-cp="${k}">Copy</button><button class="btn" data-mk="${k}">${ic('plus')}Make PO</button></div></div>`).join(''):`<div class="group"><p class="empty">Nothing low. Set reorder points on each part.</p></div><a class="btn gray" href="#items">Open parts</a>`}</div>`;
+ offBack();const E=Object.entries(G);$$('[data-i]').forEach(b=>b.onclick=()=>itemSheet(b.dataset.i));
+ $$('[data-cp]').forEach(b=>b.onclick=()=>{const[vn,xs]=E[+b.dataset.cp];copyText([`${vn} · reorder ${today()}`,...xs.map(x=>`${x.i.vpn||x.i.sku}\t${x.i.name}\t${x.need}\t${uom(x.i)}`)].join('\n'),'Copied for email')});
+ $$('[data-mk]').forEach(b=>b.onclick=()=>{const[vn,xs]=E[+b.dataset.mk];newPOSheet({vendor:vn==='No vendor'?'':vn,lines:xs.map(x=>({sku:x.i.sku,q:x.need}))})})}
+function jobList(){const M={};S.log.forEach(e=>{if((e.type==='pull'||e.type==='cut')&&e.job){const j=M[e.job]||(M[e.job]={job:e.job,n:0,cost:0,t:e.t,rows:[]});j.n++;j.cost+=costOf(e.sku,e.qty);j.rows.push(e);if(e.t>j.t)j.t=e.t}});return Object.values(M).sort((a,b)=>b.t.localeCompare(a.t))}
+function offJobs(v){const J=jobList();
+ if(JOB){const j=J.find(x=>x.job===JOB);if(!j){JOB='';return offJobs(v)}
+  v.innerHTML=`<div class="stack">${backBtn('Jobs','bk2')}${title('Job '+j.job,`${j.n} pull${j.n>1?'s':''} · ${money(j.cost)}`)}
+  <div class="group">${j.rows.map(e=>{const i=item(e.sku);return `<div class="cell"><span class="tx"><b>${esc(i?i.name:e.sku)}</b><span class="t2">${esc(e.from||'')} · ${esc(nameOf(e.who))} · ${dt(e.t)}</span></span><span class="val"><b style="color:var(--ink)">${esc(fmtQ(i,e.qty))}</b><br>${i&&i.cost?money(costOf(e.sku,e.qty)):'<span class="warn">no cost</span>'}</span></div>`}).join('')}</div>
+  <button class="btn gray" id="jc">Copy for Excel</button></div>`;
+  $('#bk2').onclick=()=>{JOB='';render()};$('#jc').onclick=()=>copyText(tsv([['Job','When','Part #','Part','Qty','Unit','From','Who','Cost'],...j.rows.map(e=>[j.job,e.t,e.sku,item(e.sku)?.name||'',e.qty,uom(item(e.sku)),e.from||'',nameOf(e.who),costOf(e.sku,e.qty).toFixed(2)])]),'Copied');return}
+ const q=JOBQ.trim().toLowerCase(),list=J.filter(j=>!q||String(j.job).toLowerCase().includes(q)).slice(0,60);
+ v.innerHTML=`<div class="stack">${backBtn('Office','bk')}${title('Usage by job')}
+ <label class="search" style="padding-right:4px">${ic('search')}<input id="jq" type="search" value="${esc(JOBQ)}" placeholder="Job #" inputmode="search" style="flex:1;border:0;background:none;font:inherit;color:var(--ink);min-height:44px;outline:none"></label>
+ <div class="group" id="jl">${list.map(j=>`<button class="cell" data-j="${esc(j.job)}"><span class="tx"><b>${esc(j.job)}</b><span class="t2">${j.n} pull${j.n>1?'s':''} · ${dday(ymd(j.t))}</span></span><span class="val">${money(j.cost)}</span>${chev}</button>`).join('')||`<p class="empty">${J.length?'No match':'No job pulls yet'}</p>`}</div>
+ <p class="ft">Cost uses each part’s cost. Parts without a cost count as $0.</p></div>`;
+ offBack();$('#jq').oninput=e=>{JOBQ=e.target.value;const p=e.target.selectionStart;render();const n=$('#jq');n.focus();n.setSelectionRange(p,p)};
+ $$('[data-j]').forEach(b=>b.onclick=()=>{JOB=b.dataset.j;render();scrollTo(0,0)})}
+function invValue(){const by={},noCost=new Set();let total=0,unv=0;
+ for(const loc in S.stock)for(const l of lines(loc)){const i=item(l.sku);if(!i)continue;if(l.qty==null){unv++;continue}if(!i.cost){if(l.qty>0)noCost.add(i.sku);continue}const v=i.cost*l.qty;total+=v;by[i.cat]=(by[i.cat]||0)+v}
+ return{total,by,unv,noCost:noCost.size}}
+function offValue(v){const x=invValue(),rows=Object.entries(x.by).sort((a,b)=>b[1]-a[1]),mx=Math.max(1,...rows.map(r=>r[1]));
+ v.innerHTML=`<div class="stack">${backBtn('Office','bk')}${title('Inventory value','Counted stock × part cost')}
+ <div class="group" style="padding:22px 16px;text-align:center"><p class="sub fn">On hand</p><p style="font:700 44px var(--round);margin-top:4px">${money(x.total)}</p></div>
+ <div class="st"><p class="hd">By type</p><div class="group">${rows.length?`<div class="bars">${rows.map(([k,n])=>`<div class="bar" style="grid-template-columns:100px 1fr auto"><span>${esc(CATS[k]||k)}</span><span class="tr"><i style="width:${(n/mx*100).toFixed(1)}%"></i></span><b>${money(n)}</b></div>`).join('')}</div>`:'<p class="empty">No costed stock yet</p>'}</div></div>
+ <div class="group"><button class="cell" id="vnc">${icoB('dollar','')}<span class="tx"><b>${x.noCost} part${x.noCost===1?' has':'s have'} no cost</b><span class="t2">Left out of the total</span></span>${chev}</button>
+  <div class="cell"><span class="tx"><b>${x.unv} spot line${x.unv===1?'':'s'} not counted</b><span class="t2">Not in the total until counted</span></span></div></div></div>`;
+ offBack();$('#vnc').onclick=()=>{IT.cat='nocost';IT.q='';go('items')}}
 
 /* ---------- Spots & labels ---------- */
 let SPZ='D';
@@ -1194,39 +1286,84 @@ function vReport(v){const L=S.log.filter(e=>e.day===repDay);
  $('#rd').onchange=e=>{repDay=e.target.value||today();render()};
  $('#rc').onclick=()=>copyText([`FORCE GILBERT · ${repDay}`,`Deliveries: ${rec.map(p=>p.po).join(', ')||'none'}`,`Sheets to saw: ${saw.map(r=>`${r.k} ${r.q}`).join(', ')||'none'}`,`Hardware: ${hw.map(r=>`${r.i.name} ${r.q}`).join(', ')||'none'}`,`Handles: ${hd.map(r=>`${r.i.name} ${r.q}`).join(', ')||'none'}`,`Shipped: ${ship.map(o=>o.ref).join(', ')||'none'}`,`Count fixes: ${cor.length}`].join('\n'),'Report copied')}
 
-/* ---------- Import from Excel ---------- */
-let IMP={kind:'po',rows:null,map:{}};
-const IFIELDS={po:[['po','PO #',/po|order/],['vendor','Vendor',/vendor|supplier/],['expected','Due date',/date|eta|expected|due/],['sku','Part #',/part|sku|item ?#|item no|code/],['desc','Description',/desc|name|item$/],['qty','Quantity',/qty|quantity|ordered/],['uom','Unit',/unit|uom/]],
- item:[['sku','Part #',/part|sku|code|item ?#/],['name','Name',/desc|name/],['cat','Type',/cat|type/],['uom','Unit',/unit|uom/],['pq','Per box',/pack|per ?box|case/],['vendor','Vendor',/vendor|supplier/],['vpn','Vendor #',/vendor ?part|mfg|manufacturer/],['min','Reorder at',/min|reorder/]]};
-function parseGrid(t){const sep=t.includes('\t')?'\t':',';return t.split(/\r?\n/).filter(r=>r.trim()).map(r=>{if(sep==='\t')return r.split('\t').map(c=>c.trim());const out=[];let cur='',q=false;for(const ch of r){if(ch==='"')q=!q;else if(ch===','&&!q){out.push(cur.trim());cur=''}else cur+=ch}out.push(cur.trim());return out})}
-function vImport(v){V.live=false;const F=IFIELDS[IMP.kind];
+/* ---------- Import from Excel ----------
+   Hand-made sheets: header may not be row 1, title rows can carry the PO # and vendor,
+   blank and total rows get skipped, and a column layout is remembered for next time. */
+let IMP={kind:'po',grid:null,hdr:0,map:{},meta:{},dup:{},sheets:null,wb:null};
+const IFIELDS={po:[['qty','Quantity',/qty|quantity|ordered|order qty/],['sku','Part #',/part|sku|item ?#|item no|^item$|model|code/],['desc','Description',/desc|name/],['vendor','Vendor',/vendor|supplier/],['expected','Due date',/date|eta|expected|due|ship/],['uom','Unit',/unit|uom/],['cost','Unit cost',/cost|price|each/],['po','PO #',/^(p\.?o\.?|purchase order)\b|^po ?(#|no|num)/]],
+ item:[['sku','Part #',/part|sku|code|item ?#|model/],['name','Name',/desc|name/],['cat','Type',/cat|type/],['uom','Unit',/unit|uom/],['pq','Per box',/pack|per ?box|case/],['vendor','Vendor',/vendor|supplier/],['vpn','Vendor #',/vendor ?part|mfg|manufacturer/],['min','Reorder at',/min|reorder/],['cost','Cost',/cost|price/]]};
+function parseGrid(t){const sep=t.includes('\t')?'\t':',';return t.split(/\r?\n/).map(r=>{if(sep==='\t')return r.split('\t').map(c=>c.trim());const out=[];let cur='',q=false;for(const ch of r){if(ch==='"')q=!q;else if(ch===','&&!q){out.push(cur.trim());cur=''}else cur+=ch}out.push(cur.trim());return out})}
+let xlsxP=null;function loadXLSX(){return xlsxP||(xlsxP=new Promise((ok,no)=>{const sc=document.createElement('script');sc.src='https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';sc.onload=()=>ok(window.XLSX);sc.onerror=()=>{xlsxP=null;no(new Error('xlsx'))};document.head.appendChild(sc)}))}
+const cellStr=c=>c instanceof Date?ymd(c):c==null?'':String(c).trim();
+const hash=t=>{let h=5381;for(const ch of t)h=(h*33^ch.charCodeAt(0))>>>0;return h.toString(36)};
+function sheetGrid(name){return XLSX.utils.sheet_to_json(IMP.wb.Sheets[name],{header:1,raw:true,defval:''}).map(r=>r.map(cellStr))}
+function setGrid(g){g=g.map(r=>r.map(cellStr));const F=IFIELDS[IMP.kind];let best=0,bs=0;
+ g.slice(0,25).forEach((r,ix)=>{const sc=F.filter(([,,re])=>r.some(c=>c&&c.length<40&&re.test(c.toLowerCase()))).length;if(sc>bs){bs=sc;best=ix}});
+ IMP.grid=g;IMP.hdr=best;IMP.meta={};IMP.dup={};
+ // title rows above the header: "PO #: 1234", "Vendor: Blum", "Date: 11/3/26" (same cell or the next one)
+ g.slice(0,best).forEach(r=>r.forEach((c,ix)=>{const m=c.match(/^(p\.?o\.?(?=[\s#:]|$)\s*(?:#|no\.?|number)?|purchase order\s*#?|vendor|supplier|(?:due |ship |order )?date|eta)\s*[:#]?\s*(.*)$/i);if(!m)return;
+  const val=(m[2]||'').trim()||(r.slice(ix+1).find(x=>x)||''),k=/vendor|supplier/i.test(m[1])?'vendor':/date|eta/i.test(m[1])?'expected':'po';if(val&&!IMP.meta[k])IMP.meta[k]=val}));
+ const hd=g[best]||[],sig=IMP.kind+':'+hash(hd.join('|').toLowerCase()),saved=(S.meta.imaps||{})[sig];IMP.sig=sig;
+ if(saved){IMP.map={...saved};IMP.remembered=true}else{IMP.remembered=false;IMP.map={};F.forEach(([k,,re])=>{const ix=hd.findIndex((h,ix)=>h&&re.test(h.toLowerCase())&&!Object.values(IMP.map).includes(ix));if(ix>=0)IMP.map[k]=ix})}
+ mapUI2()}
+function vImport(v){V.live=false;if(!isOffice()){v.innerHTML=`<div class="stack">${title('Import')}<div class="group"><p class="empty">Office only.</p></div></div>`;return}
  v.innerHTML=`<div class="stack">${title('Import')}<div class="seg" role="group"><button data-k="po" aria-pressed="${IMP.kind==='po'}">Open POs</button><button data-k="item" aria-pressed="${IMP.kind==='item'}">Parts list</button></div>
- <div class="st"><p class="hd">1 · Paste rows with the header</p><textarea id="ix" placeholder="Copy from Excel or Sheets and paste here"></textarea></div><button class="btn gray" id="iRead">Read rows</button><div id="iMap" class="stack"></div></div>`;
- $$('[data-k]').forEach(b=>b.onclick=()=>{IMP={kind:b.dataset.k,rows:null,map:{}};render()});
- $('#iRead').onclick=()=>{const g=parseGrid($('#ix').value);if(g.length<2)return toast('Paste a header row and data',true);IMP.rows=g;IMP.map={};
-  F.forEach(([k,,re])=>{const ix=g[0].findIndex((h,ix)=>re.test(h.toLowerCase())&&!Object.values(IMP.map).includes(ix));if(ix>=0)IMP.map[k]=ix});mapUI2()};if(IMP.rows)mapUI2()}
-function mapUI2(){const F=IFIELDS[IMP.kind],hd=IMP.rows[0];
- $('#iMap').innerHTML=`<div class="st"><p class="hd">2 · Match columns</p><div class="group">${F.map(([k,n])=>field(n,`<select data-m="${k}"><option value="">—</option>${hd.map((h,ix)=>`<option value="${ix}"${IMP.map[k]===ix?' selected':''}>${esc(h||'Col '+(ix+1))}</option>`).join('')}</select>`)).join('')}</div></div><div class="st"><p class="hd">3 · Check</p><div class="group" id="iPrev"></div></div><button class="btn" id="iGo">Import</button>`;
- $$('[data-m]').forEach(s=>s.onchange=()=>{IMP.map[s.dataset.m]=s.value===''?undefined:+s.value;prev()});prev();$('#iGo').onclick=()=>guard(doImport)}
-function impRows(){const m=IMP.map,c=(r,k)=>m[k]!=null?(r[m[k]]||'').trim():'';return IMP.rows.slice(1).map(r=>{const o={};IFIELDS[IMP.kind].forEach(([k])=>o[k]=c(r,k));return o}).filter(o=>Object.values(o).some(Boolean))}
-function prev(){const rs=impRows(),p=$('#iPrev');
- if(IMP.kind==='po'){if(IMP.map.po==null||IMP.map.qty==null||(IMP.map.sku==null&&IMP.map.desc==null)){p.innerHTML='<p class="empty warn">Match PO #, Quantity, and Part # or Description</p>';return}
-  const by={};rs.forEach(r=>{if(r.po)(by[r.po]=by[r.po]||[]).push(r)});p.innerHTML=Object.keys(by).slice(0,8).map(x=>`<div class="cell"><span class="tx"><b>${esc(x)}${S.pos[docId(x)]?' <span class="warn fn">exists, skip</span>':''}</b><span class="t2">${esc(by[x][0].vendor)} · ${by[x].length} lines</span></span></div>`).join('')}
- else{if(IMP.map.sku==null||IMP.map.name==null){p.innerHTML='<p class="empty warn">Match Part # and Name</p>';return}p.innerHTML=`<p class="empty">${rs.length} parts</p>`}}
-function normDate(s){if(!s)return '';if(/^\d{4}-\d{2}-\d{2}$/.test(s))return s;if(/^\d{5}$/.test(s))return new Date(Date.UTC(1899,11,30)+(+s)*864e5).toISOString().slice(0,10);const d=new Date(s);return isNaN(d)?'':ymd(d)}
+ <label class="btn" style="cursor:pointer">${ic('sheet')}Choose Excel file<input id="ifile" type="file" accept=".xlsx,.xls,.csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel,text/csv" hidden></label>
+ <div class="group"><details class="cell"><summary><span class="tx"><b>Or paste rows</b></span>${chev}</summary><div class="dbody stack" style="gap:10px"><textarea id="ix" placeholder="Copy from Excel or Sheets and paste here" style="background:var(--fill)"></textarea><button class="btn gray" id="iRead">Read rows</button></div></details></div>
+ <div id="iSheet"></div><div id="iMap" class="stack"></div></div>`;
+ $$('[data-k]').forEach(b=>b.onclick=()=>{IMP={kind:b.dataset.k,grid:null,hdr:0,map:{},meta:{},dup:{},sheets:null,wb:null};render()});
+ $('#iRead').onclick=()=>{const g=parseGrid($('#ix').value);if(g.filter(r=>r.some(Boolean)).length<2)return toast('Paste a header row and data',true);IMP.wb=null;$('#iSheet').innerHTML='';setGrid(g)};
+ $('#ifile').onchange=async e=>{const f=e.target.files[0];if(!f)return;try{
+  if(/\.csv$/i.test(f.name)){IMP.wb=null;setGrid(parseGrid(await f.text()));return}
+  toast('Reading '+f.name);const X=await loadXLSX();IMP.wb=X.read(await f.arrayBuffer(),{type:'array',cellDates:true});
+  const names=IMP.wb.SheetNames.filter(n=>sheetGrid(n).some(r=>r.some(Boolean)));if(!names.length)return toast('That file looks empty',true);
+  $('#iSheet').innerHTML=names.length>1?`<div class="group">${field('Sheet',`<select id="isn">${names.map(n=>`<option>${esc(n)}</option>`).join('')}</select>`)}</div>`:'';
+  const sn=$('#isn');if(sn)sn.onchange=()=>setGrid(sheetGrid(sn.value));setGrid(sheetGrid(names[0]))}catch(err){toast(err.message==='xlsx'?'Couldn’t load the Excel reader. Check your connection.':'Couldn’t read that file',true)}};
+ if(IMP.grid)mapUI2()}
+function mapUI2(){const F=IFIELDS[IMP.kind],hd=IMP.grid[IMP.hdr]||[],opts=sel=>`<option value="">—</option>${hd.map((h,ix)=>`<option value="${ix}"${sel===ix?' selected':''}>${esc(h||'Column '+(ix+1))}</option>`).join('')}`;
+ $('#iMap').innerHTML=`<div class="st"><p class="hd">Header row</p><div class="group">${field('Row',`<select id="ihr">${IMP.grid.slice(0,25).map((r,ix)=>`<option value="${ix}"${ix===IMP.hdr?' selected':''}>${ix+1}: ${esc(r.filter(Boolean).slice(0,3).join(' · ').slice(0,40)||'(blank)')}</option>`).join('')}</select>`)}</div>${IMP.remembered?'<p class="ft">Same layout as last time. Columns matched for you.</p>':''}</div>
+ <div class="st"><p class="hd">Match columns</p><div class="group">${F.map(([k,n])=>field(n,`<select data-m="${k}">${opts(IMP.map[k])}</select>`)).join('')}</div></div>
+ ${IMP.kind==='po'?`<div class="st"><p class="hd">If not a column</p><div class="group">${field('PO #',`<input id="imPO" value="${esc(IMP.meta.po||'')}" placeholder="From the sheet title">`)}${field('Vendor',`<input id="imV" value="${esc(IMP.meta.vendor||'')}">`)}${field('Due',`<input id="imD" type="date" value="${esc(normDate(IMP.meta.expected||''))}">`)}</div></div>`:''}
+ <div class="st"><p class="hd">Check before saving</p><div id="iPrev" class="stack"></div></div><button class="btn" id="iGo">Import</button>`;
+ $('#ihr').onchange=e=>{IMP.hdr=+e.target.value;const hd2=IMP.grid[IMP.hdr]||[];IMP.map={};F.forEach(([k,,re])=>{const ix=hd2.findIndex((h,ix)=>h&&re.test(h.toLowerCase())&&!Object.values(IMP.map).includes(ix));if(ix>=0)IMP.map[k]=ix});IMP.remembered=false;mapUI2()};
+ $$('[data-m]').forEach(s=>s.onchange=()=>{IMP.map[s.dataset.m]=s.value===''?undefined:+s.value;prev()});
+ ['imPO','imV','imD'].forEach(id=>{const e=$('#'+id);if(e)e.oninput=()=>{IMP.meta[{imPO:'po',imV:'vendor',imD:'expected'}[id]]=e.value;prev()}});
+ prev();$('#iGo').onclick=()=>guard(doImport)}
+const num=x=>{const n=parseFloat(String(x||'').replace(/[$,\s]/g,''));return Number.isFinite(n)?n:NaN};
+function impRows(){const m=IMP.map,F=IFIELDS[IMP.kind],c=(r,k)=>m[k]!=null?(r[m[k]]||'').trim():'';let carry={};
+ return IMP.grid.slice(IMP.hdr+1).filter(r=>r.some(Boolean)&&!r.some(x=>/^(sub)?total\b|^grand total/i.test(x))).map(r=>{const o={};F.forEach(([k])=>o[k]=c(r,k));
+  if(IMP.kind==='po'){['po','vendor','expected'].forEach(k=>{if(o[k])carry[k]=o[k];else o[k]=carry[k]||IMP.meta[k]||''})}
+  return o}).filter(o=>Object.values(o).some(Boolean))}
+function matchPart(r){const sku=(r.sku||'').toUpperCase();if(sku&&S.items[sku])return S.items[sku];const d=(r.desc||'').toLowerCase();return d?Object.values(S.items).find(i=>i.name.toLowerCase()===d||(i.vpn&&i.vpn.toUpperCase()===sku&&sku)):null}
+function poGroups(){const by={};impRows().forEach(r=>{const q=num(r.qty),hit=matchPart(r);r.q=q;r.hit=hit;r.fix=!r.po?'No PO #':!(q>0)?'No quantity':!(r.sku||r.desc)?'No part':'';(by[r.po||'(no PO #)']=by[r.po||'(no PO #)']||[]).push(r)});return by}
+function prev(){const p=$('#iPrev');
+ if(IMP.kind==='po'){if(IMP.map.qty==null||(IMP.map.sku==null&&IMP.map.desc==null)){p.innerHTML='<div class="group"><p class="empty warn">Match Quantity, and Part # or Description</p></div>';return}
+  const by=poGroups();let ok=0,nw=0,fx=0;
+  p.innerHTML=Object.entries(by).map(([po,rs])=>{const ex=S.pos[docId(po)];if(ex&&IMP.dup[po]==null)IMP.dup[po]='skip';
+   return `<div class="group"><div class="cell"><span class="tx"><b>${esc(po)}</b><span class="t2">${esc(rs[0].vendor||'No vendor')} · ${rs.length} line${rs.length>1?'s':''}${rs[0].expected?' · due '+esc(normDate(rs[0].expected)||rs[0].expected):''}</span></span></div>
+   ${ex?`<div class="field"><span class="warn">Already in the app</span><select data-dup="${esc(po)}"><option value="skip"${IMP.dup[po]==='skip'?' selected':''}>Skip it</option><option value="update"${IMP.dup[po]==='update'?' selected':''}>Update lines</option></select></div>`:''}
+   ${rs.map(r=>{const st=r.fix?'fix':r.hit?'ok':'new';st==='ok'?ok++:st==='new'?nw++:fx++;return `<div class="cell"><span class="tx"><b>${esc(r.hit?r.hit.name:r.desc||r.sku)}</b><span class="t2">${esc(r.sku||'')} · ${Number.isFinite(r.q)?fmt(r.q):'?'} ${esc(r.uom||'')}</span></span><span class="chip" style="color:${st==='ok'?'var(--tint)':st==='new'?'var(--blue)':'var(--red)'}">${st==='ok'?ic('check','style="width:14px;height:14px"')+'Matched':st==='new'?'New part':esc(r.fix)}</span></div>`}).join('')}</div>`}).join('')+`<p class="ft">${ok} matched · ${nw} new part${nw===1?'':'s'} (flagged for review) · ${fx} skipped</p>`;
+  $$('[data-dup]',p).forEach(s=>s.onchange=()=>{IMP.dup[s.dataset.dup]=s.value})}
+ else{if(IMP.map.sku==null||IMP.map.name==null){p.innerHTML='<div class="group"><p class="empty warn">Match Part # and Name</p></div>';return}const rs=impRows().filter(r=>r.sku&&r.name);
+  p.innerHTML=`<div class="group">${rs.slice(0,8).map(r=>`<div class="cell"><span class="tx"><b>${esc(r.name)}</b><span class="t2">${esc(r.sku)}</span></span><span class="chip">${S.items[r.sku.toUpperCase()]?'Update':'New'}</span></div>`).join('')}</div><p class="ft">${rs.length} parts${rs.length>8?' · first 8 shown':''}</p>`}}
+function normDate(s){s=String(s||'').trim();if(!s)return '';if(/^\d{4}-\d{2}-\d{2}/.test(s))return s.slice(0,10);if(/^\d{5}(\.\d+)?$/.test(s))return new Date(Date.UTC(1899,11,30)+Math.floor(+s)*864e5).toISOString().slice(0,10);
+ const m=s.match(/^(\d{1,2})[\/\-.](\d{1,2})[\/\-.](\d{2,4})$/);if(m){const y=+m[3]<100?2000+ +m[3]:+m[3];return `${y}-${String(m[1]).padStart(2,'0')}-${String(m[2]).padStart(2,'0')}`}const d=new Date(s);return isNaN(d)?'':ymd(d)}
 const catGuess=t=>{t=(t||'').toLowerCase();return /hinge|slide|member|plate/.test(t)?'hardware':/screw|nail|brad/.test(t)?'fastener':/pull|knob|handle/.test(t)?'handle':/board|melamine|tfl|ply|sheet|mdf/.test(t)?'board':/strap|foam|cardboard|wrap/.test(t)?'packaging':/mold/.test(t)?'molding':'misc'};
-async function doImport(){const rs=impRows();let made=0,ni=0;
- if(IMP.kind==='po'){const by={};rs.forEach(r=>{if(r.po)(by[r.po]=by[r.po]||[]).push(r)});
-  for(const po in by){const id=docId(po);if(S.pos[id])continue;const ls=[];
-   for(const r of by[po]){const q=parseFloat(String(r.qty).replace(/,/g,''));if(!(q>0))continue;let sku=(r.sku||'').toUpperCase()||null;
-    if(!sku){const m=Object.values(S.items).find(i=>i.name.toLowerCase()===(r.desc||'').toLowerCase());sku=m?m.sku:'NEW-'+docId(r.desc).slice(0,24).toUpperCase()}
-    if(!S.items[sku]){const cat=catGuess(r.desc);await W.set('items',docId(sku),{sku,name:r.desc||sku,cat,uom:r.uom||UNIT[cat],vendor:r.vendor||'',min:0,needsReview:true});ni++}
-    ls.push({sku,desc:r.desc||item(sku)?.name||sku,ordered:Math.round(q),received:null,put:0})}
-   if(!ls.length)continue;await W.set('pos',id,{po,vendor:by[po][0].vendor||'',expected:normDate(by[po][0].expected)||today(),status:'open',lines:ls,createdBy:whoId(),createdAt:new Date().toISOString(),imported:true});made++}
-  toast(`${made} POs imported${ni?`, ${ni} new parts`:''}`);IMP={kind:'po',rows:null,map:{}};IN={tab:'exp',id:null,step:null};go('incoming')}
- else{for(const r of rs){if(!r.sku||!r.name)continue;const sku=r.sku.toUpperCase(),old=item(sku)||{},cat=old.cat||catGuess(r.cat+' '+r.name),pq=parseInt(r.pq);
-   const n={...old,sku,name:r.name,cat,uom:r.uom||old.uom||UNIT[cat],vendor:r.vendor||old.vendor||'',vpn:r.vpn||old.vpn||'',min:parseFloat(r.min)||old.min||0};if(pq>1)n.pack={n:old.pack?.n||'box',q:pq};delete n._id;await W.set('items',docId(sku),n);made++}
-  toast(`${made} parts imported`);IMP={kind:'item',rows:null,map:{}};go('items')}}
+async function doImport(){let made=0,upd=0,ni=0;
+ if(IMP.kind==='po'){const by=poGroups();
+  for(const po in by){const rs=by[po].filter(r=>!r.fix);if(!rs.length)continue;const id=docId(po),ex=S.pos[id];if(ex&&IMP.dup[po]!=='update')continue;const ls=[];
+   for(const r of rs){let sku=r.hit?r.hit.sku:(r.sku||'').toUpperCase()||'NEW-'+docId(r.desc).slice(0,24).toUpperCase();
+    if(!S.items[sku]){const cat=catGuess(r.desc);const it={sku,name:r.desc||sku,cat,uom:r.uom||UNIT[cat],vendor:r.vendor||'',min:0,needsReview:true};const c=num(r.cost);if(c>0)it.cost=c;await W.set('items',docId(sku),it);ni++}
+    else if(!S.items[sku].cost&&num(r.cost)>0){const it={...S.items[sku],cost:num(r.cost)};delete it._id;await W.set('items',S.items[sku]._id,it)}
+    const old=ls.find(l=>l.sku===sku);if(old)old.ordered+=Math.round(r.q);else ls.push({sku,desc:r.desc||item(sku)?.name||sku,ordered:Math.round(r.q),received:null,put:0})}
+   if(ex){const d=clone(ex);delete d.id;ls.forEach(l=>{const o=d.lines.find(x=>x.sku===l.sku);if(o)o.ordered=Math.max(l.ordered,o.received||0);else d.lines.push(l)});d.status=poStatus(d);d.updatedAt=new Date().toISOString();await W.set('pos',id,d);upd++}
+   else{await W.set('pos',id,{po,vendor:rs[0].vendor||'',expected:normDate(rs[0].expected)||'',status:'open',lines:ls,createdBy:whoId(),createdAt:new Date().toISOString(),imported:true});made++}}
+  await W.set('meta','main',{...S.meta,imaps:{...(S.meta.imaps||{}),[IMP.sig]:IMP.map}});
+  toast(`${made} new PO${made===1?'':'s'}${upd?`, ${upd} updated`:''}${ni?`, ${ni} new parts`:''}`);IMP={kind:'po',grid:null,hdr:0,map:{},meta:{},dup:{}};IN={tab:'exp',id:null,step:null};go('incoming')}
+ else{for(const r of impRows()){if(!r.sku||!r.name)continue;const sku=r.sku.toUpperCase(),old=item(sku)||{},cat=old.cat||catGuess(r.cat+' '+r.name),pq=parseInt(r.pq);
+   const n={...old,sku,name:r.name,cat,uom:r.uom||old.uom||UNIT[cat],vendor:r.vendor||old.vendor||'',vpn:r.vpn||old.vpn||'',min:num(r.min)||old.min||0};if(num(r.cost)>0)n.cost=num(r.cost);if(pq>1)n.pack={n:old.pack?.n||'box',q:pq};delete n._id;await W.set('items',old._id||docId(sku),n);made++}
+  await W.set('meta','main',{...S.meta,imaps:{...(S.meta.imaps||{}),[IMP.sig]:IMP.map}});
+  toast(`${made} parts imported`);IMP={kind:'item',grid:null,hdr:0,map:{},meta:{},dup:{}};go('items')}}
 
 /* ---------- Setup ---------- */
 const tsv=rows=>rows.map(r=>r.map(c=>String(c??'').replace(/[\t\n]/g,' ')).join('\t')).join('\n');
@@ -1235,13 +1372,25 @@ const itemRows=()=>[['Part #','Name','Type','Unit','Pack','Per pack','Vendor','V
 const logRows=()=>[['When','Type','Part #','Part','Qty','From','To','Job/PO','Reason','Who'],...S.log.map(e=>[e.t,e.type,e.sku,item(e.sku)?.name||'',e.qty,e.from||e.at||'',e.to||'',e.job||e.ref||'',e.reason||'',nameOf(e.who)])];
 function vSetup(v){
  v.innerHTML=`<div class="stack">${title('Setup',liveLine())}
- ${MODE==='local'?`<div class="group">${field('Your name',`<input id="nm" value="${esc(sget(NKEY)||'')}" placeholder="Shown on your changes">`)}</div>`:''}
+ ${MODE==='local'?`<div class="group">${field('Your name',`<input id="nm" value="${esc(sget(NKEY)||'')}" placeholder="Shown on your changes">`)}</div>
+ <div class="st"><p class="hd">Office</p><div class="group">${sw('offm',isOffice(),'Office mode on this device')}</div><p class="ft">Shows imports, POs, part editing and the Office tab. Needs the 4-digit PIN.</p></div>`:peopleUI()}
  <div class="st"><p class="hd">Copy to Google Sheets or Excel</p><div class="group">${[['stock','Stock by spot','box','#007AFF'],['items','Parts','list','#34C759'],['log','History','chart','#AF52DE']].map(([k,l,i,c])=>`<button class="cell" data-cp="${k}">${icoB(i,c)}<span class="tx"><b>${l}</b></span><span class="val">Copy</span></button>`).join('')}</div><p class="ft">Then tap cell A1 in a sheet and paste.</p></div>
  <div class="st"><p class="hd">Download</p><div class="group">${[['stock','Stock .csv'],['items','Parts .csv'],['log','History .csv']].map(([k,l])=>`<button class="cell" data-dl="${k}"><span class="tx"><b>${l}</b></span>${chev}</button>`).join('')}</div></div>
  <div class="st"><p class="hd">Rollout</p><div class="group">${rollout()}</div></div></div>`;
  const n=$('#nm');if(n)n.oninput=()=>sset(NKEY,n.value.trim());const R={stock:stockRows,items:itemRows,log:logRows};
+ const om=$('#offm');if(om)om.onchange=()=>{if(!om.checked){sset(OKEY,'0');render();return}om.checked=false;pinSheet()};
+ $$('[data-person]').forEach(b=>b.onchange=()=>guard(async()=>{const id=b.dataset.person,cur=new Set(S.meta.office||[]);b.checked?cur.add(id):cur.delete(id);await W.set('meta','main',{...S.meta,office:[...cur]});toast(b.checked?nameOf(id)+' is office':nameOf(id)+' is floor')}));
  $$('[data-cp]').forEach(b=>b.onclick=()=>copyText(tsv(R[b.dataset.cp]()),'Copied'));
  $$('[data-dl]').forEach(b=>b.onclick=()=>saveFile(`force-${b.dataset.dl}-${today()}.csv`,R[b.dataset.dl]().map(r=>r.map(c=>/[",\n]/.test(String(c??''))?`"${String(c).replace(/"/g,'""')}"`:String(c??'')).join(',')).join('\n')))}
+function peopleUI(){if(MODE!=='live'||!isOffice())return '';const ids=new Set(S.meta.office||[]);
+ S.log.forEach(e=>e.who&&ids.add(e.who));Object.values(S.pos).forEach(p=>[p.createdBy,p.receivedBy].forEach(x=>x&&ids.add(x)));Object.values(S.stock).forEach(x=>x.by&&ids.add(x.by));
+ const list=[...ids].filter(x=>!x.startsWith('name:'));
+ return `<div class="st"><p class="hd">People</p><div class="group"><div class="cell"><span class="tx"><b>Page owner</b><span class="t2">Always office</span></span>${OWNER?'<span class="val">You</span>':''}</div>
+  ${list.filter(x=>!(OWNER&&x===UID)).map(id=>`<label class="field"><span style="flex:1">${esc(nameOf(id))}${id===UID?' (you)':''}</span><span class="sub fn">Office</span><span class="switch"><input type="checkbox" data-person="${esc(id)}" ${(S.meta.office||[]).includes(id)?'checked':''}><i></i></span></label>`).join('')}</div>
+  <p class="ft">Office can import, make and delete POs, edit parts and costs, and confirm paperwork. Everyone else works the floor. People show here after they use the app once. The app hides these buttons; it is not a hard lock, and every change is logged with a name.</p></div>`}
+function pinSheet(){const has=!!sget(PKEY);openSheet({title:has?'Enter office PIN':'Set an office PIN',body:`<div class="stack"><div class="group">${field('PIN','<input id="pin" type="password" inputmode="numeric" maxlength="4" pattern="[0-9]*" autocomplete="off" placeholder="4 digits" autofocus>')}</div><p class="ft">${has?'':'Only on this device. Pick one the floor doesn’t know.'}</p></div>`,
+ foot:`<button class="btn" id="go">${has?'Unlock':'Save PIN'}</button>`,bind:s=>{$('#go',s).onclick=()=>{const v=$('#pin',s).value;if(!/^\d{4}$/.test(v))return toast('4 digits',true);
+  if(has&&v!==sget(PKEY))return toast('Wrong PIN',true);if(!has)sset(PKEY,v);sset(OKEY,'1');closeSheet();toast('Office mode on');render()}}})}
 function rollout(){const lab=ZPHYS.filter(z=>(S.meta.labels||{})[z.id]).length,cnt=PHYS.filter(l=>sinfo(l.id).counted).length,des=PHYS.filter(l=>sinfo(l.id).assign).length,nonPal=Object.values(S.items).filter(i=>i.cat!=='pallet'),mins=nonPal.filter(i=>i.min>0).length;
  return [['Spots with a part set',des,PHYS.filter(l=>!['A','B','C'].includes(l.z)).length],['Areas labeled',lab,ZPHYS.length],['Spots counted',cnt,PHYS.length],['Parts with reorder point',mins,nonPal.length]].map(([t,a,b])=>`<div class="cell"><span class="tx"><b>${t}</b></span><span class="val">${a} / ${b}</span></div>`).join('')}
 
