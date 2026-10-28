@@ -387,7 +387,7 @@ const P=2.8,LY=[.15,1.85,3.55,5.25];
 const OFFICE={x0:6,x1:13,z0:-38,z1:-46};
 const OPEN={z0:2.6,z1:-1.4};
 const BLD={w2:{x0:-15,x1:4.6,z0:4,z1:-53},shop:{x0:4.6,x1:31,z0:4,z1:-47}},WALLH=9.5;
-const CATS={board:'Boards',hardware:'Hardware',fastener:'Screws & nails',handle:'Handles',packaging:'Packaging',molding:'Molding',pallet:'Cabinet pallets',misc:'Misc'};
+const CATS={board:'Boards',hardware:'Hardware',fastener:'Screws & nails',handle:'Handles',packaging:'Packaging',molding:'Molding',misc:'Misc'};
 const UNIT={board:'sheets',hardware:'pcs',fastener:'boxes',handle:'pcs',packaging:'rolls',molding:'pcs',pallet:'pallets',misc:'pcs'};
 const THK=['3/4"','6mm','1/4"','1/2"','5/8"','Other'];
 const isWhite=i=>/white/i.test(i.color||'');
@@ -408,9 +408,6 @@ const palletRule=i=>i.cat!=='pallet'?'Aisles A, B and C hold cabinet pallets onl
 const ZONES=[
  {id:'D',name:'Rack D',short:'D',kind:'rack',deep:1,frontL1:1,fx:-11.1,nd:1,first:1,last:18,levels:4,ly:LY,bw:P,up:GR,beam:OR,
   purpose:L=>L===1?'Installer hardware':'Empty for now (cabinets later)',rule:(i,L)=>L===1?(i.cat!=='hardware'?'Rack D level 1 is installer hardware only.':null):'Rack D levels 2–4 stay empty for now.'},
- {id:'C',name:'Aisle C',short:'C',kind:'rack',deep:1,fx:-8.05,nd:-1,first:5,last:18,levels:4,ly:LY,bw:P,up:GR,beam:OR,purpose:()=>'Cabinet pallets',rule:palletRule},
- {id:'B',name:'Aisle B',short:'B',kind:'rack',deep:1,fx:-3.05,nd:1,first:5,last:18,levels:4,ly:LY,bw:P,up:GR,beam:OR,purpose:()=>'Cabinet pallets',rule:palletRule},
- {id:'A',name:'Aisle A',short:'A',kind:'rack',deep:1,fx:0,nd:-1,first:1,last:18,levels:4,ly:LY,bw:P,up:GR,beam:OR,purpose:()=>'Cabinet pallets',rule:palletRule},
  {id:'R0',name:'Supplies',short:'Supplies',kind:'rack',deep:0,depth:1.1,fx:7.6,nd:1,z0:-8,first:1,last:4,levels:4,ly:[.15,1.45,2.65,3.85],bw:2.75,up:GY,beam:0xE0622A,wire:1,
   purpose:L=>L===4?'Cardboard only':'Scribe molding, misc, drop-off',rule:(i,L)=>L===4&&!isCard(i)?'The top of Supplies (Rack 0) is cardboard only.':null},
  {id:'R1',name:'Rack 1',short:'R1',kind:'rack',deep:0,depth:1.1,fx:11.9,nd:-1,z0:-16.1,first:1,last:1,levels:5,ly:[.15,1.05,1.95,2.85,3.75],bw:2.45,up:GY,beam:GY,wire:1,purpose:()=>'Excess handles',rule:i=>i.cat!=='handle'?'Rack 1 holds excess handles only.':null},
@@ -418,8 +415,8 @@ const ZONES=[
  {id:'CL2',name:'Cantilever 2',short:'CL2',kind:'cant',axis:'x',sx:22.8,sz:3.6,dir:-1,cols:3,rows:8,rowsBy:[8,8,5],flip:1,bl:2.6,arm:1.3,base:.25,rh:.5,purpose:()=>'Boards',rule:i=>i.cat!=='board'?'Cantilevers hold boards only.':null},
  {id:'BD',name:'Board drop',short:'Drop',kind:'pad',axis:'x',sx:6.4,sz:-4.6,dir:-1,len:2.6,wid:1.3,purpose:()=>'Boards waiting for a home (placeholder spot)',rule:i=>i.cat!=='board'?'Board drop is for boards only.':null},
  {id:'BK',name:'Bunks',short:'Bunks',kind:'bunk',x0:14,z0:-8,purpose:()=>'Full board units'},
- {id:'HR1',name:'Hardware rack 1',short:'Hardware 1',kind:'shelf',axis:'x',sx:13.6,sz:-46.6,dir:1,bays:3,bw:1.2,shelves:5,sh:.42,depth:.6,purpose:()=>'Screws, nails, small hardware',rule:shelfRule},
- {id:'HR2',name:'Hardware rack 2',short:'Hardware 2',kind:'shelf',axis:'x',sx:17.4,sz:-46.6,dir:1,bays:2,bw:1.8,shelves:5,sh:.42,depth:.6,purpose:()=>'Handles, screws, small hardware',rule:shelfRule},
+ {id:'HR1',name:'Office rack 1',short:'Office 1',kind:'shelf',axis:'x',sx:13.6,sz:-46.6,dir:1,bays:3,bw:1.2,shelves:5,sh:.42,depth:.6,purpose:()=>'Misc supplies next to the office',rule:shelfRule},
+ {id:'HR2',name:'Office rack 2',short:'Office 2',kind:'shelf',axis:'x',sx:17.4,sz:-46.6,dir:1,bays:2,bw:1.8,shelves:5,sh:.42,depth:.6,purpose:()=>'Misc supplies next to the office',rule:shelfRule},
  {id:'VR',name:'Staging',kind:'virtual'},
  {id:'HPAL',name:'Hardware pallet',kind:'virtual'}
 ];
@@ -427,7 +424,7 @@ const zone=id=>ZONES.find(z=>z.id===id);
 // cantilever columns can differ in arm count; flip numbers columns from the viewer's left when facing the arms
 const cRows=(z,c)=>z.rowsBy?z.rowsBy[c-1]:z.rows,cPos=(z,c)=>z.flip?z.cols-c:c-1,pRows=(z,p)=>cRows(z,z.flip?z.cols-p:p+1);
 const ZPHYS=ZONES.filter(z=>z.kind!=='virtual');
-const SECT={pallets:['A','B','C'],boards:['BK','CL1','CL2','BD'],hardware:['D','HR1','HR2','R1','R0']};
+const SECT={boards:['BK','CL1','CL2','BD'],hardware:['D','HR1','HR2','R1','R0']};
 function frameOf(z){
  if(z.kind==='rack')return{O:[z.fx,0,z.z0||0],a:[0,0,-1],n:[z.nd,0,0]};
  if(z.kind==='bunk')return{O:[z.x0,0,z.z0],a:[0,0,-1],n:[1,0,0]};
@@ -593,7 +590,7 @@ const LEASE=uid(),sleep=ms=>new Promise(r=>setTimeout(r,ms));
 async function fresh(col,id){if(!DB)return clone(col==='stock'?S.stock[id]:S[col][id]);const ref=DB.collection(dbCol(col)).doc(id);
  for(let i=0;i<16;i++){let r;try{r=await ref.acquire({holder:LEASE,ttlMs:6000})}catch(e){r={acquired:true}}if(r&&r.acquired)break;await sleep(250)}
  try{const sn=await ref.get();const d=sn.exists?sn.data():{};delete d.id;return d}catch(e){return clone(col==='stock'?S.stock[id]:S[col][id])}}
-async function change(loc,sku,d){const doc=await fresh('stock',loc);doc.lines=doc.lines||[];let l=doc.lines.find(x=>x.sku===sku),short=false;
+async function change(loc,sku,d){{const hp=typeof hpOn==='function'&&LOC[loc]?.geo?hpOn(loc):null;if(hp)loc='HP-'+hp.id}const doc=await fresh('stock',loc);doc.lines=doc.lines||[];let l=doc.lines.find(x=>x.sku===sku),short=false;
  if(!l){if(d>0)doc.lines.push({sku,qty:d});else short=true}
  else if(l.qty!=null){l.qty+=d;if(l.qty<0){l.qty=0;short=true}if(l.qty===0)doc.lines=doc.lines.filter(x=>x!==l)}
  if(short&&(LOC[loc]?.geo||loc.startsWith('HP-')))doc.recount=true;await W.set('stock',loc,doc);return short}
@@ -608,7 +605,7 @@ async function guard(fn){if(!CANWRITE){toast('View only. Ask the owner for edit 
 function retryBar(fn){RETRY=fn;let b=$('#retry');if(!fn){if(b)b.remove();return}if(!b){b=document.createElement('button');b.id='retry';b.className='retry';document.body.append(b)}
  b.innerHTML=`${ic('x')}Not saved · tap to retry`;b.onclick=()=>guard(fn)}
 function suggest(i){const h=homeOf(i.sku).filter(l=>LOC[l]);if(h.length)return{loc:h[0],why:'Its spot'};
- const have=onHand(i.sku).locs.map(x=>x[0]).filter(l=>LOC[l]?.geo&&!ruleFor(l,i));if(have.length)return{loc:have[0],why:'Already here'};
+ const have=onHand(i.sku).locs.map(x=>physLoc(x[0])).filter(l=>LOC[l]?.geo&&!ruleFor(l,i));if(have.length)return{loc:have[0],why:'Already here'};
  const PREF={board:['BK','CL1','CL2','BD'],hardware:['D'],fastener:['HR1','HR2'],handle:['R1','HR2'],pallet:['A','B','C'],packaging:['R0'],molding:['R0'],misc:['R0']};
  let cand=PHYS.filter(l=>(PREF[i.cat]||[]).includes(l.z)&&!lines(l.id).length&&!sinfo(l.id).assign&&!ruleFor(l.id,i));
  cand.sort((a,b)=>(PREF[i.cat]||[]).indexOf(a.z)-(PREF[i.cat]||[]).indexOf(b.z));
@@ -623,9 +620,9 @@ function counts(){const po=Object.values(S.pos),out=Object.values(S.outs);
  return{exp:po.filter(waiting).length,expToday:po.filter(p=>waiting(p)&&p.expected&&p.expected<=today()).length,put:po.filter(putLeft).length,
   slips:po.filter(p=>got(p)&&!(p.paper||{}).confirmed).length,
   out:out.filter(o=>o.status!=='done').length,counted:PHYS.filter(l=>sinfo(l.id).counted).length,alerts:alerts().length}}
-const TABS=[['home','Home','home'],['pallets','Pallets','pallet'],['boards','Boards','layers'],['hardware','Hardware','wrench'],['more','More','dots']];
+const TABS=[['home','Home','home'],['hardware','Hardware','wrench'],['incoming','Incoming','in'],['boards','Boards','layers'],['more','More','dots']];
 const TABS_O=[...TABS.slice(0,4),['office','Office','brief']];
-function tabs(){if(!S.ready){$('#tabs').innerHTML='';return}const c=counts(),b={office:c.slips,more:c.exp+c.put,pallets:pals().filter(p=>p.status==='complete').length};
+function tabs(){if(!S.ready){$('#tabs').innerHTML='';return}const c=counts(),b={office:c.slips,incoming:c.exp+c.put};
  $('#tabs').innerHTML=(isOffice()?TABS_O:TABS).map(([r,l,i])=>`<a class="tab" href="#${r}" aria-current="${route===r?'page':'false'}">${ic(i)}<span>${l}</span>${b[r]?`<span class="bd">${b[r]}</span>`:''}</a>`).join('')}
 const menuDef=()=>{const o=isOffice();return [['Do',[['scan','Scan','qr'],['add','Add stock','add'],['take','Grab parts','hand'],['move','Move stock','move']]],
  ['Go to',[['incoming','Incoming','in'],['outgoing','Outgoing','out'],['count','Count','count'],['map','Map overview','map']]],
@@ -633,6 +630,9 @@ const menuDef=()=>{const o=isOffice();return [['Do',[['scan','Scan','qr'],['add'
  ['Office',[...(o?[['office','Office','brief'],['import','Import from Excel','sheet']]:[]),['report','Daily report','chart'],['setup','Setup','gear']]]]};
 function openMenu(o){$('#menu').hidden=!o;$('#menuScrim').hidden=!o;$('#menuB').setAttribute('aria-expanded',o);
  if(o){$('#menu').innerHTML=menuDef().map(([h,its],k)=>`${k?'<div class="msep"></div>':''}<div class="mh">${h}</div>${its.map(([id,l,i,c])=>`<button class="mi" role="menuitem" data-m="${id}">${icoB(i,c)}${l}</button>`).join('')}`).join('');$('#menu button').focus()}}
+// a tab always opens the top of its section
+$('#tabs').addEventListener('click',e=>{const t=e.target.closest('a.tab');if(!t)return;const r=t.getAttribute('href').slice(1);
+ if(r==='office'){OFF='hub';JOB=''}if(r==='incoming'){IN.id=null;IN.step=null}if(r==='more'||r==='hardware'){OUT.id=null;IT.edit=null}if(route===r){e.preventDefault();render();scrollTo(0,0)}});
 $('#menuB').onclick=()=>openMenu($('#menu').hidden);$('#menuScrim').onclick=()=>openMenu(false);
 $('#menu').addEventListener('click',e=>{const b=e.target.closest('[data-m]');if(!b)return;openMenu(false);const m=b.dataset.m;
  if(m==='add')addSheet({});else if(m==='take')go('grab');else if(m==='move')moveSheet({});else if(m==='scan')scanSheet();else go(m)});
@@ -655,7 +655,7 @@ $('#sheet').addEventListener('picked',e=>SH.picked&&SH.picked(e));
  s.addEventListener('touchend',e=>{if(y0==null)return;const d=e.changedTouches[0].clientY-y0;s.style.transform='';if(d>110&&!e.target.closest('input,select,textarea,button'))closeSheet();y0=null})})();
 
 /* ---------- routing ---------- */
-const ROUTES={home:'Home',map:'Map',incoming:'Incoming',outgoing:'Outgoing',count:'Count',office:'Office',pallets:'Pallets',boards:'Boards',hardware:'Hardware',more:'More',pallet:'Pallet',build:'Build pallet',audit:'Audit',hpal:'Hardware pallet',find:'Find',items:'Parts',spots:'Spots & labels',alerts:'Alerts',report:'Daily report',import:'Import',setup:'Setup',grab:'Grab parts'};
+const ROUTES={home:'Home',map:'Map',incoming:'Incoming',outgoing:'Outgoing',count:'Count',office:'Office',boards:'Boards',hardware:'Hardware',more:'More',hpal:'Hardware pallet',find:'Find',items:'Parts',spots:'Spots & labels',alerts:'Alerts',report:'Daily report',import:'Import',setup:'Setup',grab:'Grab parts'};
 let route='home';const V={live:true};
 function readRoute(){let r=(location.hash||'#home').slice(1);if(!ROUTES[r])r='home';return r}
 addEventListener('hashchange',()=>{if(SH.open){SH.open=false;$('#sheetWrap').hidden=true;document.body.style.overflow=''}render();scrollTo(0,0)});
@@ -687,7 +687,7 @@ document.addEventListener('input',e=>{const q=e.target.closest('.qp');if(q)qtyTo
 const initQty=root=>$$('.qp',root).forEach(qtyTotal);
 
 /* spot picker: two native wheels, Area then Spot */
-const ZSHORT={R0:'Supplies',R1:'Rack 1',CL1:'Cant 1',CL2:'Cant 2',BD:'Drop',BK:'Bunks',HR1:'HW 1',HR2:'HW 2'};
+const ZSHORT={R0:'Supplies',R1:'Rack 1',CL1:'Cant 1',CL2:'Cant 2',BD:'Drop',BK:'Bunks',HR1:'Office 1',HR2:'Office 2'};
 const zpre=z=>z==='BK'?'BK':z==='VR'?'':z+'-';
 function zhint(z){const k=zone(z)?.kind;return z==='VR'?'':k==='rack'?(zone(z).deep?(z==='D'?'11a  ·  level 1, bay 1, spot a':'12b  ·  level 1, bay 2, spot b'):'11c  ·  level 1, bay 1'):k==='shelf'?'31  ·  shelf 3, bay 1':k==='cant'?'1-3  ·  column 1, row 3':k==='bunk'?'1-2  ·  bunk 1, column 2':'1'}
 function spotPick(k,sel,opts={}){if(sel&&hpOf(sel))return `<div class="group" data-sk="${k}"><div class="cell">${icoB('pallet','')}<span class="tx"><b>${esc(hpOf(sel).name)}</b><span class="t2">Hardware pallet at ${esc(hpOf(sel).loc||'—')}</span></span></div><input type="hidden" data-sl value="${sel}"></div>`;
@@ -826,7 +826,7 @@ function vHome(v){const c=counts(),h=new Date().getHours(),greet=h<12?'Good morn
  <div class="st"><p class="hd">Today</p><div class="tiles">
   ${T('#incoming','truck','Receive',c.expToday||'')}
   ${T('','dock','Put away',c.put||'','hPut')}
-  ${T('#outgoing','list','Pick lists',c.out||'')}
+  ${T('#grab','hand','Grab parts','')}
   ${T('#count','count','Count',pct(c.counted,PHYS.length)+'<small>%</small>')}
  </div></div>
  <div class="group">
@@ -848,14 +848,14 @@ function vAlerts(v){const a=alerts(),G={};a.forEach(x=>(G[x.g]=G[x.g]||[]).push(
 
 /* ---------- Find ---------- */
 let findQ='';
-function vFind(v){v.innerHTML=`<div class="stack">${title('Find')}<div class="hsearch"><label class="search" style="padding-right:4px">${ic('search')}<input id="fq" type="search" value="${esc(findQ)}" placeholder="Part, part #, or spot (D-11-c)" autocomplete="off" style="flex:1;border:0;background:none;font:inherit;color:var(--ink);min-height:44px;outline:none"></label><button class="btn scanbtn" id="fScan">${ic('qr')}Scan</button></div><div id="fr"></div></div>`;
+function vFind(v){v.innerHTML=`<div class="stack">${title('Find')}<div class="hsearch"><label class="search" style="padding-right:4px">${ic('search')}<input id="fq" type="search" value="${esc(findQ)}" placeholder="Part, item number, or spot (D-11-a)" autocomplete="off" style="flex:1;border:0;background:none;font:inherit;color:var(--ink);min-height:44px;outline:none"></label><button class="btn scanbtn" id="fScan">${ic('qr')}Scan</button></div><div id="fr"></div></div>`;
  const q=$('#fq');q.focus();q.oninput=()=>{findQ=q.value;fr()};q.onkeydown=e=>{if(e.key==='Enter'){const r=parseScan(q.value);if(r&&r.kind!=='text'){q.blur();findQ='';routeScan(q.value)}}};$('#fScan').onclick=scanSheet;fr()}
 function fr(){const out=$('#fr'),q=findQ.trim().toLowerCase();
  if(!q){const recent=S.log.slice(0,6).map(e=>e.at||e.to||e.from).filter(x=>x&&LOC[x]?.geo);const r=[...new Set(recent)].slice(0,4);
   out.innerHTML=r.length?`<div class="st"><p class="hd">Recent spots</p><div class="group">${r.map(l=>`<button class="cell" data-l="${l}"><span class="tx"><b class="code">${l}</b><span class="t2">${esc(posText(LOC[l]))}</span></span>${chev}</button>`).join('')}</div></div>`:'';$$('[data-l]',out).forEach(b=>b.onclick=()=>spotSheet(b.dataset.l));return}
  const words=q.split(/\s+/),its=allItems().filter(i=>{const h=[i.sku,i.name,i.vendor,i.vpn,i.color,i.finish,i.job,CATS[i.cat]].join(' ').toLowerCase();return words.every(w=>h.includes(w))}).slice(0,40),ex=normLoc(findQ);
  out.innerHTML=(ex?`<div class="st"><p class="hd">Spot</p><div class="group"><button class="cell" data-l="${ex}"><span class="tx"><b class="code">${ex}</b><span class="t2">${esc(posText(LOC[ex]))}</span></span>${chipSt(locStatus(ex))}${chev}</button></div></div>`:'')+
- (()=>{const ps=pals().filter(p=>p.status!=='shipped'&&words.every(w=>[palTitle(p),p.unit,p.bldg,p.po,p.loc,p.name,...(p.items||[]).map(x=>x.cab+' '+x.cid)].join(' ').toLowerCase().includes(w))).slice(0,20);
+ (()=>{const ps=pals().filter(p=>p.kind==='hardware'&&p.status!=='shipped'&&words.every(w=>[palTitle(p),p.unit,p.bldg,p.po,p.loc,p.name,...(p.items||[]).map(x=>x.cab+' '+x.cid)].join(' ').toLowerCase().includes(w))).slice(0,20);
   return ps.length?`<div class="st"><p class="hd">Pallets</p><div class="group">${ps.map(p=>`<button class="cell" data-p="${p.id}">${icoB(p.kind==='hardware'?'wrench':'pallet','')}<span class="tx"><b>${esc(palTitle(p))}</b><span class="t2">${esc(p.kind==='hardware'?'Hardware pallet':palUnit(p))}</span></span><span class="val code" style="font-size:15px">${esc(p.loc||'—')}</span>${chev}</button>`).join('')}</div></div>`:''})()+
  (its.length?`<div class="st"><p class="hd">Parts</p><div class="group">${its.map(i=>{const o=onHand(i.sku);return `<button class="cell" data-i="${esc(i.sku)}"><span class="tx"><b>${esc(i.name)}</b><span class="t2">${esc(i.sku)}${o.locs.length?' · '+esc(o.locs.slice(0,2).map(x=>physLoc(x[0])).join(', ')):''}</span></span><span class="val">${o.locs.length?(o.unk&&!o.n?'?':esc(fmtQ(i,o.n))):'0'}</span>${chev}</button>`}).join('')}</div></div>`:'')||'<div class="group"><p class="empty">No match</p></div>';
  $$('[data-l]',out).forEach(b=>b.onclick=()=>whereOf([{phys:b.dataset.l,src:b.dataset.l}]));$$('[data-i]',out).forEach(b=>b.onclick=()=>partWhere(b.dataset.i));$$('[data-p]',out).forEach(b=>b.onclick=()=>openPal(b.dataset.p))}
@@ -1051,7 +1051,7 @@ function refresh3D(){if(W3){W3.refresh();if(route==='map')labelsFor()}}
 const curZone=()=>selLoc&&LOC[selLoc]?.geo?LOC[selLoc].z:mode3;
 function bayName(zid,b){const k=zone(zid).kind;return k==='bunk'?'Bunk '+b:k==='cant'?'Column '+b:'Bay '+b}
 function bayCenter(zid,b){const ls=PHYS.filter(l=>l.z===zid&&l.bay===b);let x=0,z=0,H=0;ls.forEach(l=>{x+=l.geo.x/ls.length;z+=l.geo.z/ls.length;H=Math.max(H,l.geo.y+l.geo.h)});return[x,H+.35,z]}
-const AERN={BD:'Board drop',R0:'Supplies',R1:'Rack 1',CL1:'Cantilever 1',CL2:'Cantilever 2',BK:'Bunks',HR1:'Hardware',HR2:''};
+const AERN={BD:'Board drop',R0:'Supplies',R1:'Rack 1',CL1:'Cantilever 1',CL2:'Cantilever 2',BK:'Bunks',HR1:'Office racks',HR2:''};
 function labelsFor(){if(!W3)return;const L=[],zid=curZone();
  if(zid==='aerial'){const PR=['D','C','B','A','BK','R0','R1','CL1','CL2','BD','HR1','HR2'];[...ZPHYS].sort((a,b)=>PR.indexOf(a.id)-PR.indexOf(b.id)).forEach((z,k)=>{const Z=zoneInfo(z.id),aisle=z.kind==='rack'&&z.deep;const tx=aisle?z.id:(z.id in AERN?AERN[z.id]:z.name);if(tx)L.push({text:tx,pos:[Z.c[0],Z.mx[1]+1.2,aisle?Z.c[2]+(k%2?-7:3):Z.c[2]],click:()=>enterZone(z.id)})});AREAS.forEach(a=>L.push({text:a[0],pos:[a[1],a[2],a[3]],cls:'area'}))}
  else{const bays=[...new Set(PHYS.filter(l=>l.z===zid).map(l=>l.bay))];if(bays.length>1&&bays.length<=18)bays.forEach(b=>L.push({text:bayName(zid,b),pos:bayCenter(zid,b),cls:'bay',click:()=>flyBay(zid,b)}))}
@@ -1180,7 +1180,7 @@ function newPOSheet(pre={}){const L=pre.lines&&pre.lines.length?pre.lines:[{}];
 const poLine=(k,sku,q)=>`<div class="st" data-pl="${k}"><p class="hd">Item ${k+1}</p>${partPick('np'+k,sku||null)}<div class="qwrap">${sku?qtyPick(item(sku),'nq'+k,q??null):''}</div></div>`;
 
 /* ---------- Outgoing ---------- */
-const OT={job:['Job pull','Hardware or handles for a job','Handed off','hand','#FF9500'],saw:['To the saw','Sheets to cut','Delivered','box','#34C759'],ship:['Ship pallets','Cabinet pallets on a truck','Shipped','truck','#007AFF'],rtv:['Return to vendor','Wrong or damaged items','Sent back','back','#FF3B30']};
+const OT={job:['Job pull','Hardware or handles for a job','Handed off','hand','#FF9500'],saw:['To the saw','Sheets to cut','Delivered','box','#34C759'],rtv:['Return to vendor','Wrong or damaged items','Sent back','back','#FF3B30']};
 let OUT={tab:'open',id:null};
 function vOutgoing(v){if(OUT.id&&S.outs[OUT.id])return vOut(v);OUT.id=null;
  const all=Object.values(S.outs).sort((a,b)=>(b.createdAt||'').localeCompare(a.createdAt||'')),open=all.filter(o=>o.status!=='done'),done=all.filter(o=>o.status==='done').slice(0,60),list=OUT.tab==='open'?open:done;
@@ -1524,6 +1524,7 @@ function bindScan(root,id,onCode){const t=$('#'+id,root);if(!t)return;let tm=0;c
  setTimeout(()=>t.focus(),320)}
 function scanSheet(){openSheet({title:'Scan',body:`<div class="stack">${scanBox('scanIn')}<p class="ft">Cabinet sticker, pallet sheet, hardware pallet label or spot label. Use the scanner, the Photo button, or type it.</p></div>`,bind:s=>bindScan(s,'scanIn',v=>{closeSheet();routeScan(v)})})}
 function routeScan(v){const r=parseScan(v);if(!r)return;
+ if(r.kind==='pallet'||r.kind==='cab')return toast('Cabinet pallets aren’t in this app yet. Hardware only for now.',true);
  if(r.kind==='pallet'){const p=S.pals[r.id];if(p)return openPal(p.id);return onboardSheet(r.id)}
  if(r.kind==='hw'){if(S.pals[r.id])return openPal(r.id);return toast('That hardware label isn’t in the app',true)}
  if(r.kind==='cab'){const p=cabPallet(r.cab.key);if(p){PV.hl=r.cab.key;return openPal(p.id)}return openSheet({title:r.cab.cab,body:`<div class="stack"><div class="hero"><p class="nm" style="margin:0">${esc(r.cab.cab)} · ${esc(r.cab.type)}</p><p class="sub cap">${esc(r.cab.job)} · ${esc(r.cab.bldg)} · ${esc(r.cab.color)}</p></div><div class="group"><p class="empty">Not on a pallet in this app yet.</p></div></div>`,foot:`<button class="btn" id="y">${ic('plus')}Start a pallet with it</button>`,bind:s=>{$('#y',s).onclick=()=>{BUILD={size:'single',cabs:[r.cab],pal:null};closeSheet();go('build')}}})}
@@ -1551,7 +1552,7 @@ function spotLabelsPDF(list,name){savePDF(name,doc=>{list.forEach((l,i)=>{const 
 
 /* ---------- directions + where it is (search → map) ---------- */
 function dirText(loc){const l=LOC[loc];if(!l||!l.geo)return '';const z=zone(l.z),w2=['A','B','C','D'].includes(z.id);
- const aisle={D:'aisle between Rack D and Aisle C',C:'aisle between Rack D and Aisle C',B:'aisle between Aisles B and A',A:'aisle between Aisles B and A'}[z.id];
+ const aisle={D:'aisle along the front of Rack D'}[z.id];
  return [w2?'Warehouse 2':'Warehouse 1, through the opening',aisle,z.kind==='rack'||z.kind==='shelf'?`${z.name}, bay ${l.bay}`:z.name,posText(l)].filter(Boolean).join(' → ')}
 let WH=null;
 function whereOf(entries,i=0){entries=entries.filter(e=>LOC[e.phys]?.geo);if(!entries.length)return toast('Not in a rack spot yet',true);WH={entries,i};if(route==='map')showWhere();else go('map')}
@@ -1746,7 +1747,7 @@ function vHardware(v){const HP=pals().filter(p=>p.kind==='hardware'),spots=hwSpo
  $$('[data-ch]').forEach(b=>b.onclick=()=>{const c=b.dataset.ch;const list=c==='low'?its.filter(lowState).map(i=>({t:i.name,s:fmtQ(i,onHand(i.sku).n)+' left',f:()=>itemSheet(i.sku)})):[...hwLocs].filter(l=>c==='unc'?lines(l).some(x=>x.qty==null):sinfo(l).recount).map(l=>({t:locLabel(l),s:hpOf(l)?'Hardware pallet':posText(LOC[l]),f:()=>hpOf(l)?openPal(hpOf(l).id):spotSheet(l)}));
   openSheet({title:b.querySelector('span').textContent,body:`<div class="group">${list.map((x,k)=>`<button class="cell" data-li="${k}"><span class="tx"><b>${esc(x.t)}</b><span class="t2">${esc(x.s)}</span></span>${chev}</button>`).join('')||'<p class="empty">None</p>'}</div>`,bind:s=>$$('[data-li]',s).forEach(x=>x.onclick=()=>list[+x.dataset.li].f())})})}
 const fmtS=(i,q)=>{const pk=packOf(i);return pk&&q>=pk.q?`${Math.floor(q/pk.q)} ${pk.n==='box'?'bx':pk.n}`:`${fmt(q)} ${uom(i)}`};
-const MORE=[['Moving',[['incoming','Incoming','in'],['outgoing','Outgoing','out'],['grab','Grab parts','hand']]],['Checking',[['count','Count','count'],['audit','Audit an aisle','pallet'],['alerts','Alerts','bell']]],['Looking up',[['find','Find','search'],['map','Map overview','map'],['items','Parts','box'],['spots','Spots & labels','tag']]],['Reports & setup',[['report','Daily report','chart'],['setup','Setup','gear']]]];
+const MORE=[['Moving',[['incoming','Incoming','in'],['outgoing','Outgoing','out'],['grab','Grab parts','hand']]],['Checking',[['count','Count','count'],['alerts','Alerts','bell']]],['Looking up',[['find','Find','search'],['map','Map overview','map'],['items','Parts','box'],['spots','Spots & labels','tag']]],['Reports & setup',[['report','Daily report','chart'],['setup','Setup','gear']]]];
 const moreGroups=()=>MORE.map(([h,its])=>`<div class="st"><p class="hd">${h}</p><div class="group">${its.map(([r,l,i])=>`<a class="cell" href="#${r}">${icoB(i,'')}<span class="tx"><b>${l}</b></span>${chev}</a>`).join('')}</div></div>`).join('');
 function vMore(v){v.innerHTML=`<div class="stack">${title('More')}${moreGroups()}</div>`;$$('a[href="#audit"]').forEach(a=>a.onclick=()=>{AUD={z:'A',seen:{},odd:[]}})}
 /* one-time move to the v6 layout: Rack D level 1 front spots c/d become a/b, and spot stock there becomes hardware pallets */
