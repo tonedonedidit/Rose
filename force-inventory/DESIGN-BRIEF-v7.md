@@ -156,14 +156,22 @@ I replay your exact day as an automated test:
 
 All at tablet and desktop sizes, light and dark, zero errors.
 
-## Questions for you
-1. **Where does the order Excel live today?** On a desktop PC, in OneDrive/SharePoint, in Google Sheets, or emailed around? This decides whether live sync is possible.
-2. **Can the office keep one master Orders tab** with the fixed columns above? Who types *Delayed*: Stephen only, or Roman too?
-3. **Doors:**
-   - Where are door pallets stored?
-   - Does the app need to know which door pallet sits where, or only check counts at arrival and take problem reports from the machine?
-4. **Brand:** is charcoal/white from the logo right, or is there a brand color or guide I should use?
-5. **Office device:** do Stephen and Roman work on a desktop browser? Do they have Claude logins?
-6. **Who closes issues?** Stephen only, or anyone in the office?
-7. **Cardboard, strap, foam:** track as *OK/Low* only, or by count?
-8. **Excel write-back:** should received quantities ever go back into the Excel? My recommendation: not at first.
+## Answers (Oct 28, round 3)
+1. **Excel location:** the files are on Stephen's and Roman's computers. They move files between computers over a shared office network drive ("Community Drive #2").
+   → **No live sync is possible from a local network drive.** An artifact on claude.ai can't see office computers.
+   → Plan: Stephen drags the order Excel into the app's Office screen whenever it changes. The app reads it and shows what changed since last time (new lines, *Delayed*, quantity edits) before applying anything. It takes one drag and no retyping.
+   → **Next step:** Tony collects the real Excel sheets and sends them here. We read every one, set the import rules from them, then take the revised questions to Stephen and Roman.
+2. **Who orders:** Stephen will be the only one doing orders by the end of the year. Stephen is the office role, and he alone closes issues. Roman keeps access until then.
+3. **Doors:** door pallets are stored across from the hardware aisle. → Add a *Doors* area beside the hardware zones. The door team reports problems against it.
+4. **Brand:** the official color is **green**. Get the exact shade from the logo or brand files; it replaces orange as the accent.
+5. **Office devices:** desktop browser. **No Claude logins today.**
+   → **Blocker:** every person who saves in the app needs a claude.ai login (a free account works). Without one, Stephen can view but not import or close issues. Decide before build: give Stephen and Roman logins, or Tony runs the office side.
+6. **Closing issues:** Stephen.
+7. **Cardboard, foam, strap:** tracked **by count**, like hardware.
+8. **Excel write-back:** never. The app may **export its own Excel sheets** for Stephen (received vs. ordered, backorders, extras, issues) as downloads.
+
+## Still open
+- Exact brand green (hex or a logo file).
+- Claude logins for Stephen and Roman (see 5).
+- Can the beam saw computer export what it cut?
+- Everything the real Excel sheets will raise.
