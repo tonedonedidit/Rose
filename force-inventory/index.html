@@ -338,7 +338,7 @@ main{padding-bottom:calc(132px + env(safe-area-inset-bottom,0px))}
    ========================================================= */
 const P=2.8,LY=[.15,1.85,3.55,5.25];
 const OFFICE={x0:6,x1:13,z0:-38,z1:-46};
-const BLD={w2:{x0:-15,x1:4.6,z0:4,z1:-53},shop:{x0:4.6,x1:31,z0:4,z1:-47}},WALLH=8.5;
+const BLD={w2:{x0:-15,x1:4.6,z0:4,z1:-53},shop:{x0:4.6,x1:31,z0:4,z1:-47}},WALLH=9.5;
 const CATS={board:'Boards',hardware:'Hardware',fastener:'Screws & nails',handle:'Handles',packaging:'Packaging',molding:'Molding',pallet:'Cabinet pallets',misc:'Misc'};
 const UNIT={board:'sheets',hardware:'pcs',fastener:'boxes',handle:'pcs',packaging:'rolls',molding:'pcs',pallet:'pallets',misc:'pcs'};
 const THK=['3/4"','6mm','1/4"','1/2"','5/8"','Other'];
@@ -761,7 +761,7 @@ function fr(){const out=$('#fr'),q=findQ.trim().toLowerCase();
 let W3=null,showStatus=false,mode3='aerial',tourTok=0,touring=false,selLoc=null;
 const TINT={hardware:0x3B82F6,board:0xC9A46E,handle:0x8B5CF6,fastener:0x64748B,packaging:0xF59E0B,pallet:0x14B8A6,molding:0x9CA3AF,misc:0x9CA3AF};
 const COL={ok:0x34C759,uncounted:0xFF9F0A,wrong:0xFF3B30,recount:0xAF52DE,empty:0x9AA3A0,emptyok:0x8E8E93};
-const AREAS=[['WAREHOUSE 2',-5.2,.3,-27],['SHOP',18,.3,-30],['OPENING',4.6,2.4,-4.5],['PRODUCTION',24,.3,-12]];
+const AREAS=[['WAREHOUSE 2',-5.2,.3,-27],['WAREHOUSE 1',18,.3,-30],['OPENING',4.6,2.4,-4.5],['PRODUCTION',24,.3,-12]];
 const AER={p:[8,40,22],t:[7,0,-22],fov:50};
 const aer=()=>{const st=$('#stage');return st&&st.clientWidth<st.clientHeight?{p:[8,74,16],t:[8,0,-23],fov:50}:AER};
 const ZI={};
@@ -782,7 +782,7 @@ function makeTextures(T){
  const noise=(g,w,h,base,amt,n)=>{g.fillStyle=base;g.fillRect(0,0,w,h);for(let i=0;i<n;i++){const v=Math.floor(R()*amt*2-amt);g.fillStyle=`rgba(${v>0?255:0},${v>0?255:0},${v>0?255:0},${Math.abs(v)/255})`;g.fillRect(R()*w,R()*h,1+R()*3,1+R()*3)}};
  return{
   concrete:tx(512,512,(g,w,h)=>{noise(g,w,h,'#B7B8B2',22,9000);for(let i=0;i<6;i++){const gr=g.createRadialGradient(R()*w,R()*h,0,R()*w,R()*h,120+R()*120);gr.addColorStop(0,'rgba(255,255,255,.10)');gr.addColorStop(1,'rgba(255,255,255,0)');g.fillStyle=gr;g.fillRect(0,0,w,h)}g.strokeStyle='rgba(60,60,55,.35)';g.lineWidth=2;g.beginPath();g.moveTo(0,1);g.lineTo(w,1);g.moveTo(1,0);g.lineTo(1,h);g.stroke()},[10,10]),
-  wall:tx(512,512,(g,w,h)=>{noise(g,w,h,'#E4E0D6',10,5000);g.fillStyle='rgba(0,0,0,.12)';g.fillRect(0,0,3,h);g.fillStyle='rgba(0,0,0,.06)';g.fillRect(0,h*.62,w,2)}),
+  wall:tx(512,512,(g,w,h)=>{noise(g,w,h,'#EEEDEA',8,4000);g.fillStyle='rgba(0,0,0,.12)';g.fillRect(0,0,3,h);g.fillStyle='rgba(0,0,0,.06)';g.fillRect(0,h*.62,w,2)}),
   door:tx(256,256,(g,w,h)=>{g.fillStyle='#C9CDD0';g.fillRect(0,0,w,h);for(let y=0;y<h;y+=12){g.fillStyle='#B5BABE';g.fillRect(0,y,w,3)}g.fillStyle='#E0B400';g.fillRect(0,0,10,h);g.fillRect(w-10,0,10,h)}),
   pallet:tx(128,64,(g,w,h)=>{g.fillStyle='#2D7FD3';g.fillRect(0,0,w,h);g.fillStyle='#1D5FA6';for(let x=8;x<w;x+=30)g.fillRect(x,0,14,h)}),
   wrap:tx(256,256,(g,w,h)=>{g.fillStyle='#C9A47A';g.fillRect(0,0,w,h);for(let y=0;y<h;y+=64)for(let x=0;x<w;x+=86){g.fillStyle=['#C29A6E','#D2B088','#BF9468'][Math.floor(R()*3)];g.fillRect(x+2,y+2,82,60);g.fillStyle='#F2F2F2';g.fillRect(x+10,y+10,26,14)}g.fillStyle='rgba(255,255,255,.2)';g.fillRect(0,0,w,h);g.strokeStyle='rgba(255,255,255,.55)';g.lineWidth=2;for(let i=0;i<7;i++){g.beginPath();g.moveTo(0,R()*h);g.lineTo(w,R()*h);g.stroke()}}),
@@ -821,7 +821,7 @@ function init3D(){
  // ground, polished concrete floors, tilt-up walls (cut away on the camera side)
  const ground=new T.Mesh(new T.PlaneGeometry(260,260),new T.MeshStandardMaterial({color:0x8E918D,roughness:1}));ground.rotation.x=-Math.PI/2;ground.position.set(8,-.02,-24);scene.add(ground);
  Object.values(BLD).forEach(b=>{const w=b.x1-b.x0,d=b.z0-b.z1,t=TX.concrete.clone();t.needsUpdate=true;t.repeat.set(w/6,d/6);
-  const m=new T.Mesh(new T.PlaneGeometry(w,d),new T.MeshStandardMaterial({map:t,roughness:.45,metalness:.05}));m.rotation.x=-Math.PI/2;m.position.set((b.x0+b.x1)/2,0,(b.z0+b.z1)/2);scene.add(m)});
+  const shop=b===BLD.shop,m=new T.Mesh(new T.PlaneGeometry(w,d),new T.MeshStandardMaterial({map:t,color:shop?0x8C9093:0xffffff,roughness:shop?.28:.45,metalness:shop?.12:.05}));m.rotation.x=-Math.PI/2;m.position.set((b.x0+b.x1)/2,0,(b.z0+b.z1)/2);scene.add(m)});
  const walls=new T.Group();scene.add(walls);
  const wallPlane=(x0,z0,x1,z1,cx,cz,h=WALLH)=>{const len=Math.hypot(x1-x0,z1-z0);if(len<.1)return;const t=TX.wall.clone();t.needsUpdate=true;t.wrapS=t.wrapT=T.RepeatWrapping;t.repeat.set(len/7.5,1);
   const m=new T.Mesh(new T.PlaneGeometry(len,h),new T.MeshStandardMaterial({map:t,roughness:.9,side:T.FrontSide}));const mx=(x0+x1)/2,mz=(z0+z1)/2;m.position.set(mx,h/2,mz);
@@ -838,7 +838,7 @@ function init3D(){
  // safety tape along aisles, contact shadows under structures
  ZPHYS.forEach(z=>{const f=frameOf(z),Z=zoneInfo(z.id);const sl=Math.max(Z.mx[0]-Z.mn[0],Z.mx[2]-Z.mn[2]);
   part('shadow',Z.c[0],.012,Z.c[2],Z.mx[0]-Z.mn[0]+1.2,.001,Z.mx[2]-Z.mn[2]+1.2);
-  if(z.kind==='rack'||z.kind==='cant'){const off=z.kind==='rack'?.35:z.arm+.35,len=sl;const s0=z.kind==='rack'?(z.first-1)*z.bw:0;partF('tape',f,s0+len/2,z.kind==='rack'?off:off,.004,len,.08,.003)}});
+  if(z.kind==='rack'||z.kind==='cant'){const off=z.kind==='rack'?.35:z.arm+.35,len=sl;const s0=z.kind==='rack'?(z.first-1)*z.bw:0;for(let k=0,sg=.45;k*sg<len;k++)partF(k%2?'c0x1A1A1A':'tape',f,s0+(k+.5)*sg,off,.004,Math.min(sg,len-k*sg),.09,.003)}});
  part('tape',4.6+.5,.004,-4.5,.08,.003,5);part('tape',4.6-.5,.004,-4.5,.08,.003,5);
  ZPHYS.forEach(z=>{const f=frameOf(z);
   if(z.kind==='rack'){const D=z.deep?2.4:z.depth,top=z.ly[z.levels-1]+1.45,u='c'+z.up,bm='c'+z.beam;
