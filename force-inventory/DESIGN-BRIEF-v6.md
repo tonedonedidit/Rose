@@ -98,6 +98,7 @@ What the app does with them:
   2. Choose its spot (e.g. D-11-c).
   3. Add what's on it (part + quantity, with box math).
   4. Print the label: a large name, the spot, the QR, and the date.
+- **Mostly one part per pallet, plus two mixed pallets:** one **Misc hardware** pallet and one **Misc handles** pallet that hold many different parts each. Single-part pallets open straight to that part's count. The two misc pallets open to a searchable list of what's on them.
 - **A pallet keeps its contents when it moves.** The contents belong to the pallet, not the rack spot: move the pallet to another spot and everything on it moves too.
 - **One Scan QR button, everywhere** (Home, the search bar, each section). Whatever is scanned goes to the right place:
 
