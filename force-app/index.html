@@ -1,0 +1,704 @@
+<title>Force Receiving</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="theme-color" content="#303032">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Force">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zilla+Slab:wght@600;700&family=Public+Sans:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: phones/tablets get one column + a bottom tab bar; computers (≥900px) get a left rail and wide grids.
+   Brand: Force charcoal + Force green (#6ABF16 from forcecabinets.com). Color is for state only. */
+:root{
+ --bg:#F3F4F1;--card:#FFFFFF;--fill:#ECEEE9;--ink:#303032;--ink2:#62655E;--line:#DCDFD7;
+ --brand:#6ABF16;--act:#3F7D0E;--actInk:#FFFFFF;--actSoft:#E7F3DA;
+ --ok:#2F7D1A;--okSoft:#E3F2D8;--warn:#A15C00;--warnSoft:#FBEBD2;--bad:#B42318;--badSoft:#FBE3E0;--info:#5B3FA8;--infoSoft:#ECE6FA;
+ --shadow:0 1px 2px rgba(48,48,50,.06),0 6px 18px -10px rgba(48,48,50,.25);
+ --slab:"Zilla Slab",Rockwell,"Roboto Slab",Georgia,serif;--sans:"Public Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#17181A;--card:#212225;--fill:#2B2D30;--ink:#F2F3EF;--ink2:#A9ADA3;--line:#36393C;--brand:#6ABF16;--act:#7FD12B;--actInk:#13200A;--actSoft:#25351A;--ok:#7CD05A;--okSoft:#1F3319;--warn:#F2B04F;--warnSoft:#3A2C14;--bad:#FF8A7E;--badSoft:#3D1D1A;--info:#B9A4F5;--infoSoft:#2A2440;--shadow:0 1px 2px rgba(0,0,0,.4);color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#17181A;--card:#212225;--fill:#2B2D30;--ink:#F2F3EF;--ink2:#A9ADA3;--line:#36393C;--brand:#6ABF16;--act:#7FD12B;--actInk:#13200A;--actSoft:#25351A;--ok:#7CD05A;--okSoft:#1F3319;--warn:#F2B04F;--warnSoft:#3A2C14;--bad:#FF8A7E;--badSoft:#3D1D1A;--info:#B9A4F5;--infoSoft:#2A2440;--shadow:0 1px 2px rgba(0,0,0,.4);color-scheme:dark}
+*{box-sizing:border-box}
+html,body{min-height:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 17px/1.4 var(--sans);-webkit-font-smoothing:antialiased;-webkit-tap-highlight-color:transparent}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:30;background:var(--bg)}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:3px solid var(--brand);outline-offset:2px}
+.num{font-variant-numeric:tabular-nums}
+h1,h2,h3{margin:0;font-family:var(--slab);letter-spacing:-.01em;text-wrap:balance}
+h1{font-size:30px;line-height:1.1}h2{font-size:21px}h3{font-size:18px}
+.app{display:flex;min-height:100vh}
+.rail{display:none}
+main{flex:1;min-width:0;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:14px 120px;display:flex;flex-direction:column;gap:20px;max-width:760px;margin:0 auto;width:100%}
+.top{display:flex;align-items:center;gap:12px;min-height:44px}
+.top .grow{flex:1;min-width:0}
+.mark{font:700 22px/1 var(--slab);letter-spacing:.06em;color:var(--ink);display:flex;align-items:center;gap:8px}
+.mark i{width:10px;height:22px;background:var(--brand);border-radius:2px;display:block}
+.who{font-size:14px;color:var(--ink2);text-align:right;line-height:1.2}
+.eyebrow{font-size:13px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--ink2)}
+.muted{color:var(--ink2)}.small{font-size:14px}
+section{display:flex;flex-direction:column;gap:10px}
+.sh{display:flex;align-items:baseline;gap:10px;justify-content:space-between;padding:0 2px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow)}
+.list{background:var(--card);border:1px solid var(--line);border-radius:16px;overflow:hidden;box-shadow:var(--shadow)}
+.row{display:flex;align-items:center;gap:12px;padding:14px 16px;border-top:1px solid var(--line);min-height:60px;width:100%;background:none;border-left:0;border-right:0;border-bottom:0;text-align:left}
+.row:first-child{border-top:0}
+button.row:active,a.row:active{background:var(--fill)}
+.row .tx{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.row .tx b{font-weight:600;overflow-wrap:anywhere}
+.row .t2{font-size:14px;color:var(--ink2);overflow-wrap:anywhere}
+.row .end{display:flex;flex-direction:column;align-items:flex-end;gap:4px;text-align:right;flex-shrink:0}
+.big{font:700 22px/1 var(--sans);font-variant-numeric:tabular-nums}
+.chev{color:var(--ink2);flex-shrink:0}
+.pill{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:3px 10px;font-size:13px;font-weight:600;white-space:nowrap;background:var(--fill);color:var(--ink2)}
+.pill.ok{background:var(--okSoft);color:var(--ok)}.pill.warn{background:var(--warnSoft);color:var(--warn)}.pill.bad{background:var(--badSoft);color:var(--bad)}.pill.info{background:var(--infoSoft);color:var(--info)}.pill.act{background:var(--actSoft);color:var(--act)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:52px;padding:0 20px;border-radius:14px;border:1.5px solid var(--line);background:var(--card);font-weight:700;font-size:17px;text-decoration:none;color:var(--ink)}
+.btn.pri{background:var(--act);border-color:var(--act);color:var(--actInk)}
+.btn.bad{color:var(--bad)}
+.btn.block{width:100%}
+.btn:disabled{opacity:.45;cursor:default}
+.btn.sm{min-height:40px;padding:0 14px;font-size:15px;border-radius:11px}
+.btns{display:flex;flex-wrap:wrap;gap:10px}.btns>.btn{flex:1 1 140px}
+.tiles{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.tile{display:flex;flex-direction:column;align-items:flex-start;gap:6px;padding:16px;border-radius:16px;border:1px solid var(--line);background:var(--card);box-shadow:var(--shadow);text-align:left;min-height:96px}
+.tile .big{font-size:30px}
+a.tile{text-decoration:none;color:inherit}
+.tile.hot{border-color:var(--bad)}.tile.hot .big{color:var(--bad)}
+.empty{padding:22px 18px;text-align:center;color:var(--ink2);font-size:15px}
+.note{background:var(--fill);border-radius:12px;padding:12px 14px;font-size:15px;color:var(--ink2);margin:0}
+.note.bad{background:var(--badSoft);color:var(--bad)}.note.ok{background:var(--okSoft);color:var(--ok)}.note.warn{background:var(--warnSoft);color:var(--warn)}
+.field{display:flex;flex-direction:column;gap:6px}
+.field>span{font-size:14px;font-weight:600;color:var(--ink2)}
+.in{width:100%;min-height:52px;border:1.5px solid var(--line);border-radius:12px;background:var(--card);padding:10px 14px;font-size:18px}
+.in:focus{border-color:var(--act);outline:none}
+textarea.in{min-height:84px;resize:vertical;font-size:17px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{min-height:46px;padding:0 16px;border-radius:12px;border:1.5px solid var(--line);background:var(--card);font-weight:600;font-size:16px}
+.chip[aria-pressed="true"]{background:var(--act);border-color:var(--act);color:var(--actInk)}
+.step{display:flex;align-items:center;gap:12px}
+.step button{width:60px;height:60px;border-radius:16px;border:1.5px solid var(--line);background:var(--card);font-size:30px;font-weight:600;line-height:1;flex-shrink:0}
+.step input{flex:1;min-width:0;text-align:center;font:700 34px/1 var(--sans);font-variant-numeric:tabular-nums;border:1.5px solid var(--line);border-radius:16px;height:60px;background:var(--card)}
+.calc{font-size:15px;color:var(--ink2);text-align:center}
+.search{display:flex;gap:8px}
+.search .in{flex:1;min-width:0}
+.bar{height:8px;border-radius:4px;background:var(--fill);overflow:hidden}.bar i{display:block;height:100%;background:var(--brand)}
+.tally{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.locent{display:flex;flex-direction:column;gap:8px}
+.locrow{display:flex;align-items:center;border:1.5px solid var(--line);border-radius:12px;background:var(--card);min-height:56px;padding-left:14px}
+.locent.ok .locrow{border-color:var(--ok)}
+.locz{font:700 22px var(--sans);color:var(--ink2)}
+.locrow input{flex:1;min-width:0;border:0;background:none;font:700 22px var(--sans);text-transform:uppercase;padding:10px 12px 10px 2px;outline:none}
+.locmsg{font-size:14px;color:var(--ink2);margin:0}.locmsg.bad{color:var(--bad)}.locmsg.good{color:var(--ok)}
+nav.tabs{position:fixed;left:0;right:0;bottom:0;z-index:20;background:var(--card);border-top:1px solid var(--line);display:flex;padding:6px max(6px,env(safe-area-inset-right,0px)) calc(6px + env(safe-area-inset-bottom,0px)) max(6px,env(safe-area-inset-left,0px))}
+nav.tabs a{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 0;min-height:54px;text-decoration:none;color:var(--ink2);font-size:12px;font-weight:600;border-radius:12px}
+nav.tabs a[aria-current="page"]{color:var(--act);background:var(--actSoft)}
+nav.tabs svg,.rail svg{width:24px;height:24px}
+.badge{min-width:20px;height:20px;border-radius:10px;background:var(--bad);color:#fff;font-size:12px;font-weight:700;display:inline-flex;align-items:center;justify-content:center;padding:0 6px}
+.scrim{position:fixed;inset:0;background:rgba(20,20,22,.45);z-index:40;display:flex;align-items:flex-end;justify-content:center}
+.sheet{background:var(--bg);width:100%;max-width:620px;max-height:92vh;overflow:auto;border-radius:22px 22px 0 0;padding:18px max(16px,env(safe-area-inset-right,0px)) calc(18px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));display:flex;flex-direction:column;gap:16px;animation:up .22s cubic-bezier(.2,.9,.3,1)}
+.sheet .sh{padding:0}
+.x{width:44px;height:44px;border-radius:22px;border:0;background:var(--fill);font-size:22px;flex-shrink:0}
+@keyframes up{from{transform:translateY(30px);opacity:.4}to{transform:none;opacity:1}}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(84px + env(safe-area-inset-bottom,0px));z-index:60;background:var(--ink);color:var(--bg);padding:12px 18px;border-radius:14px;font-weight:600;font-size:15px;max-width:min(92vw,520px);box-shadow:0 8px 24px rgba(0,0,0,.25)}
+.toast.bad{background:var(--bad);color:#fff}
+.login{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px max(16px,env(safe-area-inset-right,0px)) 24px max(16px,env(safe-area-inset-left,0px))}
+.login .card{width:100%;max-width:400px;padding:26px 22px;display:flex;flex-direction:column;gap:16px}
+.login .mark{font-size:34px}
+.drop{border:2px dashed var(--line);border-radius:16px;padding:26px 16px;text-align:center;display:flex;flex-direction:column;gap:10px;align-items:center;background:var(--card)}
+.drop.over{border-color:var(--act);background:var(--actSoft)}
+.tbl{overflow-x:auto;border:1px solid var(--line);border-radius:14px;background:var(--card)}
+table{border-collapse:collapse;width:100%;font-size:15px}
+th,td{text-align:left;padding:10px 12px;border-top:1px solid var(--line);vertical-align:top}
+th{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink2);border-top:0;white-space:nowrap}
+td.n,th.n{text-align:right;font-variant-numeric:tabular-nums}
+.diff-new{color:var(--ok)}.diff-chg{color:var(--warn)}.diff-gone{color:var(--bad)}
+.cam{position:relative;border-radius:18px;overflow:hidden;background:#000;aspect-ratio:3/4;max-height:60vh}
+.cam video{width:100%;height:100%;object-fit:cover;display:block}
+.cam .aim{position:absolute;inset:18%;border:3px solid var(--brand);border-radius:18px}
+.grid2{display:grid;grid-template-columns:1fr;gap:20px}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:4px 14px;font-size:15px}.kv dt{color:var(--ink2)}.kv dd{margin:0;font-weight:600}
+.seg{display:flex;gap:6px;flex-wrap:wrap}
+@media (min-width:900px){
+ nav.tabs{display:none}
+ .rail{display:flex;flex-direction:column;gap:4px;width:232px;flex-shrink:0;position:sticky;top:0;height:100vh;padding:20px 12px;border-right:1px solid var(--line);background:var(--card)}
+ .rail .mark{padding:6px 12px 18px}
+ .rail a{display:flex;align-items:center;gap:12px;padding:12px;border-radius:12px;text-decoration:none;color:var(--ink);font-weight:600;font-size:16px}
+ .rail a[aria-current="page"]{background:var(--actSoft);color:var(--act)}
+ .rail .sep{height:1px;background:var(--line);margin:10px 6px}
+ .rail .foot{margin-top:auto;font-size:14px;color:var(--ink2);padding:12px}
+ main{max-width:1180px;padding-block:28px 60px}
+ .top .mark{display:none}
+ .tiles{grid-template-columns:repeat(4,minmax(0,1fr))}
+ .grid2{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .scrim{align-items:center}.sheet{border-radius:22px;max-height:88vh}
+ .toast{bottom:28px}
+}
+@media (prefers-reduced-motion:reduce){.sheet{animation:none}}
+</style>
+
+<div id="root"></div>
+
+<script>
+"use strict";
+/* ================= basics ================= */
+const $=(s,r=document)=>r.querySelector(s),$$=(s,r=document)=>[...r.querySelectorAll(s)];
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,8);
+const key=s=>String(s??'').toUpperCase().replace(/[^A-Z0-9]/g,'');
+const pad=n=>String(n).padStart(2,'0');
+const ymd=d=>{d=new Date(d);return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`};
+const today=()=>ymd(new Date());
+const addDays=(s,n)=>{const d=new Date(s+'T12:00:00');d.setDate(d.getDate()+n);return ymd(d)};
+const daysBetween=(a,b)=>Math.round((new Date(b+'T12:00:00')-new Date(a+'T12:00:00'))/864e5);
+const fmt=n=>(Math.round((+n||0)*100)/100).toLocaleString('en-US');
+const DOW=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'],MON=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+function dayLabel(s){if(!s)return 'No date';const t=today();if(s===t)return 'Today';if(s===addDays(t,1))return 'Tomorrow';if(s===addDays(t,-1))return 'Yesterday';const d=new Date(s+'T12:00:00');return `${DOW[d.getDay()]} ${MON[d.getMonth()]} ${d.getDate()}`}
+function timeLabel(iso){if(!iso)return '';const d=new Date(iso);const h=d.getHours(),m=pad(d.getMinutes());return `${ymd(d)===today()?'':dayLabel(ymd(d))+' '}${(h%12)||12}:${m} ${h<12?'am':'pm'}`}
+const plural=(n,w,ws)=>`${fmt(n)} ${n===1?w:(ws||w+'s')}`;
+const sget=k=>{try{return localStorage.getItem(k)}catch(e){return null}},sset=(k,v)=>{try{v==null?localStorage.removeItem(k):localStorage.setItem(k,v)}catch(e){}};
+function loadScript(src){return new Promise((ok,no)=>{if($(`script[src="${src}"]`)){const t=setInterval(()=>{if(src.includes('xlsx')?window.XLSX:window.jsQR){clearInterval(t);ok()}},50);return}const s=document.createElement('script');s.src=src;s.onload=ok;s.onerror=()=>no(new Error('Could not load '+src));document.head.append(s)})}
+const XLSX_SRC='https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js',JSQR_SRC='https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js';
+
+const ICON={
+ today:'<path d="M4 7h16M8 3v4M16 3v4"/><rect x="4" y="5" width="16" height="16" rx="3"/><path d="M8 12h3v3H8z"/>',
+ put:'<path d="M12 3v12M7 10l5 5 5-5"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/>',
+ find:'<circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/>',
+ report:'<path d="M12 4 2.5 20h19L12 4Z"/><path d="M12 10v4M12 17.5v.01"/>',
+ more:'<circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/>',
+ board:'<rect x="3" y="4" width="7" height="7" rx="2"/><rect x="14" y="4" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/><rect x="14" y="14" width="7" height="7" rx="2"/>',
+ orders:'<path d="M7 3h10l3 3v15H4V3h3"/><path d="M8 9h8M8 13h8M8 17h5"/>',
+ issues:'<circle cx="12" cy="12" r="9"/><path d="M12 7v6M12 16.5v.01"/>',
+ stock:'<path d="M3 8 12 3l9 5-9 5-9-5Z"/><path d="m3 13 9 5 9-5M3 18l9 5 9-5"/>',
+ chev:'<path d="m9 6 6 6-6 6"/>',scan:'<path d="M4 8V5a1 1 0 0 1 1-1h3M16 4h3a1 1 0 0 1 1 1v3M20 16v3a1 1 0 0 1-1 1h-3M8 20H5a1 1 0 0 1-1-1v-3M7 12h10"/>',
+ back:'<path d="m15 6-6 6 6 6"/>'};
+const ico=(n,s=24)=>`<svg viewBox="0 0 24 24" width="${s}" height="${s}" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICON[n]||''}</svg>`;
+
+/* ================= accounts ================= */
+/* Two shared sign-ins. In the claude.ai preview the check runs in the page (a gate, not security);
+   on the company site the server checks the password and these hashes are not used. */
+const ACCTS={fcadmin:{role:'office',label:'Office'},fcwarehouse:{role:'shop',label:'Warehouse'}};
+async function sha256(s){const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(s));return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('')}
+
+/* ================= spots ================= */
+const ZONES=[
+ {id:'D',name:'Rack D',short:'Rack D',kind:'rack',bays:18,levels:[1],bins:['a','b'],purpose:'Installer hardware, level 1 front'},
+ {id:'R1',name:'Rack 1',short:'Rack 1',kind:'rack',bays:1,levels:[1,2,3,4,5],bins:['c','d'],purpose:'Excess handles'},
+ {id:'R0',name:'Supplies',short:'Supplies',kind:'rack',bays:4,levels:[1,2,3,4],bins:['c','d'],purpose:'Molding and misc; cardboard on the top level'},
+ {id:'HR1',name:'Office rack 1',short:'Office 1',kind:'shelf',bays:3,shelves:5,purpose:'Misc supplies next to the office'},
+ {id:'HR2',name:'Office rack 2',short:'Office 2',kind:'shelf',bays:2,shelves:5,purpose:'Misc supplies next to the office'},
+ {id:'BK',name:'Bunks',short:'Bunks',kind:'bunk',purpose:'Full board units'},
+ {id:'CL1',name:'Cantilever 1',short:'Cant 1',kind:'cant',rowsBy:[8,8,8],purpose:'Boards for remakes and one-offs'},
+ {id:'CL2',name:'Cantilever 2',short:'Cant 2',kind:'cant',rowsBy:[8,8,5],purpose:'Boards'},
+ {id:'BD',name:'Board drop',short:'Drop',kind:'pad',purpose:'Boards waiting for a home'},
+ {id:'DR',name:'Doors',short:'Doors',kind:'floor',n:12,purpose:'Door pallets, across from the hardware aisle'}];
+const zone=id=>ZONES.find(z=>z.id===id);
+const bunkFor=(b,c)=>b===1?'3/4" white':b===4?'6 mm, any color':b===3||c<=2?'3/4" colored':'3/4" white';
+const LOC={},KEYS={};
+function addLoc(o){LOC[o.id]=o;KEYS[key(o.id)]=o.id}
+ZONES.forEach(z=>{
+ if(z.kind==='rack')for(let b=1;b<=z.bays;b++)z.levels.forEach(L=>z.bins.forEach(n=>{const id=`${z.id}-${L}${b}-${n}`;addLoc({id,z:z.id,L,bay:b,bin:n,pos:`Level ${L} · Bay ${b} · ${z.id==='D'?(n==='a'?'Front left':'Front right'):(n==='c'?'Left':'Right')}`});if(z.id==='D')KEYS[key(`${z.id}-${L}${b}-${n==='a'?'c':'d'}`)]=id}));
+ if(z.kind==='shelf')for(let b=1;b<=z.bays;b++)for(let s=1;s<=z.shelves;s++)addLoc({id:`${z.id}-${s}${b}`,z:z.id,L:s,bay:b,pos:`Shelf ${s} · Bay ${b}`});
+ if(z.kind==='bunk')for(let b=1;b<=4;b++)for(let c=1;c<=4;c++)addLoc({id:`BK${b}-${c}`,z:'BK',bunk:b,col:c,pos:`Bunk ${b} · Column ${c} · ${bunkFor(b,c)}`});
+ if(z.kind==='cant')z.rowsBy.forEach((rows,i)=>{for(let r=1;r<=rows;r++)addLoc({id:`${z.id}-${i+1}-${r}`,z:z.id,col:i+1,L:r,pos:`Column ${i+1} · Arm ${r}`})});
+ if(z.kind==='pad')addLoc({id:'BD-1',z:'BD',pos:'Floor spot'});
+ if(z.kind==='floor')for(let i=1;i<=z.n;i++)addLoc({id:`DR-${i}`,z:'DR',pos:`Door pallet spot ${i}`});
+});
+const normLoc=s=>KEYS[key(s)]||null;
+const zpre=z=>z==='BK'?'BK':z+'-';
+const ZHINT={rack:z=>z==='D'?'11a = level 1, bay 1, spot a':'11c = level 1, bay 1, left',shelf:()=>'31 = shelf 3, bay 1',bunk:()=>'1-2 = bunk 1, column 2',cant:()=>'1-3 = column 1, arm 3',pad:()=>'1',floor:()=>'1 to 12'};
+const zhint=z=>ZHINT[zone(z).kind](z);
+const ZFOR={hardware:['D','R1','R0','HR1','HR2'],packaging:['R0','HR1','HR2','D','R1'],boards:['BK','CL1','CL2','BD'],doors:['DR']};
+const TYPES={hardware:'Hardware',boards:'Boards',packaging:'Packaging',doors:'Doors'};
+const BASEU={hardware:'pcs',boards:'sheets',packaging:'pcs',doors:'pallets'};
+
+/* ================= data ================= */
+const COLS=['items','orders','arrivals','recv','units','issues','log'];
+const S={items:{},orders:{},arrivals:{},recv:{},units:{},issues:{},log:{},meta:{},ready:false};
+let STORE=null,MODE='local',ME=null;
+const SESS_K='fc-session',NAME_K='fc-name';
+let SESS=null;try{SESS=JSON.parse(sget(SESS_K)||'null')}catch(e){}
+const isOffice=()=>SESS&&SESS.role==='office';
+
+/* Three stores behind one interface: claude.ai db (preview), the company server (Netlify), or this device. */
+function claudeStore(db){
+ const subs=[];
+ return{kind:'claude',
+  start(cb){COLS.forEach(c=>{let q=db.collection(c);if(c==='log')q=q.orderBy('t','desc').limit(800);
+    subs.push(q.onSnapshot(s=>{const m={};s.docs.forEach(d=>m[d.id]={...d.data(),id:d.id});S[c]=m;cb()},()=>toast('Live updates paused. Reopen the page.',true)))});
+   subs.push(db.doc('meta/main').onSnapshot(d=>{S.meta=d.exists?d.data():{};cb()}))},
+  async set(c,id,v){c==='meta'?await db.doc('meta/main').set(v):await db.collection(c).doc(id).set(v)},
+  async del(c,id){await db.collection(c).doc(id).delete()},
+  async mut(c,id,fn){const ref=db.collection(c).doc(id),me=uid();for(let i=0;i<16;i++){let r;try{r=await ref.acquire({holder:me,ttlMs:6000})}catch(e){r={acquired:true}}if(r&&r.acquired)break;await new Promise(z=>setTimeout(z,200))}
+   let cur=null;try{const sn=await ref.get();cur=sn.exists?sn.data():null}catch(e){cur=S[c][id]?{...S[c][id]}:null}
+   const nx=fn(cur?{...cur}:null);if(nx===undefined)return;if(nx===null)await ref.delete();else{delete nx.id;await ref.set(nx)}}}}
+function serverStore(){
+ let ver='',timer=0,cb=()=>{};
+ const hdr=()=>({'content-type':'application/json',authorization:'Bearer '+(SESS&&SESS.token||'')});
+ async function pull(){try{const r=await fetch('/api/state?v='+encodeURIComponent(ver),{headers:hdr()});if(r.status===401){signOut();return}if(r.status===200){const j=await r.json();ver=j.v;COLS.forEach(c=>S[c]=j.state[c]||{});S.meta=j.state.meta||{};cb()}}catch(e){}}
+ async function send(ops){const r=await fetch('/api/ops',{method:'POST',headers:hdr(),body:JSON.stringify({ops})});if(r.status===401){signOut();throw new Error('Signed out')}if(!r.ok)throw new Error((await r.text())||'Save failed');const j=await r.json();ver=j.v;COLS.forEach(c=>S[c]=j.state[c]||{});S.meta=j.state.meta||{};cb()}
+ return{kind:'server',start(f){cb=f;pull();timer=setInterval(()=>{if(!document.hidden)pull()},2500);document.addEventListener('visibilitychange',()=>{if(!document.hidden)pull()})},
+  set:(c,id,v)=>send([{op:'set',c,id,v}]),del:(c,id)=>send([{op:'del',c,id}]),
+  async mut(c,id,fn){const nx=fn(S[c][id]?{...S[c][id]}:null);if(nx===undefined)return;
+   // the server re-applies numeric deltas to its latest copy; plain fields are last-writer-wins
+   await send([nx===null?{op:'del',c,id}:{op:'mut',c,id,v:nx,base:S[c][id]||null}])}}}
+function localStore(){
+ const K='fc-local-db';let bc=null;try{bc=new BroadcastChannel('fc-local')}catch(e){}
+ const load=()=>{try{const j=JSON.parse(sget(K)||'{}');COLS.forEach(c=>S[c]=j[c]||{});S.meta=j.meta||{}}catch(e){}};
+ const save=()=>{const j={meta:S.meta};COLS.forEach(c=>j[c]=S[c]);sset(K,JSON.stringify(j));bc&&bc.postMessage(1)};
+ let cb=()=>{};
+ return{kind:'local',start(f){cb=f;load();cb();bc&&(bc.onmessage=()=>{load();cb()})},
+  async set(c,id,v){if(c==='meta')S.meta=v;else S[c][id]={...v,id};save();cb()},
+  async del(c,id){delete S[c][id];save();cb()},
+  async mut(c,id,fn){const nx=fn(S[c][id]?{...S[c][id]}:null);if(nx===undefined)return;if(nx===null)delete S[c][id];else S[c][id]={...nx,id};save();cb()}}}
+const W={
+ set:(c,id,v)=>STORE.set(c,id,clean(v)),del:(c,id)=>STORE.del(c,id),mut:(c,id,fn)=>STORE.mut(c,id,x=>{const r=fn(x);return r?clean(r):r}),
+ meta:v=>STORE.set('meta','main',clean({...S.meta,...v}))};
+function clean(o){if(!o||typeof o!=='object')return o;const r={};for(const k in o){if(o[k]===undefined||k==='id')continue;r[k]=o[k]}return r}
+async function logIt(e){e.t=new Date().toISOString();e.day=today();e.who=ME||'Someone';e.acct=SESS&&SESS.u;await W.set('log',uid(),e)}
+
+/* ================= model ================= */
+const items=()=>Object.values(S.items);
+const item=sku=>S.items[key(sku)]||null;
+const descOf=sku=>item(sku)?.desc||Object.values(S.orders).find(o=>key(o.sku)===key(sku))?.desc||sku;
+function guessType(desc,sku){const s=(desc+' '+sku).toLowerCase();if(/door/.test(s))return 'doors';if(/cardboard|carton|foam|strap|stretch|wrap|tape|corner guard/.test(s))return 'packaging';if(/board|melamine|sheet|plywood|particle|mdf|\b6\s?mm|3\/4|panel/.test(s))return 'boards';return 'hardware'}
+const typeOf=sku=>item(sku)?.type||guessType(descOf(sku),sku);
+function thkOf(i){if(!i)return '';if(i.thk)return i.thk;const s=(i.desc||'')+' '+(i.sku||'');return /6\s?mm|1\/4/i.test(s)?'6mm':/3\/4|19\s?mm|\.75/i.test(s)?'3/4"':''}
+const isWhite=i=>/white/i.test((i&&(i.color||i.desc))||'');
+const PACKU=/^(box|boxes|bx|case|cases|cs|bundle|bundles|unit|units|pallet|pallets|plt|carton|cartons|roll|rolls|bag|bags|pk|pack|packs)$/i;
+const isPackUnit=u=>PACKU.test(String(u||'').trim());
+const packOf=sku=>{const i=item(sku);return i&&i.pack>0?+i.pack:0};
+const orders=()=>Object.values(S.orders).filter(o=>!o.gone&&o.status!=='Closed');
+const linesOf=po=>orders().filter(o=>key(o.po)===key(po));
+const recvOf=o=>S.recv[o.id]||{};
+const putOf=o=>+recvOf(o).put||0;
+const issuesOf=o=>Object.values(S.issues).filter(i=>i.orderId===o.id);
+const openIssue=i=>i.status==='open'||i.status==='reordered';
+// qty not coming on this truck: open missing/short/backorder; reordered missing comes on a new PO
+const notComing=o=>issuesOf(o).filter(i=>openIssue(i)&&['missing','short','backorder'].includes(i.kind)).reduce((a,i)=>a+(+i.qty||0),0);
+const lineLeft=o=>Math.max(0,(+o.qty||0)-putOf(o)-notComing(o));
+const arrivalOf=po=>S.arrivals[key(po)]||null;
+function deliveries(){const m={};orders().forEach(o=>{const k=key(o.po);(m[k]=m[k]||{po:o.po,k,lines:[]}).lines.push(o)});
+ return Object.values(m).map(d=>{const L=d.lines;d.vendor=[...new Set(L.map(o=>o.vendor).filter(Boolean))].join(', ')||'Vendor not listed';
+  d.date=L.map(o=>o.date).filter(Boolean).sort()[0]||'';d.types=[...new Set(L.map(o=>o.type||typeOf(o.sku)))];
+  d.arr=arrivalOf(d.po);d.cancelled=L.every(o=>o.status==='Cancelled');d.delayed=!d.cancelled&&L.some(o=>o.status==='Delayed');
+  d.issues=Object.values(S.issues).filter(i=>key(i.po)===d.k&&openIssue(i));d.left=L.reduce((a,o)=>a+lineLeft(o),0);
+  d.state=d.cancelled?'cancelled':d.arr?(d.issues.length?'issues':'arrived'):d.delayed?'delayed':!d.date?'nodate':d.date<today()?'late':d.date===today()?'due':'upcoming';return d})}
+const STATE={due:['Due today','act'],late:['Late','bad'],delayed:['Delayed','warn'],upcoming:['Coming','muted'],nodate:['No date','muted'],arrived:['Arrived','ok'],issues:['Arrived · issues','bad'],cancelled:['Cancelled','muted']};
+const statePill=d=>{const[t,c]=STATE[d.state];return `<span class="pill ${c}">${esc(t)}${d.state==='issues'?' '+d.issues.length:''}</span>`};
+function summaryOf(d){return d.lines.slice(0,3).map(o=>`${fmt(o.qty)} ${o.unit||''} ${o.desc||o.sku}`.replace(/\s+/g,' ')).join(' · ')+(d.lines.length>3?` · +${d.lines.length-3} more`:'')}
+const units=()=>Object.values(S.units);
+const unitsOf=sku=>units().filter(u=>key(u.sku)===key(sku)&&u.qty>0);
+const unitsAt=loc=>units().filter(u=>u.loc===loc&&u.qty>0);
+const onHand=sku=>unitsOf(sku).reduce((a,u)=>a+(+u.qty||0),0);
+function onOrder(sku){return orders().filter(o=>key(o.sku)===key(sku)&&o.status!=='Cancelled').reduce((a,o)=>{const l=lineLeft(o);return a+(isPackUnit(o.unit)&&packOf(sku)?l*packOf(sku):l)},0)}
+function qtyText(sku,q){const t=typeOf(sku),u=BASEU[t],p=packOf(sku);if(t==='hardware'&&p>1&&q>=p){const b=Math.floor(q/p),r=q%p;return `${fmt(q)} ${u} · ${plural(b,'box','boxes')}${r?` + ${fmt(r)}`:''}`}return `${fmt(q)} ${u}`}
+const lowOf=i=>i.min>0&&onHand(i.sku)+onOrder(i.sku)<=i.min;
+function ruleFor(loc,sku,isNew){const l=LOC[loc];if(!l)return 'No such spot.';const t=typeOf(sku),i=item(sku)||{sku,desc:descOf(sku)},z=l.z,here=unitsAt(loc);
+ if(['BK','CL1','CL2','BD'].includes(z)&&t!=='boards')return `${zone(z).name} hold boards only.`;
+ if(z==='DR'&&t!=='doors')return 'The doors area holds door pallets only.';
+ if(t==='boards'&&!['BK','CL1','CL2','BD'].includes(z))return 'Boards go in the bunks, cantilevers or board drop.';
+ if(t==='doors'&&z!=='DR')return 'Door pallets go in the doors area.';
+ if(z==='R0'&&l.L===4&&!/cardboard/i.test(i.desc||''))return 'The top of Supplies is cardboard only.';
+ if(z==='D'){const other=here.find(u=>key(u.sku)!==key(sku));if(other)return `${loc} already has ${other.sku}. One item number per spot on Rack D.`}
+ if(z==='BK'){const th=thkOf(i),b=l.bunk,c=l.col;
+  if(isNew&&here.length>=5)return `${loc} already has 5 stacks.`;
+  if(th==='6mm'&&b!==4)return '6 mm goes in Bunk 4.';if(th==='3/4"'&&b===4)return 'Bunk 4 is 6 mm only.';
+  if(th==='3/4"'){const w=isWhite(i);if(b===1&&!w)return 'Bunk 1 is white only.';if(b===3&&w)return 'Bunk 3 is colored only.';if(b===2&&c>=3&&!w)return 'Bunk 2 columns 3–4 are white.';if(b===2&&c<=2&&w)return 'Bunk 2 columns 1–2 are colored.'}}
+ return null}
+function suggestLoc(sku){const u=unitsOf(sku)[0];if(u)return u.loc;const t=typeOf(sku);if(t!=='boards')return '';const i=item(sku)||{desc:descOf(sku)},th=thkOf(i),w=isWhite(i);
+ const want=th==='6mm'?[4]:w?[1,2]:[3,2];for(const b of want)for(let c=1;c<=4;c++){const id=`BK${b}-${c}`;if(!ruleFor(id,sku,true))return id}return ''}
+
+/* ================= ui plumbing ================= */
+let route='',VIEW={};try{VIEW=JSON.parse(sessionStorage.getItem('fc-view')||'{}')}catch(e){}
+const SHOP_TABS=[['today','Today','today'],['putaway','Put away','put'],['find','Find','find'],['report','Report','report'],['more','More','more']];
+const OFF_TABS=[['board','Board','board'],['orders','Orders','orders'],['issues','Issues','issues'],['stock','Stock','stock']];
+function go(r,v){if(v)VIEW={...VIEW,...v};try{sessionStorage.setItem('fc-view',JSON.stringify(VIEW))}catch(e){}if(location.hash.slice(1)===r)render();else location.hash=r}
+addEventListener('hashchange',()=>render());
+let toastT=0;function toast(m,bad){let t=$('.toast');if(!t){t=document.createElement('div');t.className='toast';t.setAttribute('role','status');document.body.append(t)}t.textContent=m;t.classList.toggle('bad',!!bad);t.hidden=false;clearTimeout(toastT);toastT=setTimeout(()=>t.hidden=true,3200)}
+let SHEET=null;
+function openSheet(title,body,mount){closeSheet();const s=document.createElement('div');s.className='scrim';s.innerHTML=`<div class="sheet" role="dialog" aria-modal="true" aria-label="${esc(title)}"><div class="sh"><h2>${esc(title)}</h2><button class="x" data-close aria-label="Close">×</button></div>${body}</div>`;
+ document.body.append(s);SHEET=s;s.addEventListener('click',e=>{if(e.target===s||e.target.closest('[data-close]'))closeSheet()});
+ const sh=$('.sheet',s);mount&&mount(sh);initLoc(sh);const f=$('input:not([type=hidden]),textarea',sh);if(f&&matchMedia('(min-width:900px)').matches)f.focus();
+ sh.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.matches('input')&&!e.target.closest('.search')){e.preventDefault();$('[data-primary]',sh)?.click()}});return sh}
+function closeSheet(){if(SHEET){SHEET.remove();SHEET=null;stopCam()}}
+addEventListener('keydown',e=>{if(e.key==='Escape')closeSheet()});
+const busy=async(btn,fn)=>{if(btn.disabled)return;btn.disabled=true;try{await fn()}catch(e){console.error(e);toast(e.message||'That didn’t save. Try again.',true)}finally{btn.disabled=false}};
+function stepper(id,v,min=0){return `<div class="step"><button type="button" data-step="${id}" data-d="-1" aria-label="Less">−</button><input id="${id}" class="num" inputmode="numeric" value="${v}" data-min="${min}" aria-label="Quantity"><button type="button" data-step="${id}" data-d="1" aria-label="More">+</button></div>`}
+document.addEventListener('click',e=>{const b=e.target.closest('[data-step]');if(!b)return;const i=document.getElementById(b.dataset.step);const v=Math.max(+i.dataset.min||0,(parseFloat(i.value)||0)+(+b.dataset.d));i.value=v;i.dispatchEvent(new Event('input',{bubbles:true}))});
+const numv=id=>{const v=parseFloat(String(document.getElementById(id)?.value||'').replace(/,/g,''));return isFinite(v)?v:0};
+function chips(name,opts,sel){return `<div class="chips" role="group" data-chips="${name}">${opts.map(([v,l])=>`<button type="button" class="chip" data-v="${esc(v)}" aria-pressed="${v===sel}">${esc(l)}</button>`).join('')}</div>`}
+document.addEventListener('click',e=>{const c=e.target.closest('[data-chips] .chip');if(!c)return;const g=c.parentElement;$$('.chip',g).forEach(x=>x.setAttribute('aria-pressed',x===c));g.dispatchEvent(new Event('change',{bubbles:true}))});
+const chipv=(root,name)=>$(`[data-chips="${name}"] .chip[aria-pressed="true"]`,root)?.dataset.v||'';
+
+/* typed spot entry: tap the area, type the rest ("11a"), live check */
+function spotPick(id,sku,sel,zones){const zs=zones||ZFOR[typeOf(sku)]||ZFOR.hardware;const l0=sel&&LOC[sel];const z0=l0?l0.z:zs.length===1?zs[0]:'';const rest=l0?sel.slice(zpre(l0.z).length):'';
+ return `<div class="locent" id="${id}" data-z="${z0}" data-sku="${esc(sku||'')}"><div class="chips" role="group" aria-label="Area">${zs.map(z=>`<button type="button" class="chip" data-zb="${z}" aria-pressed="${z===z0}">${esc(zone(z).short)}</button>`).join('')}</div>
+ <label class="locrow"><span class="locz">${z0?esc(zpre(z0)):''}</span><input data-lin value="${esc(rest)}" autocomplete="off" autocapitalize="characters" spellcheck="false" enterkeyhint="done" aria-label="Spot" placeholder="${z0?esc(zhint(z0).split(' ')[0]):'Tap the area first'}"></label>
+ <input type="hidden" data-sl value="${esc(sel||'')}"><p class="locmsg"></p></div>`}
+function locResolve(g){const z=g.dataset.z,v=$('[data-lin]',g).value.trim();if(!z||!v)return null;const id=normLoc(zpre(z)+v);return id&&LOC[id].z===z?id:null}
+function locUpdate(g){const loc=locResolve(g),msg=$('.locmsg',g),v=$('[data-lin]',g).value.trim(),z=g.dataset.z;$('[data-sl]',g).value='';g.classList.remove('ok');
+ if(!z){msg.className='locmsg';msg.textContent='Tap the area, then type the spot';return}
+ if(!loc){msg.className='locmsg'+(v?' bad':'');msg.textContent=v?`No spot ${zpre(z)}${v.toUpperCase()}`:zhint(z);return}
+ const err=g.dataset.sku?ruleFor(loc,g.dataset.sku,g.dataset.newunit==='1'):null;
+ if(err){msg.className='locmsg bad';msg.textContent=err;return}
+ $('[data-sl]',g).value=loc;g.classList.add('ok');const h=unitsAt(loc);msg.className='locmsg good';msg.textContent=`${loc} · ${LOC[loc].pos} · ${h.length?'Has '+[...new Set(h.map(u=>u.sku))].join(', '):'Empty'}`}
+function initLoc(root){$$('.locent',root).forEach(g=>{locUpdate(g);$('[data-lin]',g).addEventListener('input',()=>locUpdate(g));
+ $$('[data-zb]',g).forEach(b=>b.addEventListener('click',()=>{g.dataset.z=b.dataset.zb;$$('[data-zb]',g).forEach(x=>x.setAttribute('aria-pressed',x===b));$('.locz',g).textContent=zpre(b.dataset.zb);const i=$('[data-lin]',g);i.placeholder=zhint(b.dataset.zb).split(' ')[0];locUpdate(g);i.focus()}))})}
+const locVal=(root,id)=>$(`#${id} [data-sl]`,root)?.value||'';
+
+/* ================= render ================= */
+function render(){
+ const root=$('#root');
+ if(!SESS){root.innerHTML=loginView();bindLogin();return}
+ if(!ME){root.innerHTML=nameView();bindName();return}
+ const tabs=isOffice()?[...OFF_TABS,['today','Shop','today'],['more','More','more']]:SHOP_TABS;
+ let r=location.hash.slice(1)||(isOffice()&&matchMedia('(min-width:900px)').matches?'board':'today');
+ const V=VIEWS[r]&&(!VIEWS[r].office||isOffice())?r:'today';route=V;
+ const open=Object.values(S.issues).filter(i=>i.status==='open').length;
+ const nav=(cls)=>tabs.map(([id,l,ic])=>`<a href="#${id}" ${(route===id||(PARENT[route]===id))?'aria-current="page"':''}>${ico(ic)}<span>${l}${id==='issues'&&open?` <span class="badge">${open}</span>`:''}</span></a>`).join('');
+ const rail=`<nav class="rail" aria-label="Main"><div class="mark"><i></i>FORCE</div>${nav()}<div class="foot">${esc(ME)} · ${esc(ACCTS[SESS.u]?.label||SESS.role)}<br>${MODE==='local'?'Saved on this device':'Live'}</div></nav>`;
+ let body='';try{body=VIEWS[V].render()}catch(e){console.error(e);body=`<p class="note bad">This screen hit a problem: ${esc(e.message)}</p>`}
+ const sy=scrollY,same=root.dataset.r===V;
+ root.innerHTML=`<div class="app">${rail}<main id="main">${body}</main></div><nav class="tabs" aria-label="Main">${nav()}</nav>`;
+ root.dataset.r=V;if(same)scrollTo(0,sy);else scrollTo(0,0);
+ VIEWS[V].bind&&VIEWS[V].bind($('#main'));
+}
+const PARENT={delivery:'today',item:'find',spot:'find',putline:'putaway'};
+const topBar=(title,sub,back)=>`<div class="top">${back?`<button class="x" data-back="${back}" aria-label="Back">${ico('back',22)}</button>`:'<div class="mark"><i></i>FORCE</div>'}<div class="grow"></div><button class="btn sm" data-scan>${ico('scan',20)}Scan</button></div><header><div class="eyebrow">${esc(sub||'')}</div><h1>${esc(title)}</h1></header>`;
+document.addEventListener('click',e=>{const b=e.target.closest('[data-back]');if(b){history.length>1?history.back():go(b.dataset.back)}if(e.target.closest('[data-scan]'))scanSheet()});
+let rT=0;function onData(){S.ready=true;clearTimeout(rT);rT=setTimeout(()=>{if(SESS&&ME&&!SHEET)render();else if(SHEET&&SHEET.redraw)SHEET.redraw()},60)}
+
+/* ---------- login ---------- */
+function loginView(){return `<div class="login"><form class="card" id="lf" autocomplete="on"><div class="mark"><i></i>FORCE</div><div><h1>Sign in</h1><p class="muted small" style="margin:6px 0 0">Gilbert warehouse · receiving and inventory</p></div>
+ <label class="field"><span>User name</span><input class="in" id="lu" name="username" autocomplete="username" autocapitalize="none" spellcheck="false" required></label>
+ <label class="field"><span>Password</span><input class="in" id="lp" name="password" type="password" autocomplete="current-password" required></label>
+ <p class="note bad" id="lerr" hidden></p><button class="btn pri block" id="lgo">Sign in</button></form></div>`}
+function bindLogin(){$('#lf').addEventListener('submit',async e=>{e.preventDefault();const u=$('#lu').value.trim().toLowerCase(),p=$('#lp').value,err=$('#lerr');err.hidden=true;
+ await busy($('#lgo'),async()=>{
+  if(MODE==='server'){const r=await fetch('/api/login',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({u,p})});if(!r.ok){err.textContent='That user name or password didn’t match.';err.hidden=false;return}const j=await r.json();SESS={u:j.u,role:j.role,token:j.token}}
+  else{const h=await sha256(u+'|'+p);if(!ACCTS[u]||h!==ACCT_H[u]){err.textContent='That user name or password didn’t match.';err.hidden=false;return}SESS={u,role:ACCTS[u].role}}
+  sset(SESS_K,JSON.stringify(SESS));ME=sget(NAME_K);if(MODE==='server')STORE.start(onData);render()})})}
+function signOut(){SESS=null;ME=null;sset(SESS_K,null);sset(NAME_K,null);location.hash='';render()}
+function nameView(){const ppl=(S.meta.people||[]);return `<div class="login"><div class="card"><div class="mark"><i></i>FORCE</div><div><h1>Who’s using this?</h1><p class="muted small" style="margin:6px 0 0">Your name goes on what you receive, put away and report.</p></div>
+ ${ppl.length?`<div class="chips">${ppl.map(n=>`<button class="chip" data-name="${esc(n)}">${esc(n)}</button>`).join('')}</div>`:''}
+ <label class="field"><span>${ppl.length?'Not listed? Type your name':'Your name'}</span><input class="in" id="nn" autocomplete="given-name"></label><button class="btn pri block" id="ngo">Continue</button></div></div>`}
+function bindName(){$$('[data-name]').forEach(b=>b.addEventListener('click',()=>setName(b.dataset.name)));$('#ngo').addEventListener('click',()=>{const n=$('#nn').value.trim();if(n)setName(n,true)});$('#nn').addEventListener('keydown',e=>{if(e.key==='Enter')$('#ngo').click()})}
+async function setName(n,add){ME=n;sset(NAME_K,n);render();if(add&&!(S.meta.people||[]).includes(n))try{await W.meta({people:[...(S.meta.people||[]),n]})}catch(e){}}
+
+/* ================= shop views ================= */
+const VIEWS={};
+const delRow=d=>`<button class="row" data-del="${esc(d.po)}"><span class="tx"><b>${esc(d.vendor)}</b><span class="t2">PO ${esc(d.po)} · ${esc(d.types.map(t=>TYPES[t]).join(', '))}</span><span class="t2">${esc(summaryOf(d))}</span></span><span class="end">${statePill(d)}${d.state==='delayed'||d.state==='upcoming'||d.state==='late'?`<span class="t2">${esc(dayLabel(d.date))}</span>`:''}${d.arr?`<span class="t2">${esc(timeLabel(d.arr.at))}</span>`:''}</span>${ico('chev',20)}</button>`;
+document.addEventListener('click',e=>{const b=e.target.closest('[data-del]');if(b){VIEW.po=b.dataset.del;go('delivery')}});
+VIEWS.today={render(){const D=deliveries(),t=today();
+ const due=D.filter(d=>d.state==='due'),late=D.filter(d=>d.state==='late'),delayed=D.filter(d=>d.state==='delayed'),arr=D.filter(d=>d.arr&&ymd(d.arr.at)===t),soon=D.filter(d=>d.state==='upcoming'&&d.date<=addDays(t,7)).sort((a,b)=>a.date<b.date?-1:1);
+ const bo=orders().filter(o=>issuesOf(o).some(i=>openIssue(i)&&i.kind==='backorder'));
+ const grp=(h,L,emp)=>`<section><div class="sh"><h2>${h}</h2><span class="muted num">${L.length||''}</span></div>${L.length?`<div class="list">${L.map(delRow).join('')}</div>`:emp?`<div class="list"><p class="empty">${emp}</p></div>`:''}</section>`;
+ if(!orders().length)return topBar(dayLabel(t),'Deliveries')+`<div class="list"><p class="empty">No orders yet. ${isOffice()?'Import the order Excel under Orders.':'The office imports the order Excel; deliveries show here once it’s in.'}</p></div>`;
+ return topBar(dayLabel(t),'Deliveries')+grp('Due today',due,'Nothing else due today.')+(late.length?grp('Late',late):'')+(delayed.length?grp('Delayed',delayed):'')+
+  (bo.length?`<section><div class="sh"><h2>Backorders still coming</h2></div><div class="list">${bo.map(o=>`<button class="row" data-del="${esc(o.po)}"><span class="tx"><b>${esc(o.desc||o.sku)}</b><span class="t2">${esc(o.vendor||'')} · PO ${esc(o.po)}</span></span><span class="end"><span class="pill info">${fmt(issuesOf(o).filter(i=>openIssue(i)&&i.kind==='backorder').reduce((a,i)=>a+(+i.qty||0),0))} on backorder</span></span>${ico('chev',20)}</button>`).join('')}</div></section>`:'')+
+  grp('Arrived today',arr,'Nothing checked in yet today.')+(soon.length?grp('Next 7 days',soon):'')}};
+
+VIEWS.delivery={render(){const d=deliveries().find(x=>x.k===key(VIEW.po));if(!d)return topBar('Not found','Delivery','today')+'<p class="note">This PO isn’t on the order sheet anymore.</p>';
+ const lines=d.lines.map(o=>{const iss=issuesOf(o).filter(openIssue),p=putOf(o),it=o.type||typeOf(o.sku);
+  return `<div class="row"><span class="tx"><b>${esc(o.desc||o.sku)}</b><span class="t2">${esc(o.sku)}${o.job?' · Job '+esc(o.job):''}${o.note?' · '+esc(o.note):''}</span>
+   ${d.arr?`<span class="t2">Put away ${fmt(p)} of ${fmt(o.qty)}${lineLeft(o)?'':' ✓'}</span>`:''}${iss.map(i=>`<span class="t2" style="color:var(--${i.kind==='extra'||i.kind==='backorder'?'info':'bad'})">${esc(KIND[i.kind])} ${fmt(i.qty)}${i.note?' · '+esc(i.note):''}${i.kind==='backorder'?` <button class="btn sm" data-boin="${i.id}">It arrived</button>`:''}</span>`).join('')}</span>
+   <span class="end"><span class="big">${fmt(o.qty)}</span><span class="t2">${esc(o.unit||BASEU[it])}</span></span></div>`}).join('');
+ const acts=d.state==='cancelled'?'':!d.arr?`<div class="btns"><button class="btn pri" data-allhere>All here, all good</button><button class="btn" data-wrong>Something’s wrong</button></div><p class="muted small" style="margin:0">Check it against the paper. Only report what’s different; the paper still goes to the office.</p>`
+  :`<div class="btns">${d.left?`<button class="btn pri" data-putpo>Put away (${d.lines.filter(lineLeft).length} left)</button>`:''}<button class="btn" data-wrong>Report a problem</button></div>`;
+ return topBar(d.vendor,`PO ${d.po} · ${d.date?'Expected '+dayLabel(d.date):'No date'}`,'today')+`<div>${statePill(d)}${d.arr?` <span class="muted small">Checked in ${esc(timeLabel(d.arr.at))} by ${esc(d.arr.by)}${d.arr.count?` · ${esc(d.arr.count)} on the truck`:''}</span>`:''}</div>${acts}<section><div class="sh"><h2>On this order</h2><span class="muted">${plural(d.lines.length,'line')}</span></div><div class="list">${lines}</div></section>`},
+ bind(m){const d=deliveries().find(x=>x.k===key(VIEW.po));if(!d)return;
+  $('[data-allhere]',m)?.addEventListener('click',()=>arriveSheet(d));
+  $('[data-wrong]',m)?.addEventListener('click',()=>issueSheet({po:d.po,dock:!d.arr}));
+  $('[data-putpo]',m)?.addEventListener('click',()=>{VIEW.putpo=d.po;go('putaway')});
+  $$('[data-boin]',m).forEach(b=>b.addEventListener('click',()=>busy(b,async()=>{const i=S.issues[b.dataset.boin];await W.set('issues',i.id,{...i,status:'archived',closeNote:'Backorder arrived',closedAt:new Date().toISOString(),closedBy:ME});await logIt({type:'backorder-in',sku:i.sku,qty:i.qty,po:i.po});toast(`Backorder in. ${descOf(i.sku)} is ready to put away.`)})))}};
+function arriveSheet(d){openSheet('All here?',`<p class="muted" style="margin:0">${esc(d.vendor)} · PO ${esc(d.po)} · ${d.lines.length} lines match the paper.</p>
+ <label class="field"><span>Pallets or stacks on the truck (optional)</span>${stepper('acount',0)}</label><button class="btn pri block" data-primary id="ago">Checked in, all good</button>`,sh=>{
+ $('#ago',sh).addEventListener('click',e=>busy(e.target,async()=>{await markArrived(d.po,numv('acount'));closeSheet();toast(`${d.vendor} checked in. Office sees it now.`);render()}))})}
+async function markArrived(po,count){if(arrivalOf(po))return;await W.set('arrivals',key(po),{po,at:new Date().toISOString(),by:ME,count:count||0});await logIt({type:'arrived',po})}
+const KIND={missing:'Missing',short:'Short',damaged:'Damaged',wrong:'Wrong item',backorder:'Backorder',extra:'Extra',other:'Other'};
+function issueSheet(o={}){const L=o.po?linesOf(o.po):[];let sel=o.orderId||'';
+ openSheet(o.po?'What’s wrong?':'Report a problem',`${o.po?`<div class="field"><span>Which item</span><div class="list" id="ilines">${L.map(x=>`<button type="button" class="row" data-line="${x.id}" aria-pressed="${x.id===sel}"><span class="tx"><b>${esc(x.desc||x.sku)}</b><span class="t2">${esc(x.sku)} · ordered ${fmt(x.qty)} ${esc(x.unit||'')}</span></span></button>`).join('')}</div></div>`:
+  `<label class="field"><span>Item # or description</span><input class="in" id="isku" list="skus" autocomplete="off" placeholder="e.g. Vanity 45 sink base door"><datalist id="skus">${items().map(i=>`<option value="${esc(i.sku)}">${esc(i.desc||'')}</option>`).join('')}</datalist></label>`}
+  <div class="field"><span>What happened</span>${chips('kind',(o.po?['missing','short','damaged','wrong','backorder','extra','other']:['damaged','missing','wrong','other']).map(k=>[k,KIND[k]]),o.kind||'')}</div>
+  <div class="field"><span>How many</span>${stepper('iqty',1,1)}</div>
+  ${o.po?'':`<label class="field"><span>Job # (optional)</span><input class="in" id="ijob" inputmode="text"></label>`}
+  <label class="field"><span>Note</span><textarea class="in" id="inote" placeholder="e.g. scratched, needs reorder"></textarea></label>
+  <p class="note bad" id="ierr" hidden></p><button class="btn pri block" data-primary id="igo">Send to the office</button>`,sh=>{
+  $$('[data-line]',sh).forEach(b=>{b.style.cursor='pointer';b.addEventListener('click',()=>{sel=b.dataset.line;$$('[data-line]',sh).forEach(x=>{x.setAttribute('aria-pressed',x===b);x.style.background=x===b?'var(--actSoft)':''})});if(b.dataset.line===sel)b.style.background='var(--actSoft)'});
+  $('#igo',sh).addEventListener('click',e=>busy(e.target,async()=>{const kind=chipv(sh,'kind'),qty=numv('iqty'),note=$('#inote',sh).value.trim(),err=$('#ierr',sh);err.hidden=true;
+   const ln=sel?S.orders[sel]:null,sku=ln?ln.sku:($('#isku',sh)?.value.trim()||'');
+   if(o.po&&!ln){err.textContent='Tap the item it’s about.';err.hidden=false;return}if(!sku){err.textContent='Type the item # or what it is.';err.hidden=false;return}if(!kind){err.textContent='Pick what happened.';err.hidden=false;return}
+   const id=uid();await W.set('issues',id,{kind,sku:ln?ln.sku:(item(sku)?.sku||sku),qty,note,po:ln?ln.po:'',vendor:ln?ln.vendor:'',orderId:ln?ln.id:'',job:$('#ijob',sh)?.value.trim()||ln?.job||'',src:o.po?(o.dock?'dock':'put away'):'floor',status:'open',t:new Date().toISOString(),by:ME});
+   if(o.po&&o.dock)await markArrived(o.po,0);
+   await logIt({type:'issue',kind,sku,qty,po:ln?.po,note});closeSheet();toast(`${KIND[kind]} ${fmt(qty)} · sent to the office.`);render()}))})}
+
+/* ---------- put away ---------- */
+VIEWS.putaway={render(){const D=deliveries().filter(d=>d.arr&&d.left>0);if(VIEW.putpo&&!D.find(d=>d.k===key(VIEW.putpo)))VIEW.putpo='';
+ const one=VIEW.putpo?D.find(d=>d.k===key(VIEW.putpo)):null,list=one?[one]:D;
+ if(!list.length)return topBar('Put away','Nothing waiting')+'<div class="list"><p class="empty">Nothing is waiting to be put away. Deliveries show here after they’re checked in.</p></div>';
+ return topBar('Put away',one?`${one.vendor} · PO ${one.po}`:`${D.length} ${D.length===1?'delivery':'deliveries'} on the dock`,one?'putaway':'')+(one?`<button class="btn sm" data-allput style="align-self:flex-start">Show all deliveries</button>`:'')+
+  list.map(d=>`<section><div class="sh"><h2>${esc(d.vendor)}</h2><span class="muted">PO ${esc(d.po)} · in ${esc(timeLabel(d.arr.at))}</span></div><div class="list">${d.lines.map(o=>{const l=lineLeft(o),p=putOf(o),pct=Math.min(100,(p/(+o.qty||1))*100);
+   return `<button class="row" data-pl="${o.id}" ${l?'':'disabled'}><span class="tx"><b>${esc(o.desc||o.sku)}</b><span class="t2">${esc(o.sku)}</span><div class="bar" style="margin-top:6px"><i style="width:${pct}%"></i></div></span><span class="end"><span class="big num">${fmt(p)}<span class="muted" style="font-size:15px"> / ${fmt(o.qty)}</span></span><span class="t2">${esc(o.unit||BASEU[o.type||typeOf(o.sku)])}${l?'':' ✓'}</span></span></button>`}).join('')}</div></section>`).join('')},
+ bind(m){$('[data-allput]',m)?.addEventListener('click',()=>{VIEW.putpo='';render()});$$('[data-pl]',m).forEach(b=>b.addEventListener('click',()=>putSheet(S.orders[b.dataset.pl])))}};
+/* One sheet per order line. Hardware: boxes × per-box. Boards: one stack per entry (from its slip). Packaging: one pallet per entry. Doors: pallets. */
+function putSheet(o){const sku=o.sku,t=o.type||typeOf(sku),it=item(sku)||{sku,desc:o.desc},pk=packOf(sku),unit=o.unit||BASEU[t],packU=isPackUnit(unit);
+ const needPack=(t==='hardware'||(t==='packaging'&&packU))&&!pk,needThk=t==='boards'&&!thkOf(it);
+ const lbl=t==='boards'?'Sheets in this stack (from its slip)':t==='packaging'?(packU?unit.charAt(0).toUpperCase()+unit.slice(1):'Pieces on this pallet'):t==='doors'?'Door pallets':'Boxes';
+ const tally=()=>`<div class="tally"><span class="muted">Put away</span><span class="big num">${fmt(putOf(S.orders[o.id]||o))} <span class="muted" style="font-size:16px">of ${fmt(o.qty)} ${esc(unit)}</span></span></div>`;
+ const sh=openSheet(o.desc||sku,`<p class="muted" style="margin:0">${esc(sku)} · PO ${esc(o.po)}</p><div id="tl">${tally()}</div>
+  ${needPack?`<label class="field"><span>How many pieces in one ${t==='packaging'?esc(unit.replace(/e?s$/,'')):'box'}? (set once for this item)</span><input class="in num" id="ppk" inputmode="numeric" placeholder="e.g. 20"></label>`:''}
+  ${needThk?`<div class="field"><span>Board type (set once)</span>${chips('thk',[['3/4"','3/4"'],['6mm','6 mm']],'')}${chips('wh',[['white','White'],['color','Colored']],'')}</div>`:''}
+  <div class="field"><span>${lbl}</span>${stepper('pq',t==='doors'?1:t==='boards'?Math.min(+o.qty-putOf(o),40)||1:t==='hardware'?Math.max(1,Math.round(pk&&!packU?lineLeft(o)/pk:lineLeft(o)))||1:1,0)}</div>
+  ${t==='hardware'?`<label class="field"><span>Loose pieces (optional)</span><input class="in num" id="ploose" inputmode="numeric" value="0"></label>`:''}<p class="calc" id="pcalc"></p>
+  <div class="field"><span>Spot</span>${spotPick('ploc',sku,suggestLoc(sku))}</div>
+  <p class="note bad" id="perr" hidden></p><button class="btn pri block" data-primary id="pgo">Put away</button><button class="btn block" id="pdone">Done with this item</button>`,sh=>{
+  const g=$('#ploc',sh);g.dataset.newunit=t==='hardware'?'0':'1';
+  const calc=()=>{const p=pk||numv('ppk'),q=numv('pq'),lo=numv('ploose');$('#pcalc',sh).textContent=t==='hardware'?(p?`${fmt(q)} × ${fmt(p)} + ${fmt(lo)} = ${fmt(q*p+lo)} pcs`:'Enter pieces per box'):t==='packaging'&&packU?(p?`${fmt(q)} × ${fmt(p)} = ${fmt(q*p)} pcs`:''):t==='boards'?`Stack of ${fmt(q)} sheets`:''};
+  sh.addEventListener('input',calc);calc();
+  $('#pgo',sh).addEventListener('click',e=>busy(e.target,async()=>{const err=$('#perr',sh);err.hidden=true;const fail=m=>{err.textContent=m;err.hidden=false};
+   const p=pk||numv('ppk'),q=numv('pq'),lo=numv('ploose');if(needPack&&!p)return fail('Enter how many pieces come in one.');if(q<=0&&!(lo>0))return fail('Enter how many.');
+   if(needThk&&(!chipv(sh,'thk')||!chipv(sh,'wh')))return fail('Pick the board thickness and white or colored.');
+   if(needThk||needPack||!item(sku))await W.set('items',key(sku),{...(item(sku)||{sku,desc:o.desc,type:t}),...(needPack?{pack:p}:{}),...(needThk?{thk:chipv(sh,'thk'),color:chipv(sh,'wh')==='white'?'White':'Colored'}:{})});
+   locUpdate(g);const loc=locVal(sh,'ploc');if(!loc)return fail($('.locmsg',g).textContent||'Type a spot.');
+   const base=t==='hardware'?q*p+lo:t==='packaging'&&packU?q*p:q;
+   const tal=t==='hardware'?(packU?q+lo/p:base):t==='packaging'?(packU?q:base):t==='boards'&&packU&&pk?q/pk:q;
+   await putUnit(sku,loc,base,t,o.po);await W.mut('recv',o.id,c=>({...(c||{}),put:(+(c&&c.put)||0)+tal,by:ME,t:new Date().toISOString()}));
+   await logIt({type:'put',sku,qty:base,loc,po:o.po});await afterPut(o);
+   toast(`${t==='boards'?'Stack of '+fmt(base):qtyText(sku,base)} → ${loc}`);
+   $('#tl',sh).innerHTML=tally();if(!lineLeft(S.orders[o.id]||o)){closeSheet();render();if(putOf(S.orders[o.id])>=+o.qty)toast(`${o.desc||sku}: all ${fmt(o.qty)} put away ✓`)}
+   else{if(t!=='hardware'){$('#pq',sh).value=t==='boards'?Math.min(lineLeft(S.orders[o.id]),40):1;calc()}}}));
+  $('#pdone',sh).addEventListener('click',()=>{const l=lineLeft(S.orders[o.id]||o);if(!l){closeSheet();return}
+   openSheet(`${fmt(l)} ${unit} not put away`,`<p style="margin:0">${esc(o.desc||sku)}: ${fmt(putOf(o))} of ${fmt(o.qty)} put away.</p><div class="btns" style="flex-direction:column"><button class="btn pri" id="sm">Report ${fmt(l)} missing</button><button class="btn" id="sb">It’s on backorder</button><button class="btn" id="sl">Finish later</button></div>`,s2=>{
+    const mk=kind=>busy($('#'+(kind==='missing'?'sm':'sb'),s2),async()=>{await W.set('issues',uid(),{kind,sku,qty:l,po:o.po,vendor:o.vendor,orderId:o.id,src:'put away',status:'open',t:new Date().toISOString(),by:ME,note:''});await logIt({type:'issue',kind,sku,qty:l,po:o.po});closeSheet();toast(`${KIND[kind]} ${fmt(l)} · sent to the office.`);render()});
+    $('#sm',s2).addEventListener('click',()=>mk('missing'));$('#sb',s2).addEventListener('click',()=>mk('backorder'));$('#sl',s2).addEventListener('click',()=>{closeSheet();render()})})})})}
+async function putUnit(sku,loc,qty,t,po){if(t==='hardware'){const id=`u_${key(loc)}_${key(sku)}`;await W.mut('units',id,c=>({sku:item(sku)?.sku||sku,loc,qty:(+(c&&c.qty)||0)+qty,kind:'boxes',t:new Date().toISOString(),by:ME}))}
+ else await W.set('units',uid(),{sku:item(sku)?.sku||sku,loc,qty,kind:t==='boards'?'stack':'pallet',po,t:new Date().toISOString(),by:ME})}
+/* After a put: flag extras, and archive reorders whose replacement PO just came in. */
+async function afterPut(o){o=S.orders[o.id]||o;const p=putOf(o),ex=Object.values(S.issues).find(i=>i.orderId===o.id&&i.kind==='extra'&&openIssue(i));
+ if(p>+o.qty){const q=p-(+o.qty);if(ex)await W.set('issues',ex.id,{...ex,qty:q});else await W.set('issues',uid(),{kind:'extra',sku:o.sku,qty:q,po:o.po,vendor:o.vendor,orderId:o.id,src:'put away',status:'open',t:new Date().toISOString(),by:ME,note:'More arrived than ordered. Kept.'})}
+ for(const i of Object.values(S.issues))if(i.status==='reordered'&&i.newPo&&key(i.newPo)===key(o.po)&&(!i.sku||key(i.sku)===key(o.sku)))await W.set('issues',i.id,{...i,status:'archived',closeNote:`Replacement arrived on PO ${o.po}`,closedAt:new Date().toISOString(),closedBy:'Auto'})}
+
+/* ---------- find ---------- */
+VIEWS.find={render(){const q=VIEW.q||'';return topBar('Find','On hand and where')+`<div class="search"><input class="in" id="fq" type="search" placeholder="Item #, description or spot (D 11 a)" value="${esc(q)}" autocomplete="off" aria-label="Search"></div><div id="fres">${findResults(q)}</div>`},
+ bind(m){const i=$('#fq',m);i.addEventListener('input',()=>{VIEW.q=i.value;$('#fres',m).innerHTML=findResults(i.value)});i.addEventListener('keydown',e=>{if(e.key==='Enter'){const r=$('#fres [data-item],#fres [data-spot]',m);r&&r.click()}})}};
+function findResults(q){q=q.trim();const kq=key(q);
+ const spot=q?normLoc(q):null;
+ let list=items();if(kq)list=list.filter(i=>key(i.sku).includes(kq)||(i.aliases||[]).some(a=>key(a).includes(kq))||(i.desc||'').toLowerCase().includes(q.toLowerCase()));
+ list=list.map(i=>({i,h:onHand(i.sku)})).sort((a,b)=>(b.h>0)-(a.h>0)||a.i.sku.localeCompare(b.i.sku)).slice(0,80);
+ return (spot?`<div class="list" style="margin-bottom:14px"><button class="row" data-spot="${spot}"><span class="tx"><b>Spot ${spot}</b><span class="t2">${esc(zone(LOC[spot].z).name)} · ${esc(LOC[spot].pos)}</span></span>${ico('chev',20)}</button></div>`:'')+
+  (list.length?`<div class="list">${list.map(({i,h})=>{const locs=[...new Set(unitsOf(i.sku).map(u=>u.loc))];return `<button class="row" data-item="${esc(i.sku)}"><span class="tx"><b>${esc(i.sku)}</b><span class="t2">${esc(i.desc||'')}</span><span class="t2">${locs.length?esc(locs.slice(0,4).join(' · ')+(locs.length>4?' …':'')):'Not on a shelf'}</span></span><span class="end"><span class="big">${fmt(h)}</span><span class="t2">${BASEU[i.type||typeOf(i.sku)]}</span></span>${ico('chev',20)}</button>`}).join('')}</div>`:`<div class="list"><p class="empty">${q?'No item matches “'+esc(q)+'”.':'No items yet. They’re added from the order Excel.'}</p></div>`)}
+document.addEventListener('click',e=>{const a=e.target.closest('[data-item]');if(a){VIEW.sku=a.dataset.item;closeSheet();go('item')}const s=e.target.closest('[data-spot]');if(s){VIEW.loc=s.dataset.spot;closeSheet();go('spot')}});
+const unitRow=u=>{const t=typeOf(u.sku);return `<div class="row"><span class="tx"><b>${esc(u.loc)}</b><span class="t2">${esc(LOC[u.loc]?.pos||'')}${u.kind==='stack'?' · stack':u.kind==='pallet'?' · pallet':''}${u.po?' · PO '+esc(u.po):''}</span></span><span class="end"><span class="big">${fmt(u.qty)}</span><span class="t2">${BASEU[t]}</span></span></div><div class="row" style="min-height:0;padding-top:0;border-top:0"><div class="btns" style="width:100%">${t==='boards'?`<button class="btn sm" data-take="${u.id}" data-why="saw">To saw</button><button class="btn sm" data-take="${u.id}" data-why="custom">Custom cut</button><button class="btn sm" data-take="${u.id}" data-why="remake">Remake</button>`:t==='doors'?'':`<button class="btn sm" data-take="${u.id}" data-why="${t==='packaging'?'use':'job'}">${t==='packaging'?'Use':'Take for job'}</button>`}<button class="btn sm" data-count="${u.id}">Count</button><button class="btn sm" data-move="${u.id}">Move</button></div></div>`};
+VIEWS.item={render(){const i=item(VIEW.sku)||{sku:VIEW.sku,desc:descOf(VIEW.sku)},U=unitsOf(i.sku).sort((a,b)=>a.loc.localeCompare(b.loc)),h=onHand(i.sku),oo=onOrder(i.sku),iss=Object.values(S.issues).filter(x=>key(x.sku)===key(i.sku)&&openIssue(x));
+ return topBar(i.sku,i.desc||TYPES[typeOf(i.sku)],'find')+`<div class="tiles"><div class="tile"><span class="eyebrow">On hand</span><span class="big">${fmt(h)}</span><span class="muted small">${esc(qtyText(i.sku,h))}</span></div><div class="tile"><span class="eyebrow">On order</span><span class="big">${fmt(oo)}</span><span class="muted small">${BASEU[typeOf(i.sku)]} not in yet</span></div></div>
+ ${packOf(i.sku)?`<p class="muted small" style="margin:0">${fmt(packOf(i.sku))} per ${typeOf(i.sku)==='hardware'?'box':'unit'}${i.min?` · reorder at ${fmt(i.min)}`:''}</p>`:''}
+ <section><div class="sh"><h2>Where it is</h2><button class="btn sm" data-addhere>Found some</button></div><div class="list">${U.length?U.map(unitRow).join(''):'<p class="empty">None on a shelf.</p>'}</div></section>
+ ${iss.length?`<section><div class="sh"><h2>Open problems</h2></div><div class="list">${iss.map(issueRow).join('')}</div></section>`:''}
+ ${isOffice()?`<button class="btn" data-edit="${esc(i.sku)}">Edit item</button>`:''}`},
+ bind(m){bindUnitActs(m);$('[data-addhere]',m)?.addEventListener('click',()=>addSheet(VIEW.sku))}};
+VIEWS.spot={render(){const loc=VIEW.loc,l=LOC[loc];if(!l)return topBar('Not found','Spot','find');const U=unitsAt(loc);
+ return topBar(loc,`${zone(l.z).name} · ${l.pos}`,'find')+`<p class="muted" style="margin:0">${esc(zone(l.z).purpose)}</p><section><div class="sh"><h2>${U.length?'In this spot':'Empty'}</h2><button class="btn sm" data-addspot>Add item here</button></div><div class="list">${U.length?U.map(u=>`<button class="row" data-item="${esc(u.sku)}"><span class="tx"><b>${esc(u.sku)}</b><span class="t2">${esc(descOf(u.sku))}</span></span><span class="end"><span class="big">${fmt(u.qty)}</span><span class="t2">${BASEU[typeOf(u.sku)]}</span></span></button>`).join(''):'<p class="empty">Nothing here.</p>'}</div></section>`},
+ bind(m){$('[data-addspot]',m)?.addEventListener('click',()=>addSheet('',VIEW.loc))}};
+function bindUnitActs(m){$$('[data-take]',m).forEach(b=>b.addEventListener('click',()=>takeSheet(S.units[b.dataset.take],b.dataset.why)));$$('[data-count]',m).forEach(b=>b.addEventListener('click',()=>countSheet(S.units[b.dataset.count])));$$('[data-move]',m).forEach(b=>b.addEventListener('click',()=>moveSheet(S.units[b.dataset.move])));$$('[data-edit]',m).forEach(b=>b.addEventListener('click',()=>itemSheet(b.dataset.edit)))}
+const WHY={saw:'To saw',custom:'Custom cut',remake:'Remake',job:'Take for job',use:'Use'};
+function takeSheet(u,why){const t=typeOf(u.sku),pk=packOf(u.sku),max=why==='saw'?Math.min(28,u.qty):u.qty,hw=t==='hardware'&&pk>1;
+ openSheet(`${WHY[why]} · ${u.sku}`,`<p class="muted" style="margin:0">${esc(descOf(u.sku))} · ${esc(u.loc)} has ${esc(qtyText(u.sku,u.qty))}</p>
+  ${hw?`<div class="field"><span>Count in</span>${chips('tu',[['box','Boxes'],['pc','Pieces']],'box')}</div>`:''}
+  <div class="field"><span>${why==='saw'?'Sheets to the saw (max 28)':t==='boards'?'Sheets':'How many'}</span>${stepper('tq',why==='saw'?max:1,1)}</div><p class="calc" id="tcalc"></p>
+  ${why==='use'?'':`<label class="field"><span>Job #${why==='job'?'':' (optional)'}</span><input class="in" id="tjob"></label>`}
+  ${why==='custom'||why==='remake'?`<label class="field"><span>Note (optional)</span><input class="in" id="tnote" placeholder="What it was for"></label>`:''}
+  <p class="note bad" id="terr" hidden></p><button class="btn pri block" data-primary id="tgo">${WHY[why]}</button>`,sh=>{
+  const n=()=>{const q=numv('tq');return hw&&chipv(sh,'tu')==='box'?q*pk:q};const c=()=>{$('#tcalc',sh).textContent=hw?`= ${fmt(n())} pcs`:''};sh.addEventListener('input',c);sh.addEventListener('change',c);c();
+  $('#tgo',sh).addEventListener('click',e=>busy(e.target,async()=>{const q=n(),err=$('#terr',sh),job=$('#tjob',sh)?.value.trim()||'';err.hidden=true;
+   if(q<=0){err.textContent='Enter how many.';err.hidden=false;return}if(why==='saw'&&q>28){err.textContent='The saw takes 28 sheets at a time.';err.hidden=false;return}if(q>u.qty){err.textContent=`Only ${fmt(u.qty)} here. Count the spot if that’s wrong.`;err.hidden=false;return}if(why==='job'&&!job){err.textContent='Enter the job #.';err.hidden=false;return}
+   await W.mut('units',u.id,c=>{if(!c)return undefined;const nq=(+c.qty||0)-q;return nq<=0?null:{...c,qty:nq}});
+   await logIt({type:'take',why,sku:u.sku,qty:q,loc:u.loc,job,note:$('#tnote',sh)?.value.trim()||''});closeSheet();toast(`${WHY[why]}: ${qtyText(u.sku,q)} from ${u.loc}`);render()}))})}
+function countSheet(u){const t=typeOf(u.sku);openSheet(`Count ${u.loc}`,`<p class="muted" style="margin:0">${esc(u.sku)} · ${esc(descOf(u.sku))}. The app says ${esc(qtyText(u.sku,u.qty))}.</p><div class="field"><span>Actual ${BASEU[t]}</span>${stepper('cq',u.qty,0)}</div><button class="btn pri block" data-primary id="cgo">Save count</button>`,sh=>{
+ $('#cgo',sh).addEventListener('click',e=>busy(e.target,async()=>{const q=numv('cq');await W.mut('units',u.id,c=>c?(q<=0?null:{...c,qty:q,counted:new Date().toISOString()}):undefined);await logIt({type:'count',sku:u.sku,loc:u.loc,prev:u.qty,qty:q});closeSheet();toast(`${u.loc} counted: ${fmt(q)} ${BASEU[t]}`);render()}))})}
+function moveSheet(u){openSheet(`Move from ${u.loc}`,`<p class="muted" style="margin:0">${esc(u.sku)} · ${esc(qtyText(u.sku,u.qty))}</p><div class="field"><span>New spot</span>${spotPick('mloc',u.sku,'')}</div><p class="note bad" id="merr" hidden></p><button class="btn pri block" data-primary id="mgo">Move</button>`,sh=>{
+ $('#mloc',sh).dataset.newunit=typeOf(u.sku)==='hardware'?'0':'1';
+ $('#mgo',sh).addEventListener('click',e=>busy(e.target,async()=>{locUpdate($('#mloc',sh));const loc=locVal(sh,'mloc');if(!loc){const er=$('#merr',sh);er.textContent=$('#mloc .locmsg',sh).textContent;er.hidden=false;return}
+  if(typeOf(u.sku)==='hardware'){await W.del('units',u.id);await putUnit(u.sku,loc,u.qty,'hardware')}else await W.set('units',u.id,{...u,loc});await logIt({type:'move',sku:u.sku,qty:u.qty,from:u.loc,loc});closeSheet();toast(`Moved to ${loc}`);render()}))})}
+function addSheet(sku,loc){openSheet('Found some',`<label class="field"><span>Item #</span><input class="in" id="asku" list="askus" value="${esc(sku||'')}" autocomplete="off"><datalist id="askus">${items().map(i=>`<option value="${esc(i.sku)}">${esc(i.desc||'')}</option>`).join('')}</datalist></label>
+ <div class="field"><span>How many (pieces or sheets)</span>${stepper('aq',1,1)}</div><div class="field"><span>Spot</span><div id="aspw">${spotPick('aloc',sku,loc||suggestLoc(sku),loc?[LOC[loc].z]:null)}</div></div><p class="note bad" id="aerr" hidden></p><button class="btn pri block" data-primary id="ago2">Add</button>`,sh=>{
+ $('#asku',sh).addEventListener('change',()=>{const s=$('#asku',sh).value.trim();$('#aspw',sh).innerHTML=spotPick('aloc',s,loc||suggestLoc(s),loc?[LOC[loc].z]:null);initLoc(sh)});
+ $('#ago2',sh).addEventListener('click',e=>busy(e.target,async()=>{const s=$('#asku',sh).value.trim(),q=numv('aq'),err=$('#aerr',sh);err.hidden=true;if(!s){err.textContent='Type the item #.';err.hidden=false;return}
+  $('#aloc',sh).dataset.sku=s;locUpdate($('#aloc',sh));const l=locVal(sh,'aloc');if(!l){err.textContent=$('#aloc .locmsg',sh).textContent||'Type a spot.';err.hidden=false;return}
+  if(!item(s))await W.set('items',key(s),{sku:s,desc:'',type:guessType('',s),added:'floor'});await putUnit(s,l,q,typeOf(s));await logIt({type:'found',sku:s,qty:q,loc:l});closeSheet();toast(`Added ${fmt(q)} ${s} at ${l}`);render()}))})}
+
+/* ---------- report (door machine / floor) ---------- */
+VIEWS.report={render(){const mine=Object.values(S.issues).filter(i=>i.src==='floor').sort((a,b)=>a.t<b.t?1:-1).slice(0,8);
+ return topBar('Report a problem','Doors, damage, anything')+`<button class="btn pri block" data-newissue style="min-height:72px;font-size:20px">${ico('report')}Report a problem</button><p class="muted small" style="margin:0">Goes straight to Stephen’s queue. Use it at the door machine for damaged or wrong doors.</p>
+ <section><div class="sh"><h2>Recent reports</h2></div><div class="list">${mine.length?mine.map(issueRow).join(''):'<p class="empty">No reports yet.</p>'}</div></section>`},
+ bind(m){$('[data-newissue]',m).addEventListener('click',()=>issueSheet())}};
+const ISTAT={open:['Open','bad'],reordered:['Reordered','info'],archived:['Archived','muted']};
+function issueRow(i){const age=daysBetween(ymd(i.t),today());return `<button class="row" data-issue="${i.id}"><span class="tx"><b>${i.kind==='damaged'||i.kind==='missing'?'−':''}${fmt(i.qty)} · ${esc(descOf(i.sku))}</b><span class="t2">${esc(KIND[i.kind])}${i.po?' · PO '+esc(i.po):''}${i.job?' · Job '+esc(i.job):''} · ${esc(i.by||'')} · ${esc(timeLabel(i.t))}</span>${i.note?`<span class="t2">“${esc(i.note)}”</span>`:''}${i.newPo?`<span class="t2">Reordered on PO ${esc(i.newPo)}</span>`:''}${i.closeNote?`<span class="t2">${esc(i.closeNote)}</span>`:''}</span><span class="end"><span class="pill ${ISTAT[i.status][1]}">${ISTAT[i.status][0]}</span>${i.status==='open'&&age>=2?`<span class="t2" style="color:var(--bad)">${age} days</span>`:''}</span></button>`}
+document.addEventListener('click',e=>{const b=e.target.closest('[data-issue]');if(b&&isOffice())issueAct(S.issues[b.dataset.issue])});
+
+/* ---------- more ---------- */
+VIEWS.more={render(){return topBar('More',`${ME} · ${ACCTS[SESS.u]?.label||''}`)+`<div class="list">
+ <button class="row" data-scan><span class="tx"><b>Scan a label</b><span class="t2">Spot labels and item QR codes</span></span>${ico('chev',20)}</button>
+ <button class="row" id="mname"><span class="tx"><b>Not ${esc(ME)}?</b><span class="t2">Switch the name on this device</span></span>${ico('chev',20)}</button>
+ ${isOffice()?`<button class="row" id="mppl"><span class="tx"><b>People</b><span class="t2">${esc((S.meta.people||[]).join(', ')||'No names yet')}</span></span>${ico('chev',20)}</button>`:''}
+ <button class="row" id="mlog"><span class="tx"><b>Activity</b><span class="t2">Everything received, put away, taken and reported</span></span>${ico('chev',20)}</button>
+ <button class="row" id="mout"><span class="tx"><b style="color:var(--bad)">Sign out</b><span class="t2">Signed in as ${esc(SESS.u)}</span></span></button></div>
+ <p class="muted small">${MODE==='local'?'This copy saves on this device only.':MODE==='claude'?'Preview on claude.ai · syncs live for everyone with the link.':'Live · every device sees changes within seconds.'}</p>`},
+ bind(m){$('#mname',m).addEventListener('click',()=>{ME=null;sset(NAME_K,null);render()});$('#mout',m).addEventListener('click',signOut);$('#mlog',m).addEventListener('click',()=>go('activity'));
+  $('#mppl',m)?.addEventListener('click',peopleSheet)}};
+VIEWS.activity={render(){const L=Object.values(S.log).sort((a,b)=>a.t<b.t?1:-1).slice(0,200);const T={arrived:'Checked in',put:'Put away',take:'Took',count:'Counted',move:'Moved',issue:'Reported',found:'Found',import:'Imported orders','backorder-in':'Backorder in',reorder:'Reordered',archive:'Archived'};
+ return topBar('Activity','Latest 200','more')+`<div class="list">${L.length?L.map(e=>`<div class="row"><span class="tx"><b>${esc(T[e.type]||e.type)}${e.why?' · '+esc(WHY[e.why]):''}${e.kind?' · '+esc(KIND[e.kind]||e.kind):''}</b><span class="t2">${[e.sku&&esc(e.sku),e.qty!=null&&fmt(e.qty),e.loc&&'at '+esc(e.loc),e.po&&'PO '+esc(e.po),e.job&&'Job '+esc(e.job),e.note&&'“'+esc(e.note)+'”'].filter(Boolean).join(' · ')}</span></span><span class="end"><span class="t2">${esc(e.who)}</span><span class="t2">${esc(timeLabel(e.t))}</span></span></div>`).join(''):'<p class="empty">Nothing yet.</p>'}</div>`}};
+PARENT.activity='more';
+function peopleSheet(){const ppl=S.meta.people||[];openSheet('People',`<div class="list">${ppl.map(n=>`<div class="row"><span class="tx"><b>${esc(n)}</b></span><button class="btn sm bad" data-rm="${esc(n)}">Remove</button></div>`).join('')||'<p class="empty">No names yet.</p>'}</div><label class="field"><span>Add a name</span><input class="in" id="pn"></label><button class="btn pri block" data-primary id="pgo2">Add</button>`,sh=>{
+ $('#pgo2',sh).addEventListener('click',e=>busy(e.target,async()=>{const n=$('#pn',sh).value.trim();if(!n)return;await W.meta({people:[...new Set([...ppl,n])]});closeSheet();toast(`${n} added`);render()}));
+ $$('[data-rm]',sh).forEach(b=>b.addEventListener('click',()=>busy(b,async()=>{await W.meta({people:ppl.filter(x=>x!==b.dataset.rm)});closeSheet();render()})))})}
+
+/* ================= office views ================= */
+VIEWS.board={office:1,render(){const D=deliveries(),t=today(),I=Object.values(S.issues);
+ const due=D.filter(d=>d.date===t||(d.arr&&ymd(d.arr.at)===t)).sort((a,b)=>(a.arr?1:0)-(b.arr?1:0));
+ const late=D.filter(d=>d.state==='late'),delayed=D.filter(d=>d.state==='delayed'),dock=D.filter(d=>d.arr&&d.left>0);
+ const open=I.filter(i=>i.status==='open').sort((a,b)=>a.t<b.t?-1:1),extras=I.filter(i=>i.kind==='extra'&&i.status==='open'),low=items().filter(lowOf);
+ return `<header><div class="eyebrow">Office · ${esc(dayLabel(t))}</div><h1>Board</h1></header>
+ <div class="tiles"><a class="tile" href="#issues"><span class="eyebrow">Needs action</span><span class="big">${open.length}</span><span class="muted small">open problems${open.filter(i=>daysBetween(ymd(i.t),t)>=2).length?` · ${open.filter(i=>daysBetween(ymd(i.t),t)>=2).length} over 2 days`:''}</span></a>
+ <div class="tile"><span class="eyebrow">Today</span><span class="big">${due.filter(d=>d.arr).length}/${due.length}</span><span class="muted small">deliveries checked in</span></div>
+ <div class="tile ${late.length?'hot':''}"><span class="eyebrow">Late</span><span class="big">${late.length}</span><span class="muted small">past due, not here</span></div>
+ <div class="tile"><span class="eyebrow">On the dock</span><span class="big">${dock.length}</span><span class="muted small">not fully put away</span></div></div>
+ <div class="grid2"><section><div class="sh"><h2>Today’s deliveries</h2></div><div class="list">${due.length?due.map(delRow).join(''):'<p class="empty">Nothing due today.</p>'}</div></section>
+ <section><div class="sh"><h2>Needs action</h2><a class="btn sm" href="#issues">All issues</a></div><div class="list">${open.length?open.slice(0,8).map(issueRow).join(''):'<p class="empty">No open problems.</p>'}</div></section>
+ ${late.length||delayed.length?`<section><div class="sh"><h2>Late and delayed</h2></div><div class="list">${[...late,...delayed].map(delRow).join('')}</div></section>`:''}
+ ${dock.length?`<section><div class="sh"><h2>On the dock</h2></div><div class="list">${dock.map(d=>`<button class="row" data-del="${esc(d.po)}"><span class="tx"><b>${esc(d.vendor)}</b><span class="t2">PO ${esc(d.po)} · ${d.lines.filter(lineLeft).length} of ${d.lines.length} items not put away</span></span>${ico('chev',20)}</button>`).join('')}</div></section>`:''}
+ ${extras.length?`<section><div class="sh"><h2>Extras kept</h2></div><div class="list">${extras.map(issueRow).join('')}</div></section>`:''}
+ ${low.length?`<section><div class="sh"><h2>Low stock</h2><a class="btn sm" href="#stock">Stock</a></div><div class="list">${low.map(i=>`<button class="row" data-item="${esc(i.sku)}"><span class="tx"><b>${esc(i.sku)}</b><span class="t2">${esc(i.desc||'')}</span></span><span class="end"><span class="big">${fmt(onHand(i.sku))}</span><span class="t2">+${fmt(onOrder(i.sku))} coming · min ${fmt(i.min)}</span></span></button>`).join('')}</div></section>`:''}</div>`}};
+VIEWS.orders={office:1,render(){const D=deliveries(),f=VIEW.of||'open';const F={open:d=>!d.cancelled&&(d.left>0||!d.arr),arrived:d=>!!d.arr,delayed:d=>d.state==='delayed'||d.state==='late',all:()=>true};
+ const L=D.filter(F[f]).sort((a,b)=>(a.date||'9')<(b.date||'9')?-1:1);const imp=S.meta.lastImport;
+ return `<header><div class="eyebrow">Office</div><h1>Orders</h1></header>
+ <div class="drop" id="drop"><b>Drop the order Excel here</b><span class="muted small">or</span><label class="btn pri"><input type="file" id="xf" accept=".xlsx,.xls,.xlsm,.csv" hidden>Choose the file</label><span class="muted small">${imp?`Last import: ${esc(imp.file)} · ${esc(timeLabel(imp.at))} · ${esc(imp.by)}`:'Nothing imported yet. You’ll see what changed before anything is applied.'}</span></div>
+ <div class="btns" style="justify-content:space-between"><div class="seg">${chips('of',[['open','Open'],['delayed','Late & delayed'],['arrived','Arrived'],['all','All']],f)}</div><div class="seg"><button class="btn sm" id="xadd">Add a line by hand</button><button class="btn sm" id="xexp">Export to Excel</button></div></div>
+ <div class="tbl"><table><thead><tr><th>PO</th><th>Vendor</th><th>Expected</th><th>Status</th><th class="n">Lines</th><th class="n">Ordered</th><th class="n">Put away</th><th class="n">Still out</th><th class="n">Issues</th></tr></thead><tbody>${L.length?L.map(d=>{const o=d.lines.reduce((a,x)=>a+(+x.qty||0),0),p=d.lines.reduce((a,x)=>a+putOf(x),0);
+  return `<tr data-del="${esc(d.po)}" style="cursor:pointer"><td><b>${esc(d.po)}</b></td><td>${esc(d.vendor)}</td><td>${esc(dayLabel(d.date))}</td><td>${statePill(d)}</td><td class="n">${d.lines.length}</td><td class="n">${fmt(o)}</td><td class="n">${fmt(p)}</td><td class="n">${fmt(d.left)}</td><td class="n">${d.issues.length||''}</td></tr>`}).join(''):`<tr><td colspan="9" class="empty">No orders here.</td></tr>`}</tbody></table></div>`},
+ bind(m){$('[data-chips="of"]',m).addEventListener('change',()=>{VIEW.of=chipv(m,'of');render()});const dr=$('#drop',m),xf=$('#xf',m);
+  xf.addEventListener('change',()=>xf.files[0]&&importFile(xf.files[0]));
+  dr.addEventListener('dragover',e=>{e.preventDefault();dr.classList.add('over')});dr.addEventListener('dragleave',()=>dr.classList.remove('over'));dr.addEventListener('drop',e=>{e.preventDefault();dr.classList.remove('over');const f=e.dataTransfer.files[0];f&&importFile(f)});
+  $('#xadd',m).addEventListener('click',lineSheet);$('#xexp',m).addEventListener('click',exportSheet)}};
+VIEWS.issues={office:1,render(){const f=VIEW.isf||'open',I=Object.values(S.issues).filter(i=>i.status===f).sort((a,b)=>f==='archived'?(a.closedAt<b.closedAt?1:-1):(a.t<b.t?-1:1));const n=s=>Object.values(S.issues).filter(i=>i.status===s).length;
+ return `<header><div class="eyebrow">Office · Stephen closes these</div><h1>Issues</h1></header>${chips('isf',[['open',`Open (${n('open')})`],['reordered',`Waiting on replacement (${n('reordered')})`],['archived','Archived']],f)}
+ <div class="list">${I.length?I.slice(0,200).map(issueRow).join(''):`<p class="empty">${f==='open'?'No open problems.':'Nothing here.'}</p>`}</div>`},
+ bind(m){$('[data-chips="isf"]',m).addEventListener('change',()=>{VIEW.isf=chipv(m,'isf');render()})}};
+function issueAct(i){if(!i)return;openSheet(`${KIND[i.kind]} · ${descOf(i.sku)}`,`<dl class="kv"><dt>Item</dt><dd>${esc(i.sku)}</dd><dt>Qty</dt><dd>${fmt(i.qty)}</dd>${i.po?`<dt>PO</dt><dd>${esc(i.po)} · ${esc(i.vendor||'')}</dd>`:''}${i.job?`<dt>Job</dt><dd>${esc(i.job)}</dd>`:''}<dt>From</dt><dd>${esc(i.by)} · ${esc(i.src)} · ${esc(timeLabel(i.t))}</dd>${i.note?`<dt>Note</dt><dd>${esc(i.note)}</dd>`:''}${i.newPo?`<dt>Reorder</dt><dd>PO ${esc(i.newPo)}</dd>`:''}${i.closeNote?`<dt>Closed</dt><dd>${esc(i.closeNote)}</dd>`:''}</dl>
+ ${i.status==='archived'?`<button class="btn block" id="ireo">Reopen</button>`:`${i.kind!=='extra'&&i.kind!=='backorder'?`<label class="field"><span>Reordered on PO #</span><input class="in" id="inpo" value="${esc(i.newPo||'')}" placeholder="New PO #"></label><button class="btn pri block" data-primary id="ireord">Mark reordered</button><p class="muted small" style="margin:0">It archives itself when that PO’s line is put away.</p>`:''}
+ <div class="field"><span>Or close it</span>${chips('cr',[['Credit taken','Credit taken'],['Not needed','Not needed'],['Arrived','Arrived'],['Kept as stock','Kept as stock'],['Returned','Returned']],'')}</div><button class="btn block" id="iarch">Archive</button>`}`,sh=>{
+ $('#ireord',sh)?.addEventListener('click',e=>busy(e.target,async()=>{const p=$('#inpo',sh).value.trim();if(!p)return toast('Enter the new PO #',true);await W.set('issues',i.id,{...i,status:'reordered',newPo:p,reorderedAt:new Date().toISOString(),reorderedBy:ME});await logIt({type:'reorder',sku:i.sku,qty:i.qty,po:p});closeSheet();toast(`Reordered on PO ${p}`);render()}));
+ $('#iarch',sh)?.addEventListener('click',e=>busy(e.target,async()=>{const r=chipv(sh,'cr');if(!r)return toast('Pick why it’s closed',true);await W.set('issues',i.id,{...i,status:'archived',closeNote:r,closedAt:new Date().toISOString(),closedBy:ME});await logIt({type:'archive',sku:i.sku,note:r});closeSheet();toast('Archived');render()}));
+ $('#ireo',sh)?.addEventListener('click',e=>busy(e.target,async()=>{await W.set('issues',i.id,{...i,status:'open',closeNote:'',closedAt:''});closeSheet();render()}))})}
+VIEWS.stock={office:1,render(){const f=VIEW.sf||'all';let L=items();if(f!=='all')L=f==='low'?L.filter(lowOf):L.filter(i=>(i.type||typeOf(i.sku))===f);L.sort((a,b)=>a.sku.localeCompare(b.sku));
+ return `<header><div class="eyebrow">Office</div><h1>Stock</h1></header><div class="btns" style="justify-content:space-between">${chips('sf',[['all','All'],['low','Low'],['hardware','Hardware'],['boards','Boards'],['packaging','Packaging'],['doors','Doors']],f)}<button class="btn sm" id="sexp" style="flex:0 0 auto">Export to Excel</button></div>
+ <div class="tbl"><table><thead><tr><th>Item #</th><th>Description</th><th>Type</th><th class="n">On hand</th><th class="n">On order</th><th class="n">Per box</th><th class="n">Min</th><th>Spots</th></tr></thead><tbody>${L.length?L.map(i=>`<tr data-edit="${esc(i.sku)}" style="cursor:pointer"><td><b>${esc(i.sku)}</b>${lowOf(i)?' <span class="pill bad">Low</span>':''}</td><td>${esc(i.desc||'')}</td><td>${TYPES[i.type||typeOf(i.sku)]}</td><td class="n">${fmt(onHand(i.sku))}</td><td class="n">${fmt(onOrder(i.sku))}</td><td class="n">${i.pack?fmt(i.pack):''}</td><td class="n">${i.min?fmt(i.min):''}</td><td>${esc([...new Set(unitsOf(i.sku).map(u=>u.loc))].join(', '))}</td></tr>`).join(''):'<tr><td colspan="8" class="empty">No items.</td></tr>'}</tbody></table></div>`},
+ bind(m){$('[data-chips="sf"]',m).addEventListener('change',()=>{VIEW.sf=chipv(m,'sf');render()});bindUnitActs(m);$('#sexp',m).addEventListener('click',exportSheet)}};
+function itemSheet(sku){const i=item(sku)||{sku,desc:descOf(sku),type:typeOf(sku)};openSheet(`Edit ${i.sku}`,`<label class="field"><span>Description</span><input class="in" id="ed" value="${esc(i.desc||'')}"></label>
+ <div class="field"><span>Type</span>${chips('ety',Object.entries(TYPES),i.type||typeOf(sku))}</div>
+ <label class="field"><span>Pieces per box (or sheets per unit)</span><input class="in num" id="epk" inputmode="numeric" value="${i.pack||''}"></label>
+ <label class="field"><span>Reorder when on hand + on order is at or below</span><input class="in num" id="emin" inputmode="numeric" value="${i.min||''}"></label>
+ <div class="field"><span>Boards only</span>${chips('ethk',[['3/4"','3/4"'],['6mm','6 mm']],thkOf(i))}${chips('ewh',[['White','White'],['Colored','Colored']],i.color||(isWhite(i)?'White':''))}</div>
+ <label class="field"><span>Other names on boxes (comma separated)</span><input class="in" id="eal" value="${esc((i.aliases||[]).join(', '))}"></label>
+ <button class="btn pri block" data-primary id="ego">Save</button>`,sh=>{$('#ego',sh).addEventListener('click',e=>busy(e.target,async()=>{
+  await W.set('items',key(i.sku),{...i,desc:$('#ed',sh).value.trim(),type:chipv(sh,'ety'),pack:numv('epk')||0,min:numv('emin')||0,thk:chipv(sh,'ethk'),color:chipv(sh,'ewh'),aliases:$('#eal',sh).value.split(',').map(s=>s.trim()).filter(Boolean)});closeSheet();toast(`${i.sku} saved`);render()}))})}
+function lineSheet(){openSheet('Add an order line',`<label class="field"><span>PO #</span><input class="in" id="lpo"></label><label class="field"><span>Vendor</span><input class="in" id="lv"></label><label class="field"><span>Item #</span><input class="in" id="ls"></label><label class="field"><span>Description</span><input class="in" id="ld"></label>
+ <div class="field"><span>Type</span>${chips('lt',Object.entries(TYPES),'hardware')}</div><label class="field"><span>Quantity</span><input class="in num" id="lq" inputmode="numeric"></label><label class="field"><span>Unit (as the Excel counts it)</span><input class="in" id="lu2" placeholder="pcs, boxes, sheets, pallets"></label>
+ <label class="field"><span>Expected date</span><input class="in" id="ldt" type="date" value="${today()}"></label><label class="field"><span>Job # (doors)</span><input class="in" id="lj"></label><button class="btn pri block" data-primary id="lgo2">Add line</button>`,sh=>{
+ $('#lgo2',sh).addEventListener('click',e=>busy(e.target,async()=>{const r={po:$('#lpo',sh).value.trim(),vendor:$('#lv',sh).value.trim(),sku:$('#ls',sh).value.trim()||$('#ld',sh).value.trim(),desc:$('#ld',sh).value.trim(),type:chipv(sh,'lt'),qty:numv('lq'),unit:$('#lu2',sh).value.trim(),date:$('#ldt',sh).value,job:$('#lj',sh).value.trim(),status:'Ordered',note:'',src:'hand'};
+  if(!r.po||!r.sku||!r.qty)return toast('PO #, item and quantity are needed',true);await applyLines([r]);closeSheet();toast(`Added to PO ${r.po}`);render()}))})}
+
+/* ---------- Excel import: read, show what changed, then apply ---------- */
+const HDR={po:['po','po#','po #','po no','po number','purchase order','purchase order #','order #','order number'],vendor:['vendor','supplier','vendor name','supplier name'],sku:['item','item #','item#','item no','item number','part','part #','part#','part number','sku','product #','product code','code'],desc:['description','desc','item description','product','product name','name'],
+ type:['type','category','cat','material'],qty:['qty','quantity','qty ordered','ordered','order qty','quantity ordered','total','amount ordered'],unit:['unit','uom','units','u/m','unit of measure'],date:['expected','expected date','due','due date','eta','delivery date','delivery','ship date','arrival','date expected'],status:['status','order status'],job:['job','job #','job#','job no','job name','job number'],note:['note','notes','comment','comments','memo','remarks']};
+const hnorm=s=>String(s??'').toLowerCase().replace(/[\s_.:]+/g,' ').replace(/ ?# ?/,' #').trim();
+function headerMap(row){const m={};row.forEach((c,ix)=>{const h=hnorm(c);if(!h)return;for(const f in HDR){if(m[f]!=null)continue;if(HDR[f].map(hnorm).includes(h)){m[f]=ix;return}}});
+ row.forEach((c,ix)=>{const h=hnorm(c);if(!h||Object.values(m).includes(ix))return;for(const f in HDR){if(m[f]!=null)continue;if(HDR[f].some(x=>x.length>3&&h.includes(hnorm(x)))){m[f]=ix;return}}});return m}
+function xdate(v){if(v==null||v==='')return '';if(typeof v==='number'&&v>20000&&v<80000){const d=new Date(Math.round((v-25569)*864e5));return `${d.getUTCFullYear()}-${pad(d.getUTCMonth()+1)}-${pad(d.getUTCDate())}`}if(v instanceof Date)return ymd(v);const s=String(v).trim();let m=s.match(/^(\d{1,2})[\/-](\d{1,2})[\/-](\d{2,4})$/);if(m){let y=+m[3];if(y<100)y+=2000;return `${y}-${pad(m[1])}-${pad(m[2])}`}m=s.match(/^(\d{4})-(\d{2})-(\d{2})/);if(m)return m[0];const d=Date.parse(s);return isNaN(d)?'':ymd(d)}
+function xstatus(v){const s=String(v||'').toLowerCase();return /cancel/.test(s)?'Cancelled':/delay|back ?order|push/.test(s)?'Delayed':/receiv|complete|closed|done/.test(s)?'Closed':'Ordered'}
+const lineId=(po,sku)=>`${key(po)}~${key(sku).slice(0,48)}`;
+async function readBook(file){await loadScript(XLSX_SRC);const buf=await file.arrayBuffer();const wb=XLSX.read(buf,{type:'array',cellDates:false});
+ const rows=[],warn=[];let sheets=0;
+ wb.SheetNames.forEach(sn=>{const A=XLSX.utils.sheet_to_json(wb.Sheets[sn],{header:1,raw:true,defval:''});let hi=-1,m=null;
+  for(let r=0;r<Math.min(A.length,20);r++){const mm=headerMap(A[r]);if(mm.qty!=null&&(mm.sku!=null||mm.desc!=null)&&Object.keys(mm).length>=3){hi=r;m=mm;break}}
+  if(hi<0)return;sheets++;
+  for(let r=hi+1;r<A.length;r++){const row=A[r];const g=f=>m[f]!=null?row[m[f]]:'';if(row.every(c=>String(c).trim()===''))continue;
+   const sku=String(g('sku')||'').trim(),desc=String(g('desc')||'').trim(),qtyRaw=g('qty'),qty=parseFloat(String(qtyRaw).replace(/[^0-9.\-]/g,''));let po=String(g('po')||'').trim();
+   if(!sku&&!desc)continue;if(!isFinite(qty)||qty<=0){warn.push(`${sn} row ${r+1}: no quantity (${esc(sku||desc)})`);continue}
+   if(!po){warn.push(`${sn} row ${r+1}: no PO # (${esc(sku||desc)}); used the sheet name`);po=sn}
+   const tRaw=String(g('type')||'').toLowerCase(),type=/door/.test(tRaw)?'doors':/board|sheet|melamine|panel/.test(tRaw)?'boards':/pack|cardboard|foam|strap|supply/.test(tRaw)?'packaging':/hard|handle|hinge|slide/.test(tRaw)?'hardware':(item(sku||desc)?.type||guessType(desc,sku));
+   rows.push({po,vendor:String(g('vendor')||'').trim(),sku:sku||desc,desc,type,qty,unit:String(g('unit')||'').trim(),date:xdate(g('date')),status:xstatus(g('status')),job:String(g('job')||'').trim(),note:String(g('note')||'').trim(),src:'excel',sheet:sn,row:r+1})}});
+ return{rows,warn,sheets,names:wb.SheetNames}}
+const FIELDS=['vendor','desc','type','qty','unit','date','status','job','note'];
+async function importFile(file){toast('Reading '+file.name+'…');let R;try{R=await readBook(file)}catch(e){toast('Couldn’t read that file: '+e.message,true);return}
+ if(!R.rows.length){openSheet('Nothing to import',`<p class="note bad">No order lines found in ${esc(file.name)}. The app looks for a header row with a quantity column and an item # or description column.</p><p class="muted small">Sheets in the file: ${esc(R.names.join(', '))}</p>${R.warn.length?`<p class="muted small">${R.warn.slice(0,20).join('<br>')}</p>`:''}`);return}
+ const inFile={};R.rows.forEach(r=>{const id=lineId(r.po,r.sku);if(inFile[id]){inFile[id].qty+=r.qty}else inFile[id]={...r}});
+ const add=[],chg=[],gone=[];
+ for(const id in inFile){const n=inFile[id],o=S.orders[id];if(!o||o.gone)add.push(n);else{const d=FIELDS.filter(f=>String(o[f]??'')!==String(n[f]??''));if(d.length)chg.push({n,o,d})}}
+ Object.values(S.orders).forEach(o=>{if(o.src==='excel'&&!o.gone&&!inFile[o.id])gone.push(o)});
+ const row=(cls,o,extra)=>`<tr class="${cls}"><td>${esc(o.po)}</td><td>${esc(o.sku)}</td><td>${esc(o.desc)}</td><td class="n">${fmt(o.qty)} ${esc(o.unit)}</td><td>${esc(extra)}</td></tr>`;
+ openSheet(`Import ${file.name}`,`<p style="margin:0">${R.rows.length} lines read from ${R.sheets} ${R.sheets===1?'sheet':'sheets'}.</p>
+  <div class="chips"><span class="pill ok">${add.length} new</span><span class="pill warn">${chg.length} changed</span><span class="pill bad">${gone.length} no longer in the file</span></div>
+  ${R.warn.length?`<p class="note warn">${R.warn.slice(0,12).join('<br>')}${R.warn.length>12?`<br>+${R.warn.length-12} more`:''}</p>`:''}
+  ${add.length+chg.length+gone.length?`<div class="tbl" style="max-height:44vh"><table><thead><tr><th>PO</th><th>Item</th><th>Description</th><th class="n">Qty</th><th>Change</th></tr></thead><tbody>
+  ${add.map(o=>row('diff-new',o,`New · ${o.status}${o.date?' · '+dayLabel(o.date):''}`)).join('')}
+  ${chg.map(c=>row('diff-chg',c.n,c.d.map(f=>`${f}: ${c.o[f]||'—'} → ${c.n[f]||'—'}`).join(' · '))).join('')}
+  ${gone.map(o=>row('diff-gone',o,'Not in this file; hidden from the shop')).join('')}</tbody></table></div><button class="btn pri block" data-primary id="iapply">Apply ${add.length+chg.length+gone.length} changes</button>`:'<p class="note ok">Everything already matches. Nothing to apply.</p>'}`,sh=>{
+  $('#iapply',sh)?.addEventListener('click',e=>busy(e.target,async()=>{e.target.textContent='Applying…';await applyLines([...add,...chg.map(c=>c.n)],gone);await W.meta({lastImport:{file:file.name,at:new Date().toISOString(),by:ME,rows:R.rows.length}});await logIt({type:'import',note:`${file.name}: ${add.length} new, ${chg.length} changed, ${gone.length} removed`});closeSheet();toast(`Applied: ${add.length} new, ${chg.length} changed, ${gone.length} removed`);render()}))})}
+async function applyLines(rows,gone=[]){const jobs=[];
+ rows.forEach(r=>{const id=lineId(r.po,r.sku);jobs.push(()=>W.set('orders',id,{...clean(r),gone:false}));if(!item(r.sku))jobs.push(()=>W.set('items',key(r.sku),{sku:r.sku,desc:r.desc,type:r.type}))});
+ gone.forEach(o=>jobs.push(()=>W.set('orders',o.id,{...o,gone:true})));
+ for(let i=0;i<jobs.length;i+=8)await Promise.all(jobs.slice(i,i+8).map(f=>f()))}
+
+/* ---------- exports (our own sheets for Stephen; never written into his Excel) ---------- */
+function exportSheet(){openSheet('Export to Excel',`<div class="list">${[['check','Orders check','Ordered, put away, still out and issues per line'],['issues','Issues','Every problem with its status'],['stock','Stock','On hand, on order and spots'],['backorders','Backorders and extras','What’s still coming and what came extra']].map(([k,t,d])=>`<button class="row" data-x="${k}"><span class="tx"><b>${t}</b><span class="t2">${d}</span></span>${ico('chev',20)}</button>`).join('')}</div>`,sh=>{
+ $$('[data-x]',sh).forEach(b=>b.addEventListener('click',()=>busy(b,()=>exportX(b.dataset.x))))})}
+async function exportX(k){await loadScript(XLSX_SRC);let rows=[];const I=Object.values(S.issues);
+ if(k==='check')rows=orders().map(o=>({PO:o.po,Vendor:o.vendor,'Item #':o.sku,Description:o.desc,Type:TYPES[o.type||typeOf(o.sku)],Expected:o.date,Status:o.status,Arrived:arrivalOf(o.po)?ymd(arrivalOf(o.po).at):'',Ordered:+o.qty,Unit:o.unit,'Put away':putOf(o),'Still out':lineLeft(o),Issues:issuesOf(o).filter(openIssue).map(i=>`${KIND[i.kind]} ${i.qty}`).join('; ')}));
+ if(k==='issues'||k==='backorders')rows=I.filter(i=>k==='issues'||(['backorder','extra'].includes(i.kind)&&openIssue(i))).map(i=>({Reported:ymd(i.t),Kind:KIND[i.kind],'Item #':i.sku,Description:descOf(i.sku),Qty:+i.qty,PO:i.po,Vendor:i.vendor,Job:i.job,Note:i.note,By:i.by,Status:ISTAT[i.status][0],'Reorder PO':i.newPo||'',Closed:i.closeNote||''}));
+ if(k==='stock')rows=items().map(i=>({'Item #':i.sku,Description:i.desc,Type:TYPES[i.type||typeOf(i.sku)],'On hand':onHand(i.sku),'On order':onOrder(i.sku),'Per box':i.pack||'',Min:i.min||'',Low:lowOf(i)?'Yes':'',Spots:[...new Set(unitsOf(i.sku).map(u=>u.loc))].join(', ')}));
+ const ws=XLSX.utils.json_to_sheet(rows.length?rows:[{Note:'Nothing to export yet'}]),wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,'Sheet1');
+ const data=XLSX.write(wb,{type:'array',bookType:'xlsx'}),name=`Force ${({check:'Orders check',issues:'Issues',stock:'Stock',backorders:'Backorders and extras'})[k]} ${today()}.xlsx`;
+ if(MODE==='claude'){const dl=await claude.use('downloads');if(!dl)throw new Error('Downloads are off for this page.');await dl.save({filename:name,data});toast('Saved '+name)}
+ else{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([data],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}));a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),4000);toast('Downloaded '+name)}}
+
+/* ================= scanning ================= */
+let CAM=null;
+function stopCam(){if(CAM){CAM.stop=true;CAM.stream&&CAM.stream.getTracks().forEach(t=>t.stop());CAM=null}}
+function handleScan(txt){txt=String(txt||'').trim();closeSheet();if(!txt)return;
+ const sp=txt.match(/^FORCE:SPOT:(.+)$/i);if(sp){const l=normLoc(sp[1]);if(l){VIEW.loc=l;go('spot');return}}
+ const hw=txt.match(/^FORCE:HW:(.+)$/i);const raw=hw?hw[1]:txt;
+ if(/^Pallet:/i.test(txt))return toast('That’s an old cabinet pallet sheet. Cabinet pallets aren’t in this app yet.',true);
+ const l=normLoc(raw);if(l){VIEW.loc=l;go('spot');return}
+ const it=item(raw)||items().find(i=>(i.aliases||[]).some(a=>key(a)===key(raw)));if(it){VIEW.sku=it.sku;go('item');return}
+ VIEW.q=raw.split(/\r?\n/)[0];go('find');toast('No exact match. Showing search results.')}
+async function scanSheet(){const live=MODE!=='claude'&&navigator.mediaDevices&&navigator.mediaDevices.getUserMedia;
+ const sh=openSheet('Scan',`${live?'<div class="cam"><video playsinline muted id="cv"></video><div class="aim"></div></div><p class="muted small" style="margin:0" id="cmsg">Hold the QR code inside the frame.</p>':'<p class="note">Live camera isn’t allowed in the claude.ai preview. On the company site it scans the moment a code is in frame. Here, take a photo of the label instead, or use a Bluetooth scanner in the box below.</p>'}
+  <label class="btn block"><input type="file" accept="image/*" capture="environment" id="cphoto" hidden>Take a photo of the label</label>
+  <label class="field"><span>Or type / scan with a Bluetooth scanner</span><input class="in" id="ctxt" autocomplete="off" autocapitalize="characters" placeholder="D 11 a, item #, or scan"></label><button class="btn pri block" data-primary id="cgo3">Go</button>`,sh=>{
+  $('#cgo3',sh).addEventListener('click',()=>handleScan($('#ctxt',sh).value));
+  $('#cphoto',sh).addEventListener('change',async e=>{const f=e.target.files[0];if(!f)return;try{await loadScript(JSQR_SRC);const img=await createImageBitmap(f);const c=document.createElement('canvas'),s=Math.min(1,1600/Math.max(img.width,img.height));c.width=img.width*s;c.height=img.height*s;const x=c.getContext('2d');x.drawImage(img,0,0,c.width,c.height);const r=jsQR(x.getImageData(0,0,c.width,c.height).data,c.width,c.height);r?handleScan(r.data):toast('No QR code found in that photo. Get closer and try again.',true)}catch(err){toast(err.message,true)}})});
+ if(!live)return;
+ try{const stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'},audio:false});const v=$('#cv',sh);if(!v){stream.getTracks().forEach(t=>t.stop());return}CAM={stream};v.srcObject=stream;await v.play();
+  const det=('BarcodeDetector' in window)?new BarcodeDetector({formats:['qr_code']}):null;if(!det)await loadScript(JSQR_SRC);
+  const c=document.createElement('canvas'),x=c.getContext('2d',{willReadFrequently:true});const me=CAM;
+  const tick=async()=>{if(!CAM||me.stop)return;try{if(v.readyState>=2){let txt='';if(det){const r=await det.detect(v);if(r[0])txt=r[0].rawValue}else{c.width=Math.min(800,v.videoWidth);c.height=c.width*v.videoHeight/v.videoWidth;x.drawImage(v,0,0,c.width,c.height);const r=jsQR(x.getImageData(0,0,c.width,c.height).data,c.width,c.height,{inversionAttempts:'dontInvert'});if(r)txt=r.data}
+   if(txt){navigator.vibrate&&navigator.vibrate(60);handleScan(txt);return}}}catch(e){}requestAnimationFrame(tick)};tick()}
+ catch(e){const m=$('#cmsg',sh);if(m)m.textContent='Camera blocked. Allow camera access for this site, or take a photo instead.'}}
+/* Bluetooth scanners type fast and end with Enter: catch that anywhere outside a field */
+let kb='',kbT=0;document.addEventListener('keydown',e=>{if(e.target.closest('input,textarea')||!SESS||!ME)return;if(e.key==='Enter'){if(kb.length>2)handleScan(kb);kb='';return}if(e.key.length===1){kb+=e.key;clearTimeout(kbT);kbT=setTimeout(()=>kb='',280)}});
+
+/* ================= boot ================= */
+let ACCT_H={};
+const PREVIEW_HASHES={fcadmin:'602bc4deb231124e2d71a7c24126cfe7d6156e644521eb7872dd64bfaab0dbf1',fcwarehouse:'0ffb68cfb3c296a86231d1ca33139d2ff0cfea7071ee2581f4fbbc445db0908e'};
+async function boot(){
+ render();
+ let db=null;try{if(window.claude&&claude.use)db=await claude.use('db')}catch(e){}
+ if(db){MODE='claude';STORE=claudeStore(db)}
+ else if(location.protocol.startsWith('http')&&!window.claude){try{const r=await fetch('/api/ping');if(r.ok&&(await r.json()).ok){MODE='server';STORE=serverStore()}}catch(e){}}
+ if(!STORE){MODE='local';STORE=localStore()}
+ ACCT_H=PREVIEW_HASHES;
+ ME=sget(NAME_K);
+ if(MODE!=='server'||SESS)STORE.start(onData);else render();
+}
+boot();
+</script>
