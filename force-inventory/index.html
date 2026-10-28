@@ -359,7 +359,7 @@ const shelfRule=i=>['board','pallet','molding'].includes(i.cat)?'Office racks ho
 const palletRule=i=>i.cat!=='pallet'?'Aisles A, B and C hold cabinet pallets only.':null;
 const ZONES=[
  {id:'D',name:'Rack D',short:'D',kind:'rack',deep:1,fx:-11.1,nd:1,first:1,last:18,levels:4,ly:LY,bw:P,up:GR,beam:OR,
-  purpose:L=>L===1?'Installer hardware':'Not decided yet',rule:(i,L)=>L===1&&i.cat!=='hardware'?'Rack D level 1 is installer hardware only.':null},
+  purpose:L=>L===1?'Installer hardware':'Empty for now (cabinets later)',rule:(i,L)=>L===1?(i.cat!=='hardware'?'Rack D level 1 is installer hardware only.':null):'Rack D levels 2–4 stay empty for now.'},
  {id:'C',name:'Aisle C',short:'C',kind:'rack',deep:1,fx:-8.05,nd:-1,first:5,last:18,levels:4,ly:LY,bw:P,up:GR,beam:OR,purpose:()=>'Cabinet pallets',rule:palletRule},
  {id:'B',name:'Aisle B',short:'B',kind:'rack',deep:1,fx:-3.05,nd:1,first:5,last:18,levels:4,ly:LY,bw:P,up:GR,beam:OR,purpose:()=>'Cabinet pallets',rule:palletRule},
  {id:'A',name:'Aisle A',short:'A',kind:'rack',deep:1,fx:0,nd:-1,first:1,last:18,levels:4,ly:LY,bw:P,up:GR,beam:OR,purpose:()=>'Cabinet pallets',rule:palletRule},
@@ -367,7 +367,7 @@ const ZONES=[
   purpose:L=>L===4?'Cardboard only':'Scribe molding, misc, drop-off',rule:(i,L)=>L===4&&!isCard(i)?'The top of Rack 0 is cardboard only.':null},
  {id:'R1',name:'Rack 1',short:'R1',kind:'rack',deep:0,depth:1.1,fx:11.9,nd:-1,z0:-16.1,first:1,last:1,levels:5,ly:[.15,1.05,1.95,2.85,3.75],bw:2.45,up:GY,beam:GY,wire:1,purpose:()=>'Excess handles',rule:i=>i.cat!=='handle'?'Rack 1 holds excess handles only.':null},
  {id:'CL1',name:'Cantilever 1',short:'CL1',kind:'cant',axis:'z',sx:13,sz:-8,dir:-1,cols:3,rows:8,bl:2.6,arm:1.3,base:.25,rh:.5,purpose:()=>'Boards for remakes and one-offs',rule:i=>i.cat!=='board'?'Cantilevers hold boards only.':null},
- {id:'CL2',name:'Cantilever 2',short:'CL2',kind:'cant',axis:'x',sx:26,sz:3.6,dir:-1,cols:1,rows:6,bl:2.6,arm:1.3,base:.25,rh:.62,purpose:()=>'Boards',rule:i=>i.cat!=='board'?'Cantilevers hold boards only.':null},
+ {id:'CL2',name:'Cantilever 2',short:'CL2',kind:'cant',axis:'x',sx:22.8,sz:3.6,dir:-1,cols:3,rows:8,rowsBy:[8,8,5],flip:1,bl:2.6,arm:1.3,base:.25,rh:.5,purpose:()=>'Boards',rule:i=>i.cat!=='board'?'Cantilevers hold boards only.':null},
  {id:'BD',name:'Board drop',short:'Drop',kind:'pad',axis:'x',sx:6.4,sz:-4.6,dir:-1,len:2.6,wid:1.3,purpose:()=>'Boards waiting for a home (placeholder spot)',rule:i=>i.cat!=='board'?'Board drop is for boards only.':null},
  {id:'BK',name:'Bunks',short:'Bunks',kind:'bunk',x0:14,z0:-8,purpose:()=>'Full board units'},
  {id:'HR1',name:'Hardware rack 1',short:'Hardware 1',kind:'shelf',axis:'x',sx:13.6,sz:-46.6,dir:1,bays:3,bw:1.2,shelves:5,sh:.42,depth:.6,purpose:()=>'Screws, nails, small hardware',rule:shelfRule},
@@ -375,6 +375,8 @@ const ZONES=[
  {id:'VR',name:'Staging',kind:'virtual'}
 ];
 const zone=id=>ZONES.find(z=>z.id===id);
+// cantilever columns can differ in arm count; flip numbers columns from the viewer's left when facing the arms
+const cRows=(z,c)=>z.rowsBy?z.rowsBy[c-1]:z.rows,cPos=(z,c)=>z.flip?z.cols-c:c-1,pRows=(z,p)=>cRows(z,z.flip?z.cols-p:p+1);
 const ZPHYS=ZONES.filter(z=>z.kind!=='virtual');
 function frameOf(z){
  if(z.kind==='rack')return{O:[z.fx,0,z.z0||0],a:[0,0,-1],n:[z.nd,0,0]};
@@ -401,8 +403,8 @@ ZONES.forEach(z=>{
     if(dbl)b.split('+').forEach(c=>KEYS[key(`${z.id}-${L}${r}-${c}`)]=id);
    })}
  }else if(z.kind==='cant'){
-  for(let c=1;c<=z.cols;c++)for(let r=1;r<=z.rows;r++)
-   addLoc({id:`${z.id}-${c}-${r}`,z:z.id,L:r,bay:c,purpose:z.purpose(),geo:G((c-.5)*z.bl,z.arm/2+.12,z.base+(r-1)*z.rh+.06,z.bl-.15,1.25,z.rh-.12)});
+  for(let c=1;c<=z.cols;c++)for(let r=1;r<=cRows(z,c);r++)
+   addLoc({id:`${z.id}-${c}-${r}`,z:z.id,L:r,bay:c,purpose:z.purpose(),geo:G((cPos(z,c)+.5)*z.bl,z.arm/2+.12,z.base+(r-1)*z.rh+.06,z.bl-.15,1.25,z.rh-.12)});
  }else if(z.kind==='bunk'){
   for(let b=1;b<=4;b++)for(let c=1;c<=4;c++)addLoc({id:`BK${b}-${c}`,z:'BK',bunk:b,col:c,bay:b,L:1,purpose:bunkFor(b,c),geo:G((c-.5)*1.5,(b-.5)*2.9,.1,1.27,2.5,4.6)});
  }else if(z.kind==='pad'){
@@ -849,10 +851,10 @@ function init3D(){
    for(let k=z.first-1;k<=z.last;k++){const s=k*z.bw;partF(u,f,s,0,0,.09,.09,top);partF(u,f,s,-D,0,.09,.09,top);partF('c0x777777',f,s,0,0,.18,.18,.02);partF('c0x777777',f,s,-D,0,.18,.18,.02);for(let y=.6;y<top;y+=1.2)partF(u,f,s,-D/2,y,.035,D,.035)}
    for(let r=z.first;r<=z.last;r++)for(let L=1;L<=z.levels;L++){const s=(r-.5)*z.bw,y=z.ly[L-1];
     partF(bm,f,s,0,y-.14,z.bw-.1,.07,.13);partF(bm,f,s,-D,y-.14,z.bw-.1,.07,.13);partF(z.wire?'wire':'deck',f,s,-D/2,y-.02,z.bw-.12,D-.04,.02)}}
-  if(z.kind==='cant'){const top=z.base+z.rows*z.rh+.3;
-   for(let k=0;k<=z.cols*2;k++){const s=k*z.bl/2;partF('c0x2E7D3A',f,s,-.12,0,.22,.25,top);partF('c0x2E7D3A',f,s,.55,0,.25,1.45,.16);
-    for(let r=1;r<=z.rows;r++)partF('c0xD9531E',f,s,z.arm/2,z.base+(r-1)*z.rh-.1,.09,z.arm,.1)}
-   for(let c=0;c<z.cols*2;c++){const s=(c+.5)*z.bl/2;[top*.35,top*.72].forEach(y=>partF('c0xD9531E',f,s,-.22,y,z.bl/2-.22,.06,.07))}}
+  if(z.kind==='cant'){const rAt=k=>Math.max(pRows(z,Math.max(0,Math.floor((k-1)/2))),pRows(z,Math.min(z.cols-1,Math.floor(k/2))));
+   for(let k=0;k<=z.cols*2;k++){const s=k*z.bl/2,rows=rAt(k),top=z.base+rows*z.rh+.3;partF('c0x2E7D3A',f,s,-.12,0,.22,.25,top);partF('c0x2E7D3A',f,s,.55,0,.25,1.45,.16);
+    for(let r=1;r<=rows;r++)partF('c0xD9531E',f,s,z.arm/2,z.base+(r-1)*z.rh-.1,.09,z.arm,.1)}
+   for(let c=0;c<z.cols*2;c++){const s=(c+.5)*z.bl/2,top=z.base+pRows(z,Math.floor(c/2))*z.rh+.3;[top*.35,top*.72].forEach(y=>partF('c0xD9531E',f,s,-.22,y,z.bl/2-.22,.06,.07))}}
   if(z.kind==='bunk')for(let b=1;b<=4;b++)for(let c=1;c<=4;c++){const s=(c-.5)*1.5,t=(b-.5)*2.9;
    partF('tape',f,s,t-1.3,0,1.38,.05,.006);partF('tape',f,s,t+1.3,0,1.38,.05,.006);partF('tape',f,s-.69,t,0,.05,2.6,.006);partF('tape',f,s+.69,t,0,.05,2.6,.006);
    partF('c0x8B6B43',f,s,t-.85,0,1.27,.1,.09);partF('c0x8B6B43',f,s,t+.85,0,1.27,.1,.09)}
