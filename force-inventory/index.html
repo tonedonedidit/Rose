@@ -313,6 +313,15 @@ main{padding-bottom:calc(132px + env(safe-area-inset-bottom,0px))}
 .fab button[aria-pressed="true"]{background:linear-gradient(180deg,#F27A2E,#C2410C);color:#fff}
 .maphint{bottom:auto;top:12px;left:12px;transform:none;border-radius:999px;background:rgba(30,20,12,.55);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px)}
 .legend i{border-radius:4px}
+/* map: fills the screen between the chips and the tab bar; large targets for one thumb */
+body.mapmode main{padding-bottom:0}
+body.mapmode #stage{height:calc(100svh - 226px - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px));min-height:420px}
+.zchips button{min-height:44px;padding:0 18px;font-size:16px}
+.olay .lb{min-height:42px;padding:0 16px;font-size:15px;display:flex;align-items:center}
+.olay .lb.bay{min-height:38px;font-size:14px;padding:0 14px}
+.fab{gap:10px}.fab button{width:52px;height:52px}.fab button svg.i{width:24px;height:24px}
+.mapbar{right:78px}.mapbar .mb{min-height:50px;padding:0 18px;font-size:16px}
+#stage .legend{position:absolute;top:12px;left:12px;right:78px;padding:8px 14px;border-radius:18px;gap:4px 12px;font-size:12px;color:#3a2f26;background:rgba(255,255,255,.62);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border:1px solid rgba(255,255,255,.85);width:max-content;max-width:calc(100% - 90px);pointer-events:none}
 @supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){:root{--cell:rgba(255,255,255,.92);--sbg:#F4F3F1}}
 </style>
 
@@ -338,6 +347,7 @@ main{padding-bottom:calc(132px + env(safe-area-inset-bottom,0px))}
    ========================================================= */
 const P=2.8,LY=[.15,1.85,3.55,5.25];
 const OFFICE={x0:6,x1:13,z0:-38,z1:-46};
+const OPEN={z0:2.6,z1:-1.4};
 const BLD={w2:{x0:-15,x1:4.6,z0:4,z1:-53},shop:{x0:4.6,x1:31,z0:4,z1:-47}},WALLH=9.5;
 const CATS={board:'Boards',hardware:'Hardware',fastener:'Screws & nails',handle:'Handles',packaging:'Packaging',molding:'Molding',pallet:'Cabinet pallets',misc:'Misc'};
 const UNIT={board:'sheets',hardware:'pcs',fastener:'boxes',handle:'pcs',packaging:'rolls',molding:'pcs',pallet:'pallets',misc:'pcs'};
@@ -594,7 +604,7 @@ let route='home';const V={live:true};
 function readRoute(){let r=(location.hash||'#home').slice(1);if(!ROUTES[r])r='home';return r}
 addEventListener('hashchange',()=>{if(SH.open){SH.open=false;$('#sheetWrap').hidden=true;document.body.style.overflow=''}render();scrollTo(0,0)});
 function go(r){if(location.hash==='#'+r){render();scrollTo(0,0)}else location.hash=r}
-function render(){const prev=route;route=readRoute();if(prev==='map'&&route!=='map'&&W3)W3.stop();$('#ttl').textContent=ROUTES[route];tabs();V.live=true;const v=$('#view');
+function render(){const prev=route;route=readRoute();document.body.classList.toggle('mapmode',route==='map');if(prev==='map'&&route!=='map'&&W3)W3.stop();$('#ttl').textContent=ROUTES[route];tabs();V.live=true;const v=$('#view');
  if(!S.ready){v.innerHTML='<p class="empty">Loading…</p>';return}
  ({home:vHome,map:vMap,office:vOffice,incoming:vIncoming,outgoing:vOutgoing,count:vCount,find:vFind,items:vItems,spots:vSpots,alerts:vAlerts,report:vReport,import:vImport,setup:vSetup,grab:vGrab})[route](v)}
 const title=(t,sub)=>`<div><h1 class="lt">${esc(t)}</h1>${sub?`<p class="lsub">${sub}</p>`:''}</div>`;
@@ -782,9 +792,9 @@ function fr(){const out=$('#fr'),q=findQ.trim().toLowerCase();
 let W3=null,showStatus=false,mode3='aerial',tourTok=0,touring=false,selLoc=null;
 const TINT={hardware:0x3B82F6,board:0xC9A46E,handle:0x8B5CF6,fastener:0x64748B,packaging:0xF59E0B,pallet:0x14B8A6,molding:0x9CA3AF,misc:0x9CA3AF};
 const COL={ok:0x34C759,uncounted:0xFF9F0A,wrong:0xFF3B30,recount:0xAF52DE,empty:0x9AA3A0,emptyok:0x8E8E93};
-const AREAS=[['WAREHOUSE 2',-5.2,.3,-27],['WAREHOUSE 1',27,.3,-17],['OPENING',4.6,2.4,-4.5]];
+const AREAS=[['WAREHOUSE 2',-5.2,.3,-27],['WAREHOUSE 1',27,.3,-17],['OPENING',4.6,3.2,.6]];
 const AER={p:[8,40,22],t:[7,0,-22],fov:50};
-const aer=()=>{const st=$('#stage');return st&&st.clientWidth<st.clientHeight?{p:[8,74,16],t:[8,0,-23],fov:50}:AER};
+const aer=()=>{const st=$('#stage');return st&&st.clientWidth<st.clientHeight?{p:[8,84,20],t:[8,0,-23],fov:50}:AER};
 const ZI={};
 function zoneInfo(id){if(ZI[id])return ZI[id];const ls=PHYS.filter(l=>l.z===id),mn=[1e9,1e9,1e9],mx=[-1e9,-1e9,-1e9];
  ls.forEach(l=>{const g=l.geo;mn[0]=Math.min(mn[0],g.x-g.w/2);mx[0]=Math.max(mx[0],g.x+g.w/2);mn[1]=Math.min(mn[1],g.y);mx[1]=Math.max(mx[1],g.y+g.h);mn[2]=Math.min(mn[2],g.z-g.d/2);mx[2]=Math.max(mx[2],g.z+g.d/2)});
@@ -850,9 +860,9 @@ function init3D(){
  const door=(x,z,rot,w=3.2,h=3.8)=>{const m=new T.Mesh(new T.PlaneGeometry(w,h),new T.MeshStandardMaterial({map:TX.door,roughness:.6,side:T.FrontSide}));m.position.set(x,h/2,z);m.rotation.y=rot;walls.add(m)};
  const B2=BLD.w2,SH=BLD.shop,c2=[(B2.x0+B2.x1)/2,(B2.z0+B2.z1)/2],cs=[(SH.x0+SH.x1)/2,(SH.z0+SH.z1)/2];
  wallPlane(B2.x0,B2.z0,B2.x1,B2.z0,...c2);wallPlane(B2.x0,B2.z1,B2.x1,B2.z1,...c2);wallPlane(B2.x0,B2.z0,B2.x0,B2.z1,...c2);
- wallPlane(B2.x1,B2.z0,B2.x1,-2,...c2);wallPlane(B2.x1,-7,B2.x1,B2.z1,...c2);
+ wallPlane(B2.x1,B2.z0,B2.x1,OPEN.z0,...c2);wallPlane(B2.x1,OPEN.z1,B2.x1,B2.z1,...c2);
  wallPlane(SH.x0,SH.z0,SH.x1,SH.z0,...cs);wallPlane(SH.x0,SH.z1,SH.x1,SH.z1,...cs);wallPlane(SH.x1,SH.z0,SH.x1,SH.z1,...cs);
- wallPlane(SH.x0,SH.z0,SH.x0,-2,...cs);wallPlane(SH.x0,-7,SH.x0,SH.z1,...cs);
+ wallPlane(SH.x0,SH.z0,SH.x0,OPEN.z0,...cs);wallPlane(SH.x0,OPEN.z1,SH.x0,SH.z1,...cs);
  [-11,-4.5].forEach(x=>door(x,B2.z0-.05,Math.PI));door(B2.x0+.05,-20,Math.PI/2);door(B2.x0+.05,-32,Math.PI/2);
  [24,28].forEach(x=>door(x,SH.z1+.05,0));door(SH.x1-.05,-20,-Math.PI/2);door(SH.x1-.05,-30,-Math.PI/2);
  const O=OFFICE;[[O.x0,O.z0,O.x1,O.z0],[O.x0,O.z0,O.x0,O.z1],[O.x1,O.z0,O.x1,O.z1]].forEach(([a,b,c,d])=>{part('c0xE6E2D8',(a+c)/2,.5,(b+d)/2,Math.max(.15,Math.abs(c-a)),1,Math.max(.15,Math.abs(d-b)));part('glass',(a+c)/2,1.8,(b+d)/2,Math.max(.1,Math.abs(c-a)),1.6,Math.max(.1,Math.abs(d-b)));part('c0xE6E2D8',(a+c)/2,2.85,(b+d)/2,Math.max(.15,Math.abs(c-a)),.5,Math.max(.15,Math.abs(d-b)))});
@@ -860,7 +870,7 @@ function init3D(){
  ZPHYS.forEach(z=>{const f=frameOf(z),Z=zoneInfo(z.id);const sl=Math.max(Z.mx[0]-Z.mn[0],Z.mx[2]-Z.mn[2]);
   part('shadow',Z.c[0],.012,Z.c[2],Z.mx[0]-Z.mn[0]+1.2,.001,Z.mx[2]-Z.mn[2]+1.2);
   if(z.kind==='rack'||z.kind==='cant'){const off=z.kind==='rack'?.35:z.arm+.35,len=sl;const s0=z.kind==='rack'?(z.first-1)*z.bw:0;for(let k=0,sg=.45;k*sg<len;k++)partF(k%2?'c0x1A1A1A':'tape',f,s0+(k+.5)*sg,off,.004,Math.min(sg,len-k*sg),.09,.003)}});
- part('tape',4.6+.5,.004,-4.5,.08,.003,5);part('tape',4.6-.5,.004,-4.5,.08,.003,5);
+ {const oz=(OPEN.z0+OPEN.z1)/2,ow=OPEN.z0-OPEN.z1;part('tape',4.6+.5,.004,oz,.08,.003,ow);part('tape',4.6-.5,.004,oz,.08,.003,ow)}
  ZPHYS.forEach(z=>{const f=frameOf(z);
   if(z.kind==='rack'){const D=z.deep?2.4:z.depth,top=z.ly[z.levels-1]+1.45,u='c'+z.up,bm='c'+z.beam;
    for(let k=z.first-1;k<=z.last;k++){const s=k*z.bw;partF(u,f,s,0,0,.09,.09,top);partF(u,f,s,-D,0,.09,.09,top);partF('c0x777777',f,s,0,0,.18,.18,.02);partF('c0x777777',f,s,-D,0,.18,.18,.02);for(let y=.6;y<top;y+=1.2)partF(u,f,s,-D/2,y,.035,D,.035)}
@@ -924,22 +934,27 @@ function init3D(){
   sm.instanceMatrix.needsUpdate=true;if(sm.instanceColor)sm.instanceColor.needsUpdate=true;sm.visible=showStatus;mark()}
  const olay=document.createElement('div');olay.className='olay';let labs=[];const tmp=new T.Vector3();
  function setLabels(list){olay.innerHTML='';labs=list.map(L=>{const e=document.createElement(L.click?'button':'span');e.className='lb '+(L.cls||'');e.textContent=L.text;
-  if(L.click){e.type='button';e.onclick=ev=>{ev.stopPropagation();L.click()}}olay.appendChild(e);return{e,v:new T.Vector3(...L.pos)}})}
- function placeLabels(){const w=ren.domElement.clientWidth,h=ren.domElement.clientHeight;labs.forEach(L=>{tmp.copy(L.v).project(cam);const vis=tmp.z<1&&tmp.z>-1&&Math.abs(tmp.x)<1.05&&Math.abs(tmp.y)<1.05;
-  L.e.style.display=vis?'':'none';if(vis){L.e.style.left=((tmp.x+1)/2*w)+'px';L.e.style.top=((1-tmp.y)/2*h)+'px'}})}
+  if(L.click){e.type='button';e.onclick=ev=>{ev.stopPropagation();L.click()}}olay.appendChild(e);return{e,v:new T.Vector3(...L.pos),area:L.cls==='area'}})}
+ // labels never cover each other: a crowded one steps up or down a row, or hides until you zoom in
+ function placeLabels(){const w=ren.domElement.clientWidth,h=ren.domElement.clientHeight,placed=[];labs.forEach(L=>{tmp.copy(L.v).project(cam);
+  if(!(tmp.z<1&&tmp.z>-1&&Math.abs(tmp.x)<1.05&&Math.abs(tmp.y)<1.05)){L.e.style.display='none';return}
+  if(!L.sw){L.e.style.display='';L.sw=L.e.offsetWidth;L.sh=L.e.offsetHeight}const x=Math.max(L.sw/2+8,Math.min(w-L.sw/2-8,(tmp.x+1)/2*w));let y=(1-tmp.y)/2*h;
+  const fit=dy=>{const r={l:x-L.sw/2-4,r:x+L.sw/2+4,t:y+dy-L.sh-3,b:y+dy+3};return placed.some(q=>r.l<q.r&&r.r>q.l&&r.t<q.b&&r.b>q.t)?null:r};
+  let r=null;for(const dy of L.area?[0]:[0,-(L.sh+6),L.sh+6,-2*(L.sh+6)]){r=fit(dy);if(r){y+=dy;break}}
+  if(!r){L.e.style.display='none';return}placed.push(r);L.e.style.display='';L.e.style.left=x+'px';L.e.style.top=y+'px'})}
  // soft controls: damping, gentle speeds, target kept inside the buildings
- let ctrl=null;if(T.OrbitControls){ctrl=new T.OrbitControls(cam,ren.domElement);Object.assign(ctrl,{enableDamping:true,dampingFactor:.09,rotateSpeed:.5,zoomSpeed:.8,panSpeed:.7,screenSpacePanning:false,maxPolarAngle:Math.PI*.47,minDistance:1.8,maxDistance:95});ctrl.addEventListener('start',()=>stopTour())}
+ let ctrl=null;if(T.OrbitControls){ctrl=new T.OrbitControls(cam,ren.domElement);Object.assign(ctrl,{enableDamping:true,dampingFactor:.09,rotateSpeed:.5,zoomSpeed:.8,panSpeed:.7,screenSpacePanning:false,maxPolarAngle:Math.PI*.47,minDistance:1.8,maxDistance:95});if(T.TOUCH)ctrl.touches={ONE:T.TOUCH.PAN,TWO:T.TOUCH.DOLLY_ROTATE};ctrl.panSpeed=1;ctrl.addEventListener('start',()=>stopTour())}
  const clampT=()=>{if(!ctrl)return;const t=ctrl.target;t.x=Math.max(-16,Math.min(32,t.x));t.z=Math.max(-54,Math.min(5,t.z));t.y=Math.max(0,Math.min(7,t.y))};
  let running=false,anim=null;
  function loop(){if(!running)return;requestAnimationFrame(loop);if(anim)anim();else if(ctrl){ctrl.update();clampT()}beam.visible=beamOn&&cam.position.distanceTo(selBox.position)>9;ren.render(scene,cam);placeLabels()}
  function start(){if(running)return;running=true;loop()}function stop(){running=false}
  // keyframed glide: rise along a curve, ease in and out, slight zoom punch
- function fly(p,t,fov=50,dur){return new Promise(res=>{const p0=cam.position.clone(),t0=ctrl?ctrl.target.clone():new T.Vector3(...t),f0=cam.fov,P1=new T.Vector3(...p),T1=new T.Vector3(...t),dist=p0.distanceTo(P1);
-  const lift=Math.min(14,dist*.25),curve=dist>4?new T.CatmullRomCurve3([p0,p0.clone().lerp(P1,.33).add(new T.Vector3(0,lift,0)),p0.clone().lerp(P1,.7).add(new T.Vector3(0,lift*.5,0)),P1],false,'centripetal'):null;
+ function fly(p,t,fov=50,dur,plain){return new Promise(res=>{const p0=cam.position.clone(),t0=ctrl?ctrl.target.clone():new T.Vector3(...t),f0=cam.fov,P1=new T.Vector3(...p),T1=new T.Vector3(...t),dist=p0.distanceTo(P1);
+  const lift=Math.min(14,dist*.25),curve=dist>4&&!plain?new T.CatmullRomCurve3([p0,p0.clone().lerp(P1,.33).add(new T.Vector3(0,lift,0)),p0.clone().lerp(P1,.7).add(new T.Vector3(0,lift*.5,0)),P1],false,'centripetal'):null;
   const D=matchMedia('(prefers-reduced-motion: reduce)').matches?1:(dur||Math.min(2400,900+dist*38)),st=performance.now();if(ctrl)ctrl.enabled=false;
   anim=()=>{const k=Math.max(0,Math.min(1,(performance.now()-st)/D)),e=k<.5?4*k*k*k:1-Math.pow(-2*k+2,3)/2;
    if(curve)cam.position.copy(curve.getPoint(e));else cam.position.lerpVectors(p0,P1,e);
-   const tt=t0.clone().lerp(T1,e);cam.fov=f0+(fov-f0)*e-(dist>4?4*Math.sin(Math.PI*e):0);cam.updateProjectionMatrix();if(ctrl)ctrl.target.copy(tt);cam.lookAt(tt);
+   const tt=t0.clone().lerp(T1,e);cam.fov=f0+(fov-f0)*e-(dist>4&&!plain?4*Math.sin(Math.PI*e):0);cam.updateProjectionMatrix();if(ctrl)ctrl.target.copy(tt);cam.lookAt(tt);
    if(k>=1){anim=null;if(ctrl){ctrl.enabled=true;ctrl.update()}res()}};if(!running)start()})}
  function size(){const st=ren.domElement.parentElement;if(!st)return;ren.setSize(st.clientWidth,st.clientHeight);cam.aspect=st.clientWidth/Math.max(1,st.clientHeight);cam.updateProjectionMatrix()}
  const rc=new T.Raycaster(),v2=new T.Vector2();let down=null,lastTap=0;
@@ -952,7 +967,8 @@ function init3D(){
   if(dbl){const f=rc.intersectObject(floorHit)[0];if(f){const p=f.point,d=cam.position.clone().sub(ctrl?ctrl.target:p).setY(0).normalize().multiplyScalar(9);fly([p.x+d.x,5.5,p.z+d.z],[p.x,1,p.z],52,900)}}});
  addEventListener('resize',size);
  refresh();cam.position.set(70,110,110);cam.lookAt(...AER.t);if(ctrl){ctrl.target.set(...AER.t);ctrl.update()}
- return{ren,olay,size,refresh,fly,mark,setLabels,start,stop,setStatus:v=>{sm.visible=v}};
+ const zoom=f=>{if(!ctrl)return;stopTour();const t=ctrl.target.clone(),d=cam.position.clone().sub(t);d.setLength(Math.max(2.5,Math.min(95,d.length()*f)));const q=t.clone().add(d);fly([q.x,q.y,q.z],[t.x,t.y,t.z],cam.fov,320,true)};
+ return{ren,olay,size,refresh,fly,mark,setLabels,start,stop,zoom,setStatus:v=>{sm.visible=v}};
 }
 function refresh3D(){if(W3){W3.refresh();if(route==='map')labelsFor()}}
 const curZone=()=>selLoc&&LOC[selLoc]?.geo?LOC[selLoc].z:mode3;
@@ -960,7 +976,7 @@ function bayName(zid,b){const k=zone(zid).kind;return k==='bunk'?'Bunk '+b:k==='
 function bayCenter(zid,b){const ls=PHYS.filter(l=>l.z===zid&&l.bay===b);let x=0,z=0,H=0;ls.forEach(l=>{x+=l.geo.x/ls.length;z+=l.geo.z/ls.length;H=Math.max(H,l.geo.y+l.geo.h)});return[x,H+.35,z]}
 const AERN={BD:'Board drop',R0:'Rack 0',R1:'Rack 1',CL1:'Cantilever 1',CL2:'Cantilever 2',BK:'Bunks',HR1:'Hardware',HR2:''};
 function labelsFor(){if(!W3)return;const L=[],zid=curZone();
- if(zid==='aerial'){ZPHYS.forEach((z,k)=>{const Z=zoneInfo(z.id),aisle=z.kind==='rack'&&z.deep;const tx=aisle?z.id:(z.id in AERN?AERN[z.id]:z.name);if(tx)L.push({text:tx,pos:[Z.c[0],Z.mx[1]+1.2,aisle?Z.c[2]+(k%2?-7:3):Z.c[2]],click:()=>enterZone(z.id)})});AREAS.forEach(a=>L.push({text:a[0],pos:[a[1],a[2],a[3]],cls:'area'}))}
+ if(zid==='aerial'){const PR=['D','C','B','A','BK','R0','R1','CL1','CL2','BD','HR1','HR2'];[...ZPHYS].sort((a,b)=>PR.indexOf(a.id)-PR.indexOf(b.id)).forEach((z,k)=>{const Z=zoneInfo(z.id),aisle=z.kind==='rack'&&z.deep;const tx=aisle?z.id:(z.id in AERN?AERN[z.id]:z.name);if(tx)L.push({text:tx,pos:[Z.c[0],Z.mx[1]+1.2,aisle?Z.c[2]+(k%2?-7:3):Z.c[2]],click:()=>enterZone(z.id)})});AREAS.forEach(a=>L.push({text:a[0],pos:[a[1],a[2],a[3]],cls:'area'}))}
  else{const bays=[...new Set(PHYS.filter(l=>l.z===zid).map(l=>l.bay))];if(bays.length>1&&bays.length<=18)bays.forEach(b=>L.push({text:bayName(zid,b),pos:bayCenter(zid,b),cls:'bay',click:()=>flyBay(zid,b)}))}
  W3.setLabels(L)}
 function stopTour(){tourTok++;if(touring){touring=false;mapUI()}}
@@ -977,23 +993,20 @@ function mapUI(){const st=$('#stage');if(!st)return;const zid=curZone();
  let bar=st.querySelector('.mapbar');if(!bar){bar=document.createElement('div');bar.className='mapbar';st.append(bar)}
  const ver=PHYS.filter(l=>['ok','emptyok'].includes(locStatus(l.id))).length;
  bar.innerHTML=zid==='aerial'?`<span class="mb">${ic('check')}${ver} of ${PHYS.length} verified</span>`:`<button class="mb" id="mList">${ic('list')}Spots</button><button class="mb" id="mTour">${ic('play')}${touring?'Stop':'Tour'}</button>${selLoc?`<button class="mb" id="mSpot" style="background:#FFCC00">${esc(selLoc)}</button>`:''}`;
- let hint=st.querySelector('.maphint');if(!hint){hint=document.createElement('div');hint.className='maphint';st.append(hint)}
- hint.textContent=zid==='aerial'?'Tap a rack or bunk':'';hint.hidden=zid!=='aerial';
  const l=$('#mList');if(l)l.onclick=()=>spotList(zid);const t=$('#mTour');if(t)t.onclick=()=>touring?stopTour():tour();const sp=$('#mSpot');if(sp)sp.onclick=()=>spotSheet(selLoc)}
 function vMap(v){V.live=false;
  v.innerHTML=`<div class="mapwrap"><div class="zchips" id="zc" role="group" aria-label="Fly to"><button data-z="aerial">${'Overview'}</button>${ZPHYS.map(z=>`<button data-z="${z.id}">${esc(z.short===z.id&&z.kind==='rack'&&z.deep?z.name:z.name)}</button>`).join('')}</div>
-  <div id="stage" aria-label="3D warehouse"><div class="fab"><button id="fHome" aria-label="Overview">${ic('aerial')}</button><button id="fEye" aria-label="Status colors" aria-pressed="${showStatus}">${ic('eye')}</button></div></div>
-  <div class="legend" id="lg"></div></div>`;
+  <div id="stage" aria-label="3D warehouse"><div class="legend" id="lg"></div><div class="fab"><button id="fHome" aria-label="Overview">${ic('aerial')}</button><button id="fIn" aria-label="Zoom in">${ic('plus')}</button><button id="fOut" aria-label="Zoom out">${ic('minus')}</button><button id="fEye" aria-label="Status colors" aria-pressed="${showStatus}">${ic('eye')}</button></div></div></div>`;
  const st=$('#stage'),first=!W3;if(!W3)W3=init3D();
  if(!W3){st.insertAdjacentHTML('beforeend','<p class="stagemsg">3D needs an internet connection.</p>')}
  else{st.prepend(W3.ren.domElement);st.append(W3.olay);W3.size();W3.refresh();W3.start();
   if(selLoc&&LOC[selLoc]?.geo)selectSpot(selLoc,true);else{labelsFor();if(first){const q=aer();W3.fly(q.p,q.t,q.fov,2400)}}}
  $$('#zc [data-z]').forEach(b=>b.onclick=()=>b.dataset.z==='aerial'?goAerial():enterZone(b.dataset.z));
- $('#fHome').onclick=goAerial;$('#fEye').onclick=()=>{showStatus=!showStatus;$('#fEye').setAttribute('aria-pressed',showStatus);if(W3)W3.setStatus(showStatus);legend()};
+ $('#fHome').onclick=goAerial;$('#fIn').onclick=()=>W3&&W3.zoom(.6);$('#fOut').onclick=()=>W3&&W3.zoom(1.6);$('#fEye').onclick=()=>{showStatus=!showStatus;$('#fEye').setAttribute('aria-pressed',showStatus);if(W3)W3.setStatus(showStatus);legend()};
  legend();mapUI();
  if(selLoc&&LOC[selLoc]?.geo&&pendingSheet){pendingSheet=false;setTimeout(()=>spotSheet(selLoc),900)}}
 let pendingSheet=false;
-function legend(){const lg=$('#lg');if(!lg)return;lg.innerHTML=showStatus?['ok','uncounted','wrong','recount','emptyok'].map(s=>`<span><i style="background:${STC[s]}"></i>${STL[s]}</span>`).join(''):`<span><i style="background:#B98F5E"></i>Solid · counted</span><span><i style="background:rgba(59,130,246,.3);box-shadow:inset 0 0 0 1.5px #3B82F6"></i>Glass · not counted</span><span><i style="box-shadow:inset 0 0 0 1.5px #8B5CF6"></i>Outline · reserved</span>`}
+function legend(){const lg=$('#lg');if(!lg)return;lg.innerHTML=showStatus?['ok','uncounted','wrong','recount','emptyok'].map(s=>`<span><i style="background:${STC[s]}"></i>${STL[s]}</span>`).join(''):`<span><i style="background:#B98F5E"></i>Counted</span><span><i style="background:rgba(59,130,246,.3);box-shadow:inset 0 0 0 1.5px #3B82F6"></i>Not counted</span><span><i style="box-shadow:inset 0 0 0 1.5px #8B5CF6"></i>Reserved</span>`}
 function spotList(zid){const z=zone(zid);openSheet({title:z.name,live:true,body:()=>{const ls=PHYS.filter(l=>l.z===zid),c=ls.filter(l=>sinfo(l.id).counted).length;
   return `<div class="stack"><p class="sub cap" style="text-align:center">${c} of ${ls.length} counted · top row is the top level</p><div class="elev">${[...new Set(ls.map(l=>l.bay))].map(b=>{const bl=ls.filter(l=>l.bay===b),rows=z.kind==='bunk'?[bl]:[...new Set(bl.map(l=>l.L))].sort((a,c)=>c-a).map(L=>bl.filter(l=>l.L===L));
    return `<div><div class="bayh"><span>${esc(bayName(zid,b))}</span><button class="pill" data-bay="${b}" style="min-height:30px">${ic('map')}View</button></div>${rows.map(r=>`<div class="lvrow" style="grid-template-columns:repeat(${r.length},minmax(0,1fr))">${r.map(l=>{const sl=lines(l.id),st=locStatus(l.id);return `<button class="sp" data-sp="${l.id}" style="--st:${STC[st]}" aria-current="${l.id===selLoc}" aria-label="${l.id}, ${STL[st]}">${esc(spotShort(l))}<span>${sl.length?sl.map(x=>x.qty==null?'?':fmt(x.qty)).join('+'):'–'}</span></button>`}).join('')}</div>`).join('')}</div>`}).join('')}</div></div>`},
