@@ -117,6 +117,22 @@ td.n,th.n{text-align:right;font-variant-numeric:tabular-nums}
 .cam .aim{position:absolute;inset:18%;border:3px solid var(--brand);border-radius:18px}
 .grid2{display:grid;grid-template-columns:1fr;gap:20px}
 .grid2>section>.list{flex:1}
+.seg2{display:grid;grid-template-columns:1fr 1fr;gap:6px;background:var(--fill);padding:4px;border-radius:14px}
+.seg2 a{display:flex;align-items:center;justify-content:center;min-height:44px;border-radius:11px;text-decoration:none;color:var(--ink2);font-weight:700}
+.seg2 a[aria-current="page"]{background:var(--card);color:var(--ink);box-shadow:var(--shadow)}
+.calhead{display:flex;align-items:center;gap:8px}.calhead h2{flex:1;min-width:0}
+.cal{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px}
+.cal .dow{font-size:12px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--ink2);text-align:center;padding:4px 0}
+.cal button{min-height:64px;border-radius:12px;border:1.5px solid var(--line);background:var(--card);display:flex;flex-direction:column;align-items:flex-start;justify-content:space-between;padding:6px;text-align:left;min-width:0}
+.cal button.out{opacity:.4}
+.cal button.today .dn{background:var(--act);color:var(--actInk);border-radius:8px;padding:0 6px}
+.cal button[aria-pressed="true"]{border-color:var(--act);box-shadow:0 0 0 2px var(--act) inset}
+.cal .dn{font-weight:700;font-size:15px;font-variant-numeric:tabular-nums}
+.cal .dots{display:flex;flex-wrap:wrap;gap:3px;align-items:center}
+.cal .dots i{width:10px;height:10px;border-radius:50%;display:block;box-sizing:border-box}
+.cal .cnt{font-size:12px;font-weight:700;color:var(--ink2)}
+.cal .lbl{display:none;font-size:12px;line-height:1.25;color:var(--ink2);overflow:hidden;width:100%}
+@media (min-width:900px){.cal button{min-height:108px;padding:8px}.cal .lbl{display:block}.cal .lbl div{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}}
 .cats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
 .cats .chip{min-height:56px;font-size:15px;padding:0 8px}
 .stage{position:relative;height:340px;border-radius:18px;overflow:hidden;border:1px solid var(--line);background:#E6E9E3}
@@ -382,7 +398,7 @@ function render(){
  VIEWS[V].bind&&VIEWS[V].bind($('#main'));
  if(fid){const el=document.getElementById(fid);if(el){el.focus({preventScroll:true});if(sel&&el.setSelectionRange)try{el.setSelectionRange(sel[0],sel[1])}catch(e){}}}
 }
-const PARENT={delivery:'today',item:'find',spot:'find',putline:'putaway',pallet:'pallets'};
+const PARENT={calendar:'today',delivery:'today',item:'find',spot:'find',putline:'putaway',pallet:'pallets'};
 const topBar=(title,sub,back)=>`<div class="top">${back?`<button class="x" data-back="${back}" aria-label="Back">${ico('back',22)}</button>`:'<div class="mark"><i></i>FORCE</div>'}<div class="grow"></div><button class="btn sm" data-scan>${ico('scan',20)}Scan</button></div><header><div class="eyebrow">${esc(sub||'')}</div><h1>${esc(title)}</h1></header>`;
 document.addEventListener('click',e=>{const b=e.target.closest('[data-back]');if(b){history.length>1?history.back():go(b.dataset.back)}if(e.target.closest('[data-scan]'))scanSheet()});
 let rT=0;function onData(){S.ready=true;clearTimeout(rT);rT=setTimeout(()=>{if(SESS&&ME&&!SHEET)render();else if(SHEET&&SHEET.redraw)SHEET.redraw()},60)}
@@ -412,8 +428,8 @@ VIEWS.today={render(){const D=deliveries(),t=today();
  const due=D.filter(d=>d.state==='due'),late=D.filter(d=>d.state==='late'),delayed=D.filter(d=>d.state==='delayed'),arr=D.filter(d=>d.arr&&ymd(d.arr.at)===t),soon=D.filter(d=>d.state==='upcoming'&&d.date<=addDays(t,7)).sort((a,b)=>a.date<b.date?-1:1);
  const bo=orders().filter(o=>issuesOf(o).some(i=>openIssue(i)&&i.kind==='backorder'));
  const grp=(h,L,emp)=>`<section><div class="sh"><h2>${h}</h2><span class="muted num">${L.length||''}</span></div>${L.length?`<div class="list">${L.map(delRow).join('')}</div>`:emp?`<div class="list"><p class="empty">${emp}</p></div>`:''}</section>`;
- if(!orders().length)return topBar(dayLabel(t),'Deliveries')+`<div class="list"><p class="empty">No orders yet. ${isOffice()?'Import the order Excel under Orders.':'The office imports the order Excel; deliveries show here once it’s in.'}</p></div>`;
- return topBar(dayLabel(t),'Deliveries')+grp('Due today',due,'Nothing else due today.')+(late.length?grp('Late',late):'')+(delayed.length?grp('Delayed',delayed):'')+
+ if(!orders().length)return topBar(dayLabel(t),'Deliveries')+daySwitch('today')+`<div class="list"><p class="empty">No orders yet. ${isOffice()?'Import the order Excel under Orders.':'The office imports the order Excel; deliveries show here once it’s in.'}</p></div>`;
+ return topBar(dayLabel(t),'Deliveries')+daySwitch('today')+grp('Due today',due,'Nothing else due today.')+(late.length?grp('Late',late):'')+(delayed.length?grp('Delayed',delayed):'')+
   (bo.length?`<section><div class="sh"><h2>Backorders still coming</h2></div><div class="list">${bo.map(o=>`<button class="row" data-del="${esc(o.po)}"><span class="tx"><b>${esc(o.desc||o.sku)}</b><span class="t2">${esc(o.vendor||'')} · PO ${esc(o.po)}</span></span><span class="end"><span class="pill info">${fmt(issuesOf(o).filter(i=>openIssue(i)&&i.kind==='backorder').reduce((a,i)=>a+(+i.qty||0),0))} on backorder</span></span>${ico('chev',20)}</button>`).join('')}</div></section>`:'')+
   grp('Arrived today',arr,'Nothing checked in yet today.')+(soon.length?grp('Next 7 days',soon):'')}};
 
@@ -590,6 +606,25 @@ function peopleSheet(){const ppl=S.meta.people||[];openSheet('People',`<div clas
  $('#pgo2',sh).addEventListener('click',e=>busy(e.target,async()=>{const n=$('#pn',sh).value.trim();if(!n)return;await W.meta({people:[...new Set([...ppl,n])]});closeSheet();toast(`${n} added`);render()}));
  $$('[data-rm]',sh).forEach(b=>b.addEventListener('click',()=>busy(b,async()=>{await W.meta({people:ppl.filter(x=>x!==b.dataset.rm)});closeSheet();render()})))})}
 
+
+/* ---------- delivery calendar ---------- */
+const daySwitch=cur=>`<nav class="seg2" aria-label="View"><a href="#today" ${cur==='today'?'aria-current="page"':''}>List</a><a href="#calendar" ${cur==='calendar'?'aria-current="page"':''}>Calendar</a></nav>`;
+// a delivery sits on the day it arrived, otherwise on its expected (or delayed-to) date
+const calDay=d=>d.arr?ymd(d.arr.at):d.date;
+// due = green, done = gray, coming = hollow ring, delayed = amber, late or problems = red
+const DOTC={due:'background:var(--act)',late:'background:var(--bad)',delayed:'background:var(--warn)',upcoming:'border:2px solid var(--ink2)',nodate:'border:2px solid var(--ink2)',arrived:'background:var(--ink2)',issues:'background:var(--bad)',cancelled:'background:var(--line)'};
+VIEWS.calendar={render(){const t=today(),sel=VIEW.cday||t,mon=VIEW.cmon||sel.slice(0,7),[y,m]=mon.split('-').map(Number);
+ const first=new Date(y,m-1,1),start=addDays(ymd(first),-first.getDay()),D=deliveries().filter(d=>calDay(d)&&!d.cancelled),by={};D.forEach(d=>(by[calDay(d)]=by[calDay(d)]||[]).push(d));
+ const cells=[];for(let i=0;i<42;i++){const day=addDays(start,i);if(i>=35&&day.slice(0,7)!==mon)break;cells.push(day)}
+ const L=(by[sel]||[]).sort((a,b)=>(a.arr?1:0)-(b.arr?1:0)||a.vendor.localeCompare(b.vendor));
+ const nd=D.filter(d=>!d.arr&&d.date>t).sort((a,b)=>a.date<b.date?-1:1)[0];
+ return topBar('Calendar','Deliveries by day')+daySwitch('calendar')+`<div class="calhead"><button class="btn sm" data-cm="-1" aria-label="Previous month">‹</button><h2>${MON[m-1]} ${y}</h2><button class="btn sm" data-ctoday>Today</button><button class="btn sm" data-cm="1" aria-label="Next month">›</button></div>
+ <div class="cal" role="grid">${DOW.map(d=>`<div class="dow">${d}</div>`).join('')}${cells.map(day=>{const ds=by[day]||[];return `<button type="button" data-cday="${day}" class="${day.slice(0,7)!==mon?'out ':''}${day===t?'today':''}" aria-pressed="${day===sel}" aria-label="${esc(dayLabel(day))}: ${plural(ds.length,'delivery','deliveries')}"><span class="dn">${+day.slice(8)}</span>${ds.length?`<span class="lbl">${ds.slice(0,3).map(d=>`<div>${esc(d.vendor)}</div>`).join('')}${ds.length>3?`<div>+${ds.length-3} more</div>`:''}</span><span class="dots">${ds.slice(0,4).map(d=>`<i style="${DOTC[d.state]}"></i>`).join('')}${ds.length>4?`<span class="cnt">+${ds.length-4}</span>`:''}</span>`:''}</button>`}).join('')}</div>
+ <div class="legend"><span><i style="background:var(--act);border-radius:50%"></i>Due</span><span><i style="border:2px solid var(--ink2);border-radius:50%"></i>Coming</span><span><i style="background:var(--warn);border-radius:50%"></i>Delayed</span><span><i style="background:var(--bad);border-radius:50%"></i>Late or has issues</span><span><i style="background:var(--ink2);border-radius:50%"></i>Arrived</span></div>
+ <section><div class="sh"><h2>${esc(dayLabel(sel))}</h2><span class="muted">${plural(L.length,'delivery','deliveries')}</span></div><div class="list">${L.length?L.map(delRow).join(''):`<p class="empty">No deliveries ${sel<t?'came in':'expected'} this day.${nd&&sel<=t?` Next one: ${esc(nd.vendor)}, ${esc(dayLabel(nd.date))}.`:''}</p>`}</div></section>`},
+ bind(m){$$('[data-cday]',m).forEach(b=>b.addEventListener('click',()=>{VIEW.cday=b.dataset.cday;VIEW.cmon=b.dataset.cday.slice(0,7);render()}));
+  $$('[data-cm]',m).forEach(b=>b.addEventListener('click',()=>{const[y,mm]=(VIEW.cmon||(VIEW.cday||today()).slice(0,7)).split('-').map(Number),d=new Date(y,mm-1+(+b.dataset.cm),1);VIEW.cmon=ymd(d).slice(0,7);render()}));
+  $('[data-ctoday]',m).addEventListener('click',()=>{VIEW.cday=today();VIEW.cmon=today().slice(0,7);render()})}};
 /* ================= office views ================= */
 VIEWS.board={office:1,render(){const D=deliveries(),t=today(),I=Object.values(S.issues);
  const due=D.filter(d=>d.date===t||(d.arr&&ymd(d.arr.at)===t)).sort((a,b)=>(a.arr?1:0)-(b.arr?1:0));
