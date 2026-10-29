@@ -3,7 +3,7 @@
 import {getStore} from '@netlify/blobs';
 import {createHmac,timingSafeEqual,randomUUID,scryptSync,randomBytes} from 'node:crypto';
 
-const COLS=['items','orders','arrivals','recv','units','issues','log'];
+const COLS=['items','orders','arrivals','recv','units','issues','log','pallets'];
 const ACCTS={fcadmin:{role:'office',env:'FC_ADMIN_PASS'},fcwarehouse:{role:'shop',env:'FC_WAREHOUSE_PASS'}};
 const LOG_MAX=4000,TOKEN_DAYS=180;
 const json=(o,s=200)=>new Response(JSON.stringify(o),{status:s,headers:{'content-type':'application/json','cache-control':'no-store'}});
@@ -33,7 +33,7 @@ function apply(st,ops,role){for(const o of ops){const {op,c,id}=o;
   if(c==='meta'){if(op!=='set')continue;if(role!=='office'){st.meta={...st.meta,people:Array.isArray(o.v?.people)?o.v.people.map(String).slice(0,200):st.meta.people};continue}st.meta={...o.v};continue}
   if(!COLS.includes(c)||typeof id!=='string'||!id||id.length>200)throw new Error('Bad change');
   if(c==='orders'&&role!=='office')throw new Error('Only the office changes orders');
-  const col=st[c];
+  const col=st[c]=st[c]||{};
   if(op==='del')delete col[id];
   else if(op==='set')col[id]={...o.v,id};
   else if(op==='mut'){const r=merge(col[id]||null,o.base||null,o.v);if(r===null)delete col[id];else col[id]={...r,id}}}

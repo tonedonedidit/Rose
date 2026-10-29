@@ -38,7 +38,7 @@ main{flex:1;min-width:0;padding-left:max(16px,env(safe-area-inset-left,0px));pad
 .eyebrow{font-size:13px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--ink2)}
 .muted{color:var(--ink2)}.small{font-size:14px}
 section{display:flex;flex-direction:column;gap:10px}
-.sh{display:flex;align-items:baseline;gap:10px;justify-content:space-between;padding:0 2px}
+.sh{display:flex;align-items:center;gap:10px;justify-content:space-between;padding:0 2px;min-height:40px}
 .card{background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow)}
 .list{background:var(--card);border:1px solid var(--line);border-radius:16px;overflow:hidden;box-shadow:var(--shadow)}
 .row{display:flex;align-items:center;gap:12px;padding:14px 16px;border-top:1px solid var(--line);min-height:60px;width:100%;background:none;border-left:0;border-right:0;border-bottom:0;text-align:left}
@@ -116,6 +116,18 @@ td.n,th.n{text-align:right;font-variant-numeric:tabular-nums}
 .cam video{width:100%;height:100%;object-fit:cover;display:block}
 .cam .aim{position:absolute;inset:18%;border:3px solid var(--brand);border-radius:18px}
 .grid2{display:grid;grid-template-columns:1fr;gap:20px}
+.grid2>section>.list{flex:1}
+.cats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.cats .chip{min-height:56px;font-size:15px;padding:0 8px}
+.stage{position:relative;height:340px;border-radius:18px;overflow:hidden;border:1px solid var(--line);background:#E6E9E3}
+.stage canvas{display:block;width:100%;height:100%;touch-action:none}
+.stage .lb{position:absolute;transform:translate(-50%,-100%);background:rgba(48,48,50,.86);color:#fff;font-size:12px;font-weight:700;padding:3px 8px;border-radius:8px;pointer-events:none;white-space:nowrap}
+.stage .lb.hl{background:#3F7D0E}
+.stage .msg{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#62655E;font-size:15px}
+.legend{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:13px;color:var(--ink2)}.legend i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+.palcard{display:flex;gap:14px;align-items:center}
+.palno{font:700 20px/1 var(--slab);background:var(--ink);color:var(--bg);border-radius:10px;padding:8px 10px;flex-shrink:0}
+@media (min-width:900px){.stage{height:480px}}
 .kv{display:grid;grid-template-columns:auto 1fr;gap:4px 14px;font-size:15px}.kv dt{color:var(--ink2)}.kv dd{margin:0;font-weight:600}
 .seg{display:flex;gap:6px;flex-wrap:wrap}
 @media (min-width:900px){
@@ -156,7 +168,7 @@ function dayLabel(s){if(!s)return 'No date';const t=today();if(s===t)return 'Tod
 function timeLabel(iso){if(!iso)return '';const d=new Date(iso);const h=d.getHours(),m=pad(d.getMinutes());return `${ymd(d)===today()?'':dayLabel(ymd(d))+' '}${(h%12)||12}:${m} ${h<12?'am':'pm'}`}
 const plural=(n,w,ws)=>`${fmt(n)} ${n===1?w:(ws||w+'s')}`;
 const sget=k=>{try{return localStorage.getItem(k)}catch(e){return null}},sset=(k,v)=>{try{v==null?localStorage.removeItem(k):localStorage.setItem(k,v)}catch(e){}};
-function loadScript(src){return new Promise((ok,no)=>{if($(`script[src="${src}"]`)){const t=setInterval(()=>{if(src.includes('xlsx')?window.XLSX:window.jsQR){clearInterval(t);ok()}},50);return}const s=document.createElement('script');s.src=src;s.onload=ok;s.onerror=()=>no(new Error('Could not load '+src));document.head.append(s)})}
+const LS={};function loadScript(src){return LS[src]=LS[src]||new Promise((ok,no)=>{const s=document.createElement('script');s.src=src;s.onload=ok;s.onerror=()=>{delete LS[src];s.remove();no(new Error('Could not load '+src))};document.head.append(s)})}
 const XLSX_SRC='https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js',JSQR_SRC='https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js';
 
 const ICON={
@@ -170,7 +182,8 @@ const ICON={
  issues:'<circle cx="12" cy="12" r="9"/><path d="M12 7v6M12 16.5v.01"/>',
  stock:'<path d="M3 8 12 3l9 5-9 5-9-5Z"/><path d="m3 13 9 5 9-5M3 18l9 5 9-5"/>',
  chev:'<path d="m9 6 6 6-6 6"/>',scan:'<path d="M4 8V5a1 1 0 0 1 1-1h3M16 4h3a1 1 0 0 1 1 1v3M20 16v3a1 1 0 0 1-1 1h-3M8 20H5a1 1 0 0 1-1-1v-3M7 12h10"/>',
- back:'<path d="m15 6-6 6 6 6"/>'};
+ back:'<path d="m15 6-6 6 6 6"/>',
+ pallet:'<path d="M3 17h18M3 21h18M5 17v4M12 17v4M19 17v4"/><rect x="5" y="6" width="14" height="11" rx="1.5"/><path d="M12 6v11M5 11.5h14"/>'};
 const ico=(n,s=24)=>`<svg viewBox="0 0 24 24" width="${s}" height="${s}" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICON[n]||''}</svg>`;
 
 /* ================= accounts ================= */
@@ -212,8 +225,8 @@ const TYPES={hardware:'Hardware',boards:'Boards',packaging:'Packaging',doors:'Do
 const BASEU={hardware:'pcs',boards:'sheets',packaging:'pcs',doors:'pallets'};
 
 /* ================= data ================= */
-const COLS=['items','orders','arrivals','recv','units','issues','log'];
-const S={items:{},orders:{},arrivals:{},recv:{},units:{},issues:{},log:{},meta:{},ready:false};
+const COLS=['items','orders','arrivals','recv','units','issues','log','pallets'];
+const S={items:{},orders:{},arrivals:{},recv:{},units:{},issues:{},log:{},pallets:{},meta:{},ready:false};
 let STORE=null,MODE='local',ME=null;
 const SESS_K='fc-session',NAME_K='fc-name';
 let SESS=null;try{SESS=JSON.parse(sget(SESS_K)||'null')}catch(e){}
@@ -302,7 +315,7 @@ function ruleFor(loc,sku,isNew){const l=LOC[loc];if(!l)return 'No such spot.';co
  if(t==='boards'&&!['BK','CL1','CL2','BD'].includes(z))return 'Boards go in the bunks, cantilevers or board drop.';
  if(t==='doors'&&z!=='DR')return 'Door pallets go in the doors area.';
  if(z==='R0'&&l.L===4&&!/cardboard/i.test(i.desc||''))return 'The top of Supplies is cardboard only.';
- if(z==='D'){const other=here.find(u=>key(u.sku)!==key(sku));if(other)return `${loc} already has ${other.sku}. One item number per spot on Rack D.`}
+ if(z==='D'&&!palAt(loc)){const other=here.find(u=>!u.pal&&key(u.sku)!==key(sku));if(other)return `${loc} already has ${other.sku}. One item number per spot on Rack D, or put a pallet there.`}
  if(z==='BK'){const th=thkOf(i),b=l.bunk,c=l.col;
   if(isNew&&here.length>=5)return `${loc} already has 5 stacks.`;
   if(th==='6mm'&&b!==4)return '6 mm goes in Bunk 4.';if(th==='3/4"'&&b===4)return 'Bunk 4 is 6 mm only.';
@@ -313,9 +326,9 @@ function suggestLoc(sku){const u=unitsOf(sku)[0];if(u)return u.loc;const t=typeO
 
 /* ================= ui plumbing ================= */
 let route='',VIEW={};try{VIEW=JSON.parse(sessionStorage.getItem('fc-view')||'{}')}catch(e){}
-const SHOP_TABS=[['today','Today','today'],['putaway','Put away','put'],['find','Find','find'],['report','Report','report'],['more','More','more']];
-const OFF_TABS=[['board','Board','board'],['orders','Orders','orders'],['issues','Issues','issues'],['stock','Stock','stock'],['-'],['today','Today','today'],['putaway','Put away','put'],['find','Find','find'],['report','Report','report'],['more','More','more']];
-const OFF_BAR=[['board','Board','board'],['issues','Issues','issues'],['today','Today','today'],['putaway','Put away','put'],['more','More','more']];
+const SHOP_TABS=[['today','Today','today'],['putaway','Put away','put'],['pallets','Pallets','pallet'],['find','Find','find'],['report','Report','report'],['more','More','more']];
+const OFF_TABS=[['board','Dashboard','board'],['orders','Orders','orders'],['issues','Issues','issues'],['stock','Stock','stock'],['-'],['today','Today','today'],['find','Find','find'],['pallets','Pallets','pallet'],['report','Report','report'],['more','More','more']];
+const OFF_BAR=[['board','Dashboard','board'],['issues','Issues','issues'],['today','Today','today'],['find','Find','find'],['more','More','more']];
 function go(r,v){if(v)VIEW={...VIEW,...v};try{sessionStorage.setItem('fc-view',JSON.stringify(VIEW))}catch(e){}if(location.hash.slice(1)===r)render();else location.hash=r}
 addEventListener('hashchange',()=>render());
 let toastT=0;function toast(m,bad){let t=$('.toast');if(!t){t=document.createElement('div');t.className='toast';t.setAttribute('role','status');document.body.append(t)}t.textContent=m;t.classList.toggle('bad',!!bad);t.hidden=false;clearTimeout(toastT);toastT=setTimeout(()=>t.hidden=true,3200)}
@@ -343,9 +356,9 @@ function locResolve(g){const z=g.dataset.z,v=$('[data-lin]',g).value.trim();if(!
 function locUpdate(g){const loc=locResolve(g),msg=$('.locmsg',g),v=$('[data-lin]',g).value.trim(),z=g.dataset.z;$('[data-sl]',g).value='';g.classList.remove('ok');
  if(!z){msg.className='locmsg';msg.textContent='Tap the area, then type the spot';return}
  if(!loc){msg.className='locmsg'+(v?' bad':'');msg.textContent=v?`No spot ${zpre(z)}${v.toUpperCase()}`:zhint(z);return}
- const err=g.dataset.sku?ruleFor(loc,g.dataset.sku,g.dataset.newunit==='1'):null;
+ const err=g.dataset.palchk!=null?palErr(loc,g.dataset.palchk):g.dataset.sku?ruleFor(loc,g.dataset.sku,g.dataset.newunit==='1'):null;
  if(err){msg.className='locmsg bad';msg.textContent=err;return}
- $('[data-sl]',g).value=loc;g.classList.add('ok');const h=unitsAt(loc);msg.className='locmsg good';msg.textContent=`${loc} · ${LOC[loc].pos} · ${h.length?'Has '+[...new Set(h.map(u=>u.sku))].join(', '):'Empty'}`}
+ $('[data-sl]',g).value=loc;g.classList.add('ok');const h=unitsAt(loc);msg.className='locmsg good';const pl=palAt(loc);msg.textContent=`${loc} · ${LOC[loc].pos} · ${pl&&g.dataset.palchk==null?`Pallet ${palNo(pl)}${pl.name?' ('+pl.name+')':''} · goes onto the pallet`:h.length?'Has '+[...new Set(h.map(u=>u.sku))].join(', '):'Empty'}`}
 function initLoc(root){$$('.locent',root).forEach(g=>{locUpdate(g);$('[data-lin]',g).addEventListener('input',()=>locUpdate(g));
  $$('[data-zb]',g).forEach(b=>b.addEventListener('click',()=>{g.dataset.z=b.dataset.zb;$$('[data-zb]',g).forEach(x=>x.setAttribute('aria-pressed',x===b));$('.locz',g).textContent=zpre(b.dataset.zb);const i=$('[data-lin]',g);i.placeholder=zhint(b.dataset.zb).split(' ')[0];locUpdate(g);i.focus()}))})}
 const locVal=(root,id)=>$(`#${id} [data-sl]`,root)?.value||'';
@@ -362,12 +375,14 @@ function render(){
  const nav=(L=tabs)=>L.map(([id,l,ic])=>id==='-'?'<div class="sep"></div>':`<a href="#${id}" ${(route===id||(PARENT[route]===id))?'aria-current="page"':''}>${ico(ic)}<span>${l}${id==='issues'&&open?` <span class="badge">${open}</span>`:''}</span></a>`).join('');
  const rail=`<nav class="rail" aria-label="Main"><div class="mark"><i></i>FORCE</div>${nav()}<div class="foot">${esc(ME)} · ${esc(ACCTS[SESS.u]?.label||SESS.role)}<br>${MODE==='local'?'Saved on this device':'Live'}</div></nav>`;
  let body='';try{body=VIEWS[V].render()}catch(e){console.error(e);body=`<p class="note bad">This screen hit a problem: ${esc(e.message)}</p>`}
- const sy=scrollY,same=root.dataset.r===V;
+ const sy=scrollY,same=root.dataset.r===V,ae=document.activeElement,fid=same&&ae&&ae.id&&root.contains(ae)?ae.id:null,sel=fid&&ae.selectionStart!=null?[ae.selectionStart,ae.selectionEnd]:null;
+ if(V!=='find'&&W3)W3.stop();
  root.innerHTML=`<div class="app">${rail}<main id="main">${body}</main></div><nav class="tabs" aria-label="Main">${nav(bar)}</nav>`;
  root.dataset.r=V;if(same)scrollTo(0,sy);else scrollTo(0,0);
  VIEWS[V].bind&&VIEWS[V].bind($('#main'));
+ if(fid){const el=document.getElementById(fid);if(el){el.focus({preventScroll:true});if(sel&&el.setSelectionRange)try{el.setSelectionRange(sel[0],sel[1])}catch(e){}}}
 }
-const PARENT={delivery:'today',item:'find',spot:'find',putline:'putaway'};
+const PARENT={delivery:'today',item:'find',spot:'find',putline:'putaway',pallet:'pallets'};
 const topBar=(title,sub,back)=>`<div class="top">${back?`<button class="x" data-back="${back}" aria-label="Back">${ico('back',22)}</button>`:'<div class="mark"><i></i>FORCE</div>'}<div class="grow"></div><button class="btn sm" data-scan>${ico('scan',20)}Scan</button></div><header><div class="eyebrow">${esc(sub||'')}</div><h1>${esc(title)}</h1></header>`;
 document.addEventListener('click',e=>{const b=e.target.closest('[data-back]');if(b){history.length>1?history.back():go(b.dataset.back)}if(e.target.closest('[data-scan]'))scanSheet()});
 let rT=0;function onData(){S.ready=true;clearTimeout(rT);rT=setTimeout(()=>{if(SESS&&ME&&!SHEET)render();else if(SHEET&&SHEET.redraw)SHEET.redraw()},60)}
@@ -408,7 +423,7 @@ VIEWS.delivery={render(){const d=deliveries().find(x=>x.k===key(VIEW.po));if(!d)
    ${d.arr?`<span class="t2">Put away ${fmt(p)} of ${fmt(o.qty)}${lineLeft(o)?'':' ✓'}</span>`:''}${iss.map(i=>`<span class="t2" style="color:var(--${i.kind==='extra'||i.kind==='backorder'?'info':'bad'})">${esc(KIND[i.kind])} ${fmt(i.qty)}${i.note?' · '+esc(i.note):''}${i.kind==='backorder'?` <button class="btn sm" data-boin="${i.id}">It arrived</button>`:''}</span>`).join('')}</span>
    <span class="end"><span class="big">${fmt(o.qty)}</span><span class="t2">${esc(o.unit||BASEU[it])}</span></span></div>`}).join('');
  const acts=d.state==='cancelled'?'':!d.arr?`<div class="btns"><button class="btn pri" data-allhere>All here, all good</button><button class="btn" data-wrong>Something’s wrong</button></div><p class="muted small" style="margin:0">Check it against the paper. One tap if it matches. Only report what’s different.</p>`
-  :`<div class="btns">${d.left?`<button class="btn pri" data-putpo>Put away now (${d.lines.filter(lineLeft).length} ${d.lines.filter(lineLeft).length===1?'item':'items'})</button>`:''}<button class="btn" data-wrong>Report a problem</button></div>`;
+  :`<div class="btns">${d.left&&!isOffice()?`<button class="btn pri" data-putpo>Put away now (${d.lines.filter(lineLeft).length} ${d.lines.filter(lineLeft).length===1?'item':'items'})</button>`:''}<button class="btn" data-wrong>Report a problem</button></div>`;
  return topBar(d.vendor,`PO ${d.po} · ${d.date?'Expected '+dayLabel(d.date):'No date'}`,'today')+`<div>${statePill(d)}${d.arr?` <span class="muted small">Checked in ${esc(timeLabel(d.arr.at))} by ${esc(d.arr.by)}${d.arr.count?` · ${esc(d.arr.count)} on the truck`:''}</span>`:''}</div>${acts}<section><div class="sh"><h2>On this order</h2><span class="muted">${plural(d.lines.length,'line')}</span></div><div class="list">${lines}</div></section>`},
  bind(m){const d=deliveries().find(x=>x.k===key(VIEW.po));if(!d)return;
   $('[data-allhere]',m)?.addEventListener('click',e=>busy(e.target,async()=>{await markArrived(d.po,0);toast(`${d.vendor} checked in. The office sees it now.`);render()}));
@@ -472,7 +487,7 @@ function putSheet(o){const sku=o.sku,t=o.type||typeOf(sku),it=item(sku)||{sku,de
    openSheet(`${fmt(l)} ${unit} not put away`,`<p style="margin:0">${esc(o.desc||sku)}: ${fmt(putOf(o))} of ${fmt(o.qty)} put away.</p><div class="btns" style="flex-direction:column"><button class="btn pri" id="sm">Report ${fmt(l)} missing</button><button class="btn" id="sb">It’s on backorder</button><button class="btn" id="sl">Finish later</button></div>`,s2=>{
     const mk=kind=>busy($('#'+(kind==='missing'?'sm':'sb'),s2),async()=>{await W.set('issues',uid(),{kind,sku,qty:l,po:o.po,vendor:o.vendor,orderId:o.id,src:'put away',status:'open',t:new Date().toISOString(),by:ME,note:''});await logIt({type:'issue',kind,sku,qty:l,po:o.po});closeSheet();toast(`${KIND[kind]} ${fmt(l)} · sent to the office.`);render()});
     $('#sm',s2).addEventListener('click',()=>mk('missing'));$('#sb',s2).addEventListener('click',()=>mk('backorder'));$('#sl',s2).addEventListener('click',()=>{closeSheet();render()})})})})}
-async function putUnit(sku,loc,qty,t,po){if(t==='hardware'){const id=`u_${key(loc)}_${key(sku)}`;await W.mut('units',id,c=>({sku:item(sku)?.sku||sku,loc,qty:(+(c&&c.qty)||0)+qty,kind:'boxes',t:new Date().toISOString(),by:ME}))}
+async function putUnit(sku,loc,qty,t,po){const pl=palAt(loc);if(t==='hardware'||pl&&t!=='boards'){const id=pl?`u_P${pl.id}_${key(sku)}`:`u_${key(loc)}_${key(sku)}`;await W.mut('units',id,c=>({sku:item(sku)?.sku||sku,loc,qty:(+(c&&c.qty)||0)+qty,kind:'boxes',...(pl?{pal:pl.id}:{}),t:new Date().toISOString(),by:ME}))}
  else await W.set('units',uid(),{sku:item(sku)?.sku||sku,loc,qty,kind:t==='boards'?'stack':'pallet',po,t:new Date().toISOString(),by:ME})}
 /* After a put: flag extras, and archive reorders whose replacement PO just came in. */
 async function afterPut(o){o=S.orders[o.id]||o;const p=putOf(o),ex=Object.values(S.issues).find(i=>i.orderId===o.id&&i.kind==='extra'&&openIssue(i));
@@ -480,14 +495,21 @@ async function afterPut(o){o=S.orders[o.id]||o;const p=putOf(o),ex=Object.values
  for(const i of Object.values(S.issues))if(i.status==='reordered'&&i.newPo&&key(i.newPo)===key(o.po)&&(!i.sku||key(i.sku)===key(o.sku)))await W.set('issues',i.id,{...i,status:'archived',closeNote:`Replacement arrived on PO ${o.po}`,closedAt:new Date().toISOString(),closedBy:'Auto'})}
 
 /* ---------- find ---------- */
-VIEWS.find={render(){const q=VIEW.q||'';return topBar('Find','On hand and where')+`<div class="search"><input class="in" id="fq" type="search" placeholder="Item #, description or spot (D 11 a)" value="${esc(q)}" autocomplete="off" aria-label="Search"></div><div id="fres">${findResults(q)}</div>`},
- bind(m){const i=$('#fq',m);i.addEventListener('input',()=>{VIEW.q=i.value;$('#fres',m).innerHTML=findResults(i.value)});i.addEventListener('keydown',e=>{if(e.key==='Enter'){const r=$('#fres [data-item],#fres [data-spot]',m);r&&r.click()}})}};
+VIEWS.find={render(){const q=VIEW.q||'',c=VIEW.cat||'';return topBar('Find','On hand and where')+`<div class="cats" role="group" aria-label="What are you looking for">${CATS.map(([k,l])=>`<button type="button" class="chip" data-cat="${k}" aria-pressed="${c===k}">${l}</button>`).join('')}</div>${isOffice()?mapBlock():''}<div class="search"><input class="in" id="fq" type="search" placeholder="Item #, description or spot (D 11 a)" value="${esc(q)}" autocomplete="off" aria-label="Search"></div><div id="fres">${findResults(q)}</div>`},
+ bind(m){const i=$('#fq',m);i.addEventListener('input',()=>{VIEW.q=i.value;$('#fres',m).innerHTML=findResults(i.value);mapHL()});
+  $$('[data-cat]',m).forEach(b=>b.addEventListener('click',()=>{VIEW.cat=VIEW.cat===b.dataset.cat?'':b.dataset.cat;VIEW.mapSku='';render()}));
+  if(isOffice())mapMount(m);i.addEventListener('keydown',e=>{if(e.key==='Enter'){const r=$('#fres [data-item],#fres [data-spot]',m);r&&r.click()}})}};
+const CATS=[['boards','Boards'],['hardware','Hardware & handles'],['doors','Doors']];
+const inCat=(i,c)=>!c||(c==='hardware'?['hardware','packaging'].includes(i.type||typeOf(i.sku)):(i.type||typeOf(i.sku))===c);
+function findList(q){q=(q||'').trim();const kq=key(q);let list=items().filter(i=>inCat(i,VIEW.cat));if(kq)list=list.filter(i=>key(i.sku).includes(kq)||(i.aliases||[]).some(a=>key(a).includes(kq))||(i.desc||'').toLowerCase().includes(q.toLowerCase()));return list}
 function findResults(q){q=q.trim();const kq=key(q);
- const spot=q?normLoc(q):null;
- let list=items();if(kq)list=list.filter(i=>key(i.sku).includes(kq)||(i.aliases||[]).some(a=>key(a).includes(kq))||(i.desc||'').toLowerCase().includes(q.toLowerCase()));
+ const spot=q?normLoc(q):null,pals=kq?pallets().filter(p=>key(palNo(p)).includes(kq)||key(p.name).includes(kq)):[];
+ let list=findList(q);if(kq)list=list.filter(i=>key(i.sku).includes(kq)||(i.aliases||[]).some(a=>key(a).includes(kq))||(i.desc||'').toLowerCase().includes(q.toLowerCase()));
  list=list.map(i=>({i,h:onHand(i.sku)})).sort((a,b)=>(b.h>0)-(a.h>0)||a.i.sku.localeCompare(b.i.sku)).slice(0,80);
  return (spot?`<div class="list" style="margin-bottom:14px"><button class="row" data-spot="${spot}"><span class="tx"><b>Spot ${spot}</b><span class="t2">${esc(zone(LOC[spot].z).name)} · ${esc(LOC[spot].pos)}</span></span>${ico('chev',20)}</button></div>`:'')+
-  (list.length?`<div class="list">${list.map(({i,h})=>{const locs=[...new Set(unitsOf(i.sku).map(u=>u.loc))];return `<button class="row" data-item="${esc(i.sku)}"><span class="tx"><b>${esc(i.sku)}</b><span class="t2">${esc(i.desc||'')}</span><span class="t2">${locs.length?esc(locs.slice(0,4).join(' · ')+(locs.length>4?' …':'')):'Not on a shelf'}</span></span><span class="end"><span class="big">${fmt(h)}</span><span class="t2">${BASEU[i.type||typeOf(i.sku)]}</span></span>${ico('chev',20)}</button>`}).join('')}</div>`:`<div class="list"><p class="empty">${q?'No item matches “'+esc(q)+'”.':'No items yet. They’re added from the order Excel.'}</p></div>`)}
+  (pals.length?`<div class="list" style="margin-bottom:14px">${pals.map(palRow).join('')}</div>`:'')+
+  (list.length?`<div class="list">${list.map(({i,h})=>{const locs=[...new Set(unitsOf(i.sku).map(u=>u.loc))];return `<button class="row" data-item="${esc(i.sku)}"><span class="tx"><b>${esc(i.sku)}</b><span class="t2">${esc(i.desc||'')}</span><span class="t2">${locs.length?esc(locs.slice(0,4).join(' · ')+(locs.length>4?' …':'')):'Not on a shelf'}</span></span><span class="end"><span class="big">${fmt(h)}</span><span class="t2">${BASEU[i.type||typeOf(i.sku)]}</span>${isOffice()&&locs.length?`<span class="btn sm" data-mapsku="${esc(i.sku)}" role="button">Map</span>`:''}</span>${ico('chev',20)}</button>`}).join('')}</div>`:`<div class="list"><p class="empty">${q?'No item matches “'+esc(q)+'”.':VIEW.cat?'Nothing in '+esc(CATS.find(x=>x[0]===VIEW.cat)[1])+' yet.':'No items yet. They’re added from the order Excel.'}</p></div>`)}
+document.addEventListener('click',e=>{const mk=e.target.closest('[data-mapsku]');if(mk){e.stopPropagation();VIEW.mapSku=mk.dataset.mapsku;if(route==='find'){mapHL(true);$('#map3d')?.scrollIntoView({behavior:'smooth',block:'center'})}else go('find');return}},true);
 document.addEventListener('click',e=>{const a=e.target.closest('[data-item]');if(a){VIEW.sku=a.dataset.item;closeSheet();go('item')}const s=e.target.closest('[data-spot]');if(s){VIEW.loc=s.dataset.spot;closeSheet();go('spot')}});
 const unitRow=u=>{const t=typeOf(u.sku);return `<div class="row"><span class="tx"><b>${esc(u.loc)}</b><span class="t2">${esc(LOC[u.loc]?.pos||'')}${u.kind==='stack'?' · stack':u.kind==='pallet'?' · pallet':''}${u.po?' · PO '+esc(u.po):''}</span></span><span class="end"><span class="big">${fmt(u.qty)}</span><span class="t2">${BASEU[t]}</span></span></div><div class="row" style="min-height:0;padding-top:0;border-top:0"><div class="btns" style="width:100%">${t==='boards'?`<button class="btn sm" data-take="${u.id}" data-why="saw">To saw</button><button class="btn sm" data-take="${u.id}" data-why="custom">Custom cut</button><button class="btn sm" data-take="${u.id}" data-why="remake">Remake</button>`:t==='doors'?'':`<button class="btn sm" data-take="${u.id}" data-why="${t==='packaging'?'use':'job'}">${t==='packaging'?'Use':'Take for job'}</button>`}<button class="btn sm" data-count="${u.id}">Count</button><button class="btn sm" data-move="${u.id}">Move</button></div></div>`};
 VIEWS.item={render(){const i=item(VIEW.sku)||{sku:VIEW.sku,desc:descOf(VIEW.sku)},U=unitsOf(i.sku).sort((a,b)=>a.loc.localeCompare(b.loc)),h=onHand(i.sku),oo=onOrder(i.sku),iss=Object.values(S.issues).filter(x=>key(x.sku)===key(i.sku)&&openIssue(x));
@@ -495,10 +517,10 @@ VIEWS.item={render(){const i=item(VIEW.sku)||{sku:VIEW.sku,desc:descOf(VIEW.sku)
  ${packOf(i.sku)?`<p class="muted small" style="margin:0">${fmt(packOf(i.sku))} per ${typeOf(i.sku)==='hardware'?'box':'unit'}${i.min?` · reorder at ${fmt(i.min)}`:''}</p>`:''}
  <section><div class="sh"><h2>Where it is</h2><button class="btn sm" data-addhere>Found some</button></div><div class="list">${U.length?U.map(unitRow).join(''):'<p class="empty">None on a shelf.</p>'}</div></section>
  ${iss.length?`<section><div class="sh"><h2>Open problems</h2></div><div class="list">${iss.map(issueRow).join('')}</div></section>`:''}
- ${isOffice()?`<button class="btn" data-edit="${esc(i.sku)}">Edit item</button>`:''}`},
+ ${isOffice()?`<div class="btns">${U.length?`<button class="btn" data-mapsku="${esc(i.sku)}">Show on map</button>`:''}<button class="btn" data-edit="${esc(i.sku)}">Edit item</button></div>`:''}`},
  bind(m){bindUnitActs(m);$('[data-addhere]',m)?.addEventListener('click',()=>addSheet(VIEW.sku))}};
 VIEWS.spot={render(){const loc=VIEW.loc,l=LOC[loc];if(!l)return topBar('Not found','Spot','find');const U=unitsAt(loc);
- return topBar(loc,`${zone(l.z).name} · ${l.pos}`,'find')+`<p class="muted" style="margin:0">${esc(zone(l.z).purpose)}</p><section><div class="sh"><h2>${U.length?'In this spot':'Empty'}</h2><button class="btn sm" data-addspot>Add item here</button></div><div class="list">${U.length?U.map(u=>`<button class="row" data-item="${esc(u.sku)}"><span class="tx"><b>${esc(u.sku)}</b><span class="t2">${esc(descOf(u.sku))}</span></span><span class="end"><span class="big">${fmt(u.qty)}</span><span class="t2">${BASEU[typeOf(u.sku)]}</span></span></button>`).join(''):'<p class="empty">Nothing here.</p>'}</div></section>`},
+ const pl=palAt(loc);return topBar(loc,`${zone(l.z).name} · ${l.pos}`,'find')+`<p class="muted" style="margin:0">${esc(zone(l.z).purpose)}</p>${pl?`<div class="list">${palRow(pl)}</div>`:''}<section><div class="sh"><h2>${U.length?'In this spot':'Empty'}</h2><button class="btn sm" data-addspot>Add item here</button></div><div class="list">${U.length?U.map(u=>`<button class="row" data-item="${esc(u.sku)}"><span class="tx"><b>${esc(u.sku)}</b><span class="t2">${esc(descOf(u.sku))}</span></span><span class="end"><span class="big">${fmt(u.qty)}</span><span class="t2">${BASEU[typeOf(u.sku)]}</span></span></button>`).join(''):'<p class="empty">Nothing here.</p>'}</div></section>`},
  bind(m){$('[data-addspot]',m)?.addEventListener('click',()=>addSheet('',VIEW.loc))}};
 function bindUnitActs(m){$$('[data-take]',m).forEach(b=>b.addEventListener('click',()=>takeSheet(S.units[b.dataset.take],b.dataset.why)));$$('[data-count]',m).forEach(b=>b.addEventListener('click',()=>countSheet(S.units[b.dataset.count])));$$('[data-move]',m).forEach(b=>b.addEventListener('click',()=>moveSheet(S.units[b.dataset.move])));$$('[data-edit]',m).forEach(b=>b.addEventListener('click',()=>itemSheet(b.dataset.edit)))}
 const WHY={saw:'To saw',custom:'Custom cut',remake:'Remake',job:'Take for job',use:'Use'};
@@ -506,6 +528,7 @@ function takeSheet(u,why){const t=typeOf(u.sku),pk=packOf(u.sku),max=why==='saw'
  openSheet(`${WHY[why]} · ${u.sku}`,`<p class="muted" style="margin:0">${esc(descOf(u.sku))} · ${esc(u.loc)} has ${esc(qtyText(u.sku,u.qty))}</p>
   ${hw?`<div class="field"><span>Count in</span>${chips('tu',[['box','Boxes'],['pc','Pieces']],'box')}</div>`:''}
   <div class="field"><span>${why==='saw'?'Sheets to the saw (max 28)':t==='boards'?'Sheets':'How many'}</span>${stepper('tq',why==='saw'?max:1,1)}</div><p class="calc" id="tcalc"></p>
+  ${why==='saw'&&saws().length>1?`<div class="field"><span>Which saw</span>${chips('tsaw',saws().map(x=>[x,x]),sget('fc-saw')||saws()[0])}</div>`:''}
   ${why==='use'?'':`<label class="field"><span>Job #${why==='job'?'':' (optional)'}</span><input class="in" id="tjob" value="${esc(sget('fc-lastjob')||'')}"></label>`}
   ${why==='custom'||why==='remake'?`<label class="field"><span>Note (optional)</span><input class="in" id="tnote" placeholder="What it was for"></label>`:''}
   <p class="note bad" id="terr" hidden></p><button class="btn pri block" data-primary id="tgo">${WHY[why]}</button>`,sh=>{
@@ -513,7 +536,7 @@ function takeSheet(u,why){const t=typeOf(u.sku),pk=packOf(u.sku),max=why==='saw'
   $('#tgo',sh).addEventListener('click',e=>busy(e.target,async()=>{const q=n(),err=$('#terr',sh),job=$('#tjob',sh)?.value.trim()||'';err.hidden=true;
    if(q<=0){err.textContent='Enter how many.';err.hidden=false;return}if(why==='saw'&&q>28){err.textContent='The saw takes 28 sheets at a time.';err.hidden=false;return}if(q>u.qty){err.textContent=`Only ${fmt(u.qty)} here. Count the spot if that’s wrong.`;err.hidden=false;return}if(why==='job'&&!job){err.textContent='Enter the job #.';err.hidden=false;return}
    await W.mut('units',u.id,c=>{if(!c)return undefined;const nq=(+c.qty||0)-q;return nq<=0?null:{...c,qty:nq}});
-   if(job)sset('fc-lastjob',job);await logIt({type:'take',why,sku:u.sku,qty:q,loc:u.loc,job,note:$('#tnote',sh)?.value.trim()||''});closeSheet();toast(`${WHY[why]}: ${qtyText(u.sku,q)} from ${u.loc}`);render()}))})}
+   const saw=why==='saw'?(chipv(sh,'tsaw')||saws()[0]):'';if(saw)sset('fc-saw',saw);if(job)sset('fc-lastjob',job);await logIt({type:'take',why,saw,sku:u.sku,qty:q,loc:u.loc,job,note:$('#tnote',sh)?.value.trim()||''});closeSheet();toast(`${WHY[why]}: ${qtyText(u.sku,q)} from ${u.loc}`);render()}))})}
 function countSheet(u){const t=typeOf(u.sku);openSheet(`Count ${u.loc}`,`<p class="muted" style="margin:0">${esc(u.sku)} · ${esc(descOf(u.sku))}. The app says ${esc(qtyText(u.sku,u.qty))}.</p><div class="field"><span>Actual ${BASEU[t]}</span>${stepper('cq',u.qty,0)}</div><button class="btn pri block" data-primary id="cgo">Save count</button>`,sh=>{
  $('#cgo',sh).addEventListener('click',e=>busy(e.target,async()=>{const q=numv('cq');await W.mut('units',u.id,c=>c?(q<=0?null:{...c,qty:q,counted:new Date().toISOString()}):undefined);await logIt({type:'count',sku:u.sku,loc:u.loc,prev:u.qty,qty:q});closeSheet();toast(`${u.loc} counted: ${fmt(q)} ${BASEU[t]}`);render()}))})}
 function moveSheet(u){openSheet(`Move from ${u.loc}`,`<p class="muted" style="margin:0">${esc(u.sku)} · ${esc(qtyText(u.sku,u.qty))}</p><div class="field"><span>New spot</span>${spotPick('mloc',u.sku,'')}</div><p class="note bad" id="merr" hidden></p><button class="btn pri block" data-primary id="mgo">Move</button>`,sh=>{
@@ -540,13 +563,17 @@ document.addEventListener('click',e=>{const b=e.target.closest('[data-issue]');i
 VIEWS.more={render(){return topBar('More',`${ME} · ${ACCTS[SESS.u]?.label||''}`)+`<div class="list">
  <button class="row" data-scan><span class="tx"><b>Scan a label</b><span class="t2">Spot labels and item QR codes</span></span>${ico('chev',20)}</button>
  <button class="row" id="mname"><span class="tx"><b>Not ${esc(ME)}?</b><span class="t2">Switch the name on this device</span></span>${ico('chev',20)}</button>
+ ${isOffice()?`<button class="row" id="msaw"><span class="tx"><b>Saws</b><span class="t2">${esc(saws().join(', '))}</span></span>${ico('chev',20)}</button>`:''}
  ${isOffice()?`<button class="row" id="mppl"><span class="tx"><b>People</b><span class="t2">${esc((S.meta.people||[]).join(', ')||'No names yet')}</span></span>${ico('chev',20)}</button>`:''}
  <button class="row" id="mpw"><span class="tx"><b>${isOffice()?'Passwords':'Password'}</b><span class="t2">${isOffice()?'Change the office or warehouse password':'Change the warehouse password'}</span></span>${ico('chev',20)}</button>
  <button class="row" id="mlog"><span class="tx"><b>Activity</b><span class="t2">Everything received, put away, taken and reported</span></span>${ico('chev',20)}</button>
  <button class="row" id="mout"><span class="tx"><b style="color:var(--bad)">Sign out</b><span class="t2">Signed in as ${esc(SESS.u)}</span></span></button></div>
  <p class="muted small">${MODE==='local'?'This copy saves on this device only.':MODE==='claude'?'Preview on claude.ai · syncs live for everyone with the link.':'Live · every device sees changes within seconds.'}</p>`},
  bind(m){$('#mname',m).addEventListener('click',()=>{ME=null;sset(NAME_K,null);render()});$('#mout',m).addEventListener('click',signOut);$('#mlog',m).addEventListener('click',()=>go('activity'));
-  $('#mppl',m)?.addEventListener('click',peopleSheet);$('#mpw',m)?.addEventListener('click',pwSheet)}};
+  $('#mppl',m)?.addEventListener('click',peopleSheet);$('#mpw',m)?.addEventListener('click',pwSheet);$('#msaw',m)?.addEventListener('click',sawSheet)}};
+function sawSheet(){const L=saws();openSheet('Saws',`<div class="list">${L.map(n=>`<div class="row"><span class="tx"><b>${esc(n)}</b></span>${L.length>1?`<button class="btn sm bad" data-rm="${esc(n)}">Remove</button>`:''}</div>`).join('')}</div><label class="field"><span>Add a saw</span><input class="in" id="sn" placeholder="e.g. Panel saw"></label><button class="btn pri block" data-primary id="sgo">Add</button><p class="muted small" style="margin:0">With more than one saw, To saw asks which one, and the dashboard counts each saw.</p>`,sh=>{
+ $('#sgo',sh).addEventListener('click',e=>busy(e.target,async()=>{const n=$('#sn',sh).value.trim();if(!n)return;await W.meta({saws:[...new Set([...L,n])]});closeSheet();toast(`${n} added`);render()}));
+ $$('[data-rm]',sh).forEach(b=>b.addEventListener('click',()=>busy(b,async()=>{await W.meta({saws:L.filter(x=>x!==b.dataset.rm)});closeSheet();render()})))})}
 function pwSheet(){if(MODE!=='server'){openSheet('Passwords','<p class="note">Passwords are changed on the company site (force-receiving.netlify.app), signed in as fcadmin.</p>');return}
  openSheet(isOffice()?'Passwords':'Warehouse password',`${isOffice()?'':'<!--'}<section><h3>Office (fcadmin)</h3><label class="field"><span>Current office password</span><input class="in" id="pwc" type="password" autocomplete="current-password"></label><label class="field"><span>New office password</span><input class="in" id="pwn" type="password" autocomplete="new-password"></label><label class="field"><span>New password again</span><input class="in" id="pwn2" type="password" autocomplete="new-password"></label><button class="btn pri block" id="pwgo">Change office password</button></section>${isOffice()?'':'-->'}
  <section><h3>Warehouse (fcwarehouse)</h3>${isOffice()?'':'<label class="field"><span>Current warehouse password</span><input class="in" id="pwwc" type="password" autocomplete="current-password"></label>'}<label class="field"><span>New warehouse password</span><input class="in" id="pww" type="password" autocomplete="new-password"></label><label class="field"><span>New password again</span><input class="in" id="pww2" type="password" autocomplete="new-password"></label><button class="btn block" id="pwwgo">Change warehouse password</button><p class="muted small" style="margin:0">Every ${isOffice()?'':'other '}phone signed in as fcwarehouse gets signed out and needs the new password.</p></section><p class="note bad" id="pwerr" hidden></p>`,sh=>{
@@ -556,7 +583,7 @@ function pwSheet(){if(MODE!=='server'){openSheet('Passwords','<p class="note">Pa
    if(!r.ok)return err(j.error||'That didn’t work. Try again.');if(j.token){SESS.token=j.token;sset(SESS_K,JSON.stringify(SESS))}closeSheet();toast(`${account==='fcadmin'?'Office':'Warehouse'} password changed`)};
   $('#pwgo',sh)?.addEventListener('click',e=>busy(e.target,()=>send('fcadmin',$('#pwc',sh).value,$('#pwn',sh).value,$('#pwn2',sh).value)));
   $('#pwwgo',sh).addEventListener('click',e=>busy(e.target,()=>send('fcwarehouse',$('#pwwc',sh)?.value||'',$('#pww',sh).value,$('#pww2',sh).value)))})}
-VIEWS.activity={render(){const L=Object.values(S.log).sort((a,b)=>a.t<b.t?1:-1).slice(0,200);const T={arrived:'Checked in',put:'Put away',take:'Took',count:'Counted',move:'Moved',issue:'Reported',found:'Found',import:'Imported orders','backorder-in':'Backorder in',reorder:'Reordered',archive:'Archived'};
+VIEWS.activity={render(){const L=Object.values(S.log).sort((a,b)=>a.t<b.t?1:-1).slice(0,200);const T={arrived:'Checked in',put:'Put away',take:'Took',count:'Counted',move:'Moved',issue:'Reported',found:'Found',import:'Imported orders','backorder-in':'Backorder in',reorder:'Reordered',archive:'Archived',pallet:'New pallet','pal-add':'Added to pallet','pal-move':'Moved pallet','pal-del':'Deleted pallet'};
  return topBar('Activity','Latest 200','more')+`<div class="list">${L.length?L.map(e=>`<div class="row"><span class="tx"><b>${esc(T[e.type]||e.type)}${e.why?' · '+esc(WHY[e.why]):''}${e.kind?' · '+esc(KIND[e.kind]||e.kind):''}</b><span class="t2">${[e.sku&&esc(e.sku),e.qty!=null&&fmt(e.qty),e.loc&&'at '+esc(e.loc),e.po&&'PO '+esc(e.po),e.job&&'Job '+esc(e.job),e.note&&'“'+esc(e.note)+'”'].filter(Boolean).join(' · ')}</span></span><span class="end"><span class="t2">${esc(e.who)}</span><span class="t2">${esc(timeLabel(e.t))}</span></span></div>`).join(''):'<p class="empty">Nothing yet.</p>'}</div>`}};
 PARENT.activity='more';
 function peopleSheet(){const ppl=S.meta.people||[];openSheet('People',`<div class="list">${ppl.map(n=>`<div class="row"><span class="tx"><b>${esc(n)}</b></span><button class="btn sm bad" data-rm="${esc(n)}">Remove</button></div>`).join('')||'<p class="empty">No names yet.</p>'}</div><label class="field"><span>Add a name</span><input class="in" id="pn"></label><button class="btn pri block" data-primary id="pgo2">Add</button>`,sh=>{
@@ -566,19 +593,28 @@ function peopleSheet(){const ppl=S.meta.people||[];openSheet('People',`<div clas
 /* ================= office views ================= */
 VIEWS.board={office:1,render(){const D=deliveries(),t=today(),I=Object.values(S.issues);
  const due=D.filter(d=>d.date===t||(d.arr&&ymd(d.arr.at)===t)).sort((a,b)=>(a.arr?1:0)-(b.arr?1:0));
- const late=D.filter(d=>d.state==='late'),delayed=D.filter(d=>d.state==='delayed'),dock=D.filter(d=>d.arr&&d.left>0);
- const open=I.filter(i=>i.status==='open').sort((a,b)=>a.t<b.t?-1:1),extras=I.filter(i=>i.kind==='extra'&&i.status==='open'),low=items().filter(lowOf);
- return `<header><div class="eyebrow">Office · ${esc(dayLabel(t))}</div><h1>Board</h1></header>
- <div class="tiles"><a class="tile" href="#issues"><span class="eyebrow">Needs action</span><span class="big">${open.length}</span><span class="muted small">open problems${open.filter(i=>daysBetween(ymd(i.t),t)>=2).length?` · ${open.filter(i=>daysBetween(ymd(i.t),t)>=2).length} over 2 days`:''}</span></a>
+ const delayed=D.filter(d=>d.state==='delayed'),dock=D.filter(d=>d.arr&&d.left>0);
+ const open=I.filter(i=>i.status==='open').sort((a,b)=>a.t<b.t?-1:1),old=open.filter(i=>daysBetween(ymd(i.t),t)>=2).length,extras=I.filter(i=>i.kind==='extra'&&i.status==='open'),low=items().filter(lowOf);
+ const cut=cutsByDay(7),ct=cut.days[0];
+ return `<header><div class="eyebrow">Office · ${esc(dayLabel(t))}</div><h1>Dashboard</h1></header>
+ <div class="tiles"><a class="tile ${old?'hot':''}" href="#issues"><span class="eyebrow">Needs action</span><span class="big">${open.length}</span><span class="muted small">pending issues${old?` · ${old} over 2 days`:''}</span></a>
  <a class="tile" href="#today"><span class="eyebrow">Today</span><span class="big">${due.filter(d=>d.arr).length}/${due.length}</span><span class="muted small">deliveries checked in</span></a>
- <a class="tile ${late.length?'hot':''}" href="#orders" data-of="delayed"><span class="eyebrow">Late</span><span class="big">${late.length}</span><span class="muted small">past due, not here</span></a>
- <a class="tile" href="#putaway"><span class="eyebrow">On the dock</span><span class="big">${dock.length}</span><span class="muted small">not fully put away</span></a></div>
- <div class="grid2"><section><div class="sh"><h2>Today’s deliveries</h2></div><div class="list">${due.length?due.map(delRow).join(''):'<p class="empty">Nothing due today.</p>'}</div></section>
- <section><div class="sh"><h2>Needs action</h2><a class="btn sm" href="#issues">All issues</a></div><div class="list">${open.length?open.slice(0,8).map(issueRow).join(''):'<p class="empty">No open problems.</p>'}</div></section>
- ${late.length||delayed.length?`<section><div class="sh"><h2>Late and delayed</h2></div><div class="list">${[...late,...delayed].map(delRow).join('')}</div></section>`:''}
+ <a class="tile" href="#cuts"><span class="eyebrow">Boards cut today</span><span class="big">${fmt(ct.total)}</span><span class="muted small">${cut.cols.filter(c=>ct[c]).map(c=>`${esc(c)} ${fmt(ct[c])}`).join(' · ')||'sheets'}</span></a>
+ <div class="tile"><span class="eyebrow">On the dock</span><span class="big">${dock.length}</span><span class="muted small">not fully put away</span></div></div>
+ <div class="grid2"><section><div class="sh"><h2>Today’s deliveries</h2><a class="btn sm" href="#today">Today</a></div><div class="list">${due.length?due.map(delRow).join(''):'<p class="empty">Nothing due today.</p>'}</div></section>
+ <section><div class="sh"><h2>Needs action</h2><a class="btn sm" href="#issues">All issues</a></div><div class="list">${open.length?open.slice(0,8).map(issueRow).join(''):'<p class="empty">No pending issues.</p>'}</div></section></div>
+ <section id="cuts"><div class="sh"><h2>Boards cut per day</h2><span class="muted small">Last 7 days</span></div>${cutTable(cut)}</section>
+ <div class="grid2">${delayed.length?`<section><div class="sh"><h2>Delayed</h2></div><div class="list">${delayed.map(delRow).join('')}</div></section>`:''}
  ${dock.length?`<section><div class="sh"><h2>On the dock</h2></div><div class="list">${dock.map(d=>`<button class="row" data-del="${esc(d.po)}"><span class="tx"><b>${esc(d.vendor)}</b><span class="t2">PO ${esc(d.po)} · ${d.lines.filter(lineLeft).length} of ${d.lines.length} items not put away</span></span>${ico('chev',20)}</button>`).join('')}</div></section>`:''}
  ${extras.length?`<section><div class="sh"><h2>Extras kept</h2></div><div class="list">${extras.map(issueRow).join('')}</div></section>`:''}
- ${low.length?`<section><div class="sh"><h2>Low stock</h2><a class="btn sm" href="#stock">Stock</a></div><div class="list">${low.map(i=>`<button class="row" data-item="${esc(i.sku)}"><span class="tx"><b>${esc(i.sku)}</b><span class="t2">${esc(i.desc||'')}</span></span><span class="end"><span class="big">${fmt(onHand(i.sku))}</span><span class="t2">+${fmt(onOrder(i.sku))} coming · min ${fmt(i.min)}</span></span></button>`).join('')}</div></section>`:''}</div>`}};
+ ${low.length?`<section><div class="sh"><h2>Low stock</h2><a class="btn sm" href="#stock">Stock</a></div><div class="list">${low.map(i=>`<button class="row" data-item="${esc(i.sku)}"><span class="tx"><b>${esc(i.sku)}</b><span class="t2">${esc(i.desc||'')}</span></span><span class="end"><span class="big">${fmt(onHand(i.sku))}</span><span class="t2">+${fmt(onOrder(i.sku))} coming · min ${fmt(i.min)}</span></span></button>`).join('')}</div></section>`:''}</div>`},
+ bind(m){$$('a[href="#cuts"]',m).forEach(a=>a.addEventListener('click',e=>{e.preventDefault();$('#cuts',m).scrollIntoView({behavior:'smooth'})}))}};
+const saws=()=>(S.meta.saws&&S.meta.saws.length?S.meta.saws:['Beam saw']);
+/* Sheets pulled for cutting, per day: each saw, plus custom cuts and remakes (logged by hand). */
+function cutsByDay(n){const cols=[...saws(),'Custom cut','Remake'],days=[];for(let k=0;k<n;k++){const d=addDays(today(),-k);days.push({day:d,total:0})}
+ Object.values(S.log).forEach(e=>{if(e.type!=='take'||!['saw','custom','remake'].includes(e.why))return;const r=days.find(x=>x.day===e.day);if(!r)return;const c=e.why==='saw'?(e.saw||saws()[0]):WHY[e.why];if(!cols.includes(c))cols.splice(cols.length-2,0,c);r[c]=(r[c]||0)+(+e.qty||0);r.total+=(+e.qty||0)});
+ return{cols,days}}
+function cutTable(c){return `<div class="tbl"><table><thead><tr><th>Day</th>${c.cols.map(x=>`<th class="n">${esc(x)}</th>`).join('')}<th class="n">Total</th></tr></thead><tbody>${c.days.map(r=>`<tr><td>${esc(dayLabel(r.day))}</td>${c.cols.map(x=>`<td class="n">${r[x]?fmt(r[x]):''}</td>`).join('')}<td class="n"><b>${fmt(r.total)}</b></td></tr>`).join('')}</tbody></table></div><p class="muted small" style="margin:0">Counts sheets taken with To saw, Custom cut and Remake. Once the beam saw’s export comes in, its own cut counts can be checked against this.</p>`}
 VIEWS.orders={office:1,render(){const D=deliveries(),f=VIEW.of||'open';const F={open:d=>!d.cancelled&&(d.left>0||!d.arr),arrived:d=>!!d.arr,delayed:d=>d.state==='delayed'||d.state==='late',all:()=>true};
  const L=D.filter(F[f]).sort((a,b)=>(a.date||'9')<(b.date||'9')?-1:1);const imp=S.meta.lastImport;
  return `<header><div class="eyebrow">Office</div><h1>Orders</h1></header>
@@ -681,10 +717,168 @@ async function exportX(k){await loadScript(XLSX_SRC);let rows=[];const I=Object.
  if(MODE==='claude'){const dl=await claude.use('downloads');if(!dl)throw new Error('Downloads are off for this page.');await dl.save({filename:name,data});toast('Saved '+name)}
  else{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([data],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}));a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),4000);toast('Downloaded '+name)}}
 
+/* ================= pallets ================= */
+/* A pallet is a named thing on one spot; its items are ordinary stock units tagged with the pallet id,
+   so on-hand, Find and the map all count them. Moving the pallet moves every unit on it. */
+const pallets=()=>Object.values(S.pallets||{});
+const palAt=loc=>pallets().find(p=>p.loc===loc)||null;
+const palUnits=id=>units().filter(u=>u.pal===id&&u.qty>0);
+const palNo=p=>p.no||'P-'+String(p.id).slice(-4).toUpperCase();
+const PAL_Z=['D','R1','R0','HR1','HR2','DR'];
+const QR_SRC='https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js';
+function palErr(loc,id){const l=LOC[loc];if(!PAL_Z.includes(l.z))return 'Pallets go on Rack D, Rack 1, Supplies, the office racks or the doors area.';
+ const o=palAt(loc);if(o&&o.id!==id)return `${loc} already has pallet ${palNo(o)}. One pallet per spot.`;
+ if(l.z==='D'){const loose=unitsAt(loc).find(u=>!u.pal);if(loose)return `${loc} has loose ${loose.sku}. Move it or add it to a pallet first.`}return null}
+function palRow(p){const U=palUnits(p.id);return `<button class="row" data-pal="${p.id}"><span class="palno">${esc(palNo(p))}</span><span class="tx"><b>${esc(p.name||'Pallet')}</b><span class="t2">${esc(p.loc||'No spot')} · ${plural(U.length,'item')}</span></span>${ico('chev',20)}</button>`}
+document.addEventListener('click',e=>{const b=e.target.closest('[data-pal]');if(b&&!b.closest('.sheet')){VIEW.pal=b.dataset.pal;go('pallet')}});
+const qtySub=(sku,q)=>{const t=qtyText(sku,q);return t.includes(' · ')?t.split(' · ')[1]:t.replace(/^[\d,.]+ /,'')};
+VIEWS.pallets={render(){const P=pallets().sort((a,b)=>palNo(a).localeCompare(palNo(b)));
+ return topBar('Pallets','Make, fill and move pallets')+`<button class="btn pri block" id="pnew" style="min-height:64px;font-size:19px">${ico('pallet')}New pallet</button>
+ <section><div class="sh"><h2>${P.length?plural(P.length,'pallet'):'No pallets yet'}</h2></div><div class="list">${P.length?P.map(palRow).join(''):'<p class="empty">Tap New pallet, type its spot, then add items.</p>'}</div></section>`},
+ bind(m){$('#pnew',m).addEventListener('click',()=>newPalSheet())}};
+VIEWS.pallet={render(){const p=S.pallets[VIEW.pal];if(!p)return topBar('Pallet not found','Pallets','pallets')+'<p class="note">It was deleted.</p>';const U=palUnits(p.id).sort((a,b)=>a.sku.localeCompare(b.sku));
+ return topBar(`${palNo(p)}${p.name?' · '+p.name:''}`,`Pallet at ${p.loc||'no spot'}${LOC[p.loc]?' · '+LOC[p.loc].pos:''}`,'pallets')+
+ `<button class="btn pri block" id="padd" style="min-height:60px;font-size:19px">+ Add item</button>
+ <section><div class="sh"><h2>${U.length?plural(U.length,'item'):'Empty'}</h2><span class="muted small">Tap an item to change it</span></div><div class="list">${U.length?U.map(u=>`<button class="row" data-pline="${u.id}"><span class="tx"><b>${esc(u.sku)}</b><span class="t2">${esc(descOf(u.sku))}</span></span><span class="end"><span class="big">${fmt(u.qty)}</span><span class="t2">${esc(qtySub(u.sku,u.qty))}</span></span>${ico('chev',20)}</button>`).join(''):'<p class="empty">Nothing on this pallet yet. Tap Add item.</p>'}</div></section>
+ <div class="btns"><button class="btn" id="pmove">Move pallet</button><button class="btn" id="pren">Rename</button><button class="btn" id="plabel">Print label</button><button class="btn bad" id="pdel">Delete pallet</button></div>`},
+ bind(m){const p=S.pallets[VIEW.pal];if(!p)return;$('#padd',m).addEventListener('click',()=>palAddSheet(p));$$('[data-pline]',m).forEach(b=>b.addEventListener('click',()=>palLineSheet(p,S.units[b.dataset.pline])));
+  $('#pmove',m).addEventListener('click',()=>palMoveSheet(p));$('#pren',m).addEventListener('click',()=>palRenameSheet(p));$('#plabel',m).addEventListener('click',()=>palLabel(p));$('#pdel',m).addEventListener('click',()=>palDelSheet(p))}};
+async function newPallet(name,loc){const n=Math.max(+S.meta.palSeq||0,0,...pallets().map(p=>+String(p.no||'').replace(/\D/g,'')||0))+1;const id=uid(),no='P-'+String(n).padStart(4,'0');
+ await W.set('pallets',id,{no,name,loc,t:new Date().toISOString(),by:ME});if(isOffice())await W.meta({palSeq:n});await logIt({type:'pallet',note:`New pallet ${no}${name?' · '+name:''}`,loc});return id}
+function newPalSheet(loc){openSheet('New pallet',`<label class="field"><span>Name (optional)</span><input class="in" id="pnm" placeholder="e.g. Misc hardware"></label><div class="chips">${['Misc hardware','Handles','Hinges','Slides','Doors'].map(n=>`<button type="button" class="chip" data-pn="${n}">${n}</button>`).join('')}</div>
+ <div class="field"><span>Spot</span>${spotPick('pnloc','',loc||'',PAL_Z)}</div><p class="note bad" id="pnerr" hidden></p><button class="btn pri block" data-primary id="pngo">Make pallet</button>`,sh=>{
+ $('#pnloc',sh).dataset.palchk='';
+ $$('[data-pn]',sh).forEach(b=>b.addEventListener('click',()=>{$('#pnm',sh).value=b.dataset.pn;$$('[data-pn]',sh).forEach(x=>x.setAttribute('aria-pressed',x===b))}));
+ $('#pngo',sh).addEventListener('click',e=>busy(e.target,async()=>{locUpdate($('#pnloc',sh));const l=locVal(sh,'pnloc'),er=$('#pnerr',sh);if(!l){er.textContent=$('#pnloc .locmsg',sh).textContent||'Type a spot.';er.hidden=false;return}
+  const id=await newPallet($('#pnm',sh).value.trim(),l);closeSheet();VIEW.pal=id;go('pallet');toast(`${palNo(S.pallets[id]||{id})} made at ${l}`);setTimeout(()=>S.pallets[id]&&palAddSheet(S.pallets[id]),200)}))})}
+async function palAdd(p,sku,q){await W.mut('units',`u_P${p.id}_${key(sku)}`,c=>({sku:item(sku)?.sku||sku,loc:p.loc,qty:(+(c&&c.qty)||0)+q,kind:'boxes',pal:p.id,t:new Date().toISOString(),by:ME}));await logIt({type:'pal-add',sku,qty:q,loc:p.loc,note:palNo(p)})}
+function palAddSheet(p){openSheet(`Add to ${palNo(p)}`,`<label class="field"><span>Item #</span><input class="in" id="pasku" list="paskus" autocomplete="off" autocapitalize="characters" placeholder="Type or pick"><datalist id="paskus">${items().filter(i=>['hardware','packaging'].includes(i.type||typeOf(i.sku))).map(i=>`<option value="${esc(i.sku)}">${esc(i.desc||'')}</option>`).join('')}</datalist></label><p class="muted small" id="padesc" style="margin:0"></p>
+ <label class="field" id="papkw"><span>Pieces per box (set once for this item)</span><input class="in num" id="papk" inputmode="numeric" placeholder="e.g. 20"></label>
+ <div class="field"><span>Boxes</span>${stepper('paq',1,0)}</div><label class="field"><span>Loose pieces</span><input class="in num" id="palo" inputmode="numeric" value="0"></label><p class="calc" id="pacalc"></p>
+ <p class="note bad" id="paerr" hidden></p><button class="btn pri block" data-primary id="pago">Add to pallet</button><p class="muted small" style="margin:0">After adding, this stays open for the next item. Close it when the pallet is done.</p>`,sh=>{
+ const upd=()=>{const s=$('#pasku',sh).value.trim(),pk=packOf(s);$('#padesc',sh).textContent=s?(item(s)?descOf(s):'New item number. It will be added to the item list.'):'';$('#papkw',sh).hidden=!!pk;const per=pk||numv('papk');$('#pacalc',sh).textContent=per?`${fmt(numv('paq'))} × ${fmt(per)} + ${fmt(numv('palo'))} = ${fmt(numv('paq')*per+numv('palo'))} pcs`:`${fmt(numv('palo'))} pcs`};
+ sh.addEventListener('input',upd);sh.addEventListener('change',upd);upd();
+ $('#pago',sh).addEventListener('click',e=>busy(e.target,async()=>{const s=$('#pasku',sh).value.trim(),er=$('#paerr',sh);er.hidden=true;const fail=m=>{er.textContent=m;er.hidden=false};if(!s)return fail('Type the item #.');
+  const pk=packOf(s)||numv('papk'),bx=numv('paq');if(bx>0&&!pk)return fail('Enter pieces per box, or set Boxes to 0 and count loose pieces.');const q=bx*(pk||0)+numv('palo');if(q<=0)return fail('Enter how many.');
+  if(!item(s)||(!packOf(s)&&pk))await W.set('items',key(s),{...(item(s)||{sku:s,desc:'',type:'hardware',added:'pallet'}),...(pk?{pack:pk}:{})});
+  await palAdd(p,s,q);closeSheet();toast(`Added ${qtyText(s,q)} to ${palNo(p)}`);render();setTimeout(()=>S.pallets[p.id]&&palAddSheet(S.pallets[p.id]),200)}))})}
+function palLineSheet(p,u){if(!u)return;const pk=packOf(u.sku),bx=pk>1;openSheet(`${u.sku} · ${palNo(p)}`,`<p class="muted" style="margin:0">${esc(descOf(u.sku))} · now ${esc(qtyText(u.sku,u.qty))}</p>
+ ${bx?`<div class="field"><span>Boxes</span>${stepper('plb',Math.floor(u.qty/pk),0)}</div><label class="field"><span>Loose pieces</span><input class="in num" id="pll" inputmode="numeric" value="${u.qty%pk}"></label>`:`<div class="field"><span>Pieces</span>${stepper('plb',u.qty,0)}</div>`}<p class="calc" id="plc"></p>
+ <button class="btn pri block" data-primary id="plsave">Save</button><div class="btns"><button class="btn" id="plmove">Move off the pallet</button><button class="btn bad" id="plrm">Remove from pallet</button></div><p class="muted small" style="margin:0">Remove takes it out of stock. To keep it in stock somewhere else, use Move.</p>`,sh=>{
+ const q=()=>bx?numv('plb')*pk+numv('pll'):numv('plb');const c=()=>{$('#plc',sh).textContent=bx?`= ${fmt(q())} pcs`:''};sh.addEventListener('input',c);c();
+ $('#plsave',sh).addEventListener('click',e=>busy(e.target,async()=>{const n=q();await W.mut('units',u.id,c=>c?(n<=0?null:{...c,qty:n,counted:new Date().toISOString()}):undefined);await logIt({type:'count',sku:u.sku,loc:p.loc,prev:u.qty,qty:n,note:palNo(p)});closeSheet();toast(`${u.sku}: ${qtyText(u.sku,n)} on ${palNo(p)}`);render()}));
+ $('#plrm',sh).addEventListener('click',e=>busy(e.target,async()=>{await W.del('units',u.id);await logIt({type:'count',sku:u.sku,loc:p.loc,prev:u.qty,qty:0,note:`Removed from ${palNo(p)}`});closeSheet();toast(`${u.sku} removed from ${palNo(p)}`);render()}));
+ $('#plmove',sh).addEventListener('click',()=>moveSheet(u))})}
+function palMoveSheet(p){openSheet(`Move ${palNo(p)}`,`<p class="muted" style="margin:0">Now at ${esc(p.loc||'no spot')}. Everything on it moves too.</p><div class="field"><span>New spot</span>${spotPick('pmloc','','',PAL_Z)}</div><p class="note bad" id="pmerr" hidden></p><button class="btn pri block" data-primary id="pmgo">Move pallet</button>`,sh=>{$('#pmloc',sh).dataset.palchk=p.id;
+ $('#pmgo',sh).addEventListener('click',e=>busy(e.target,async()=>{locUpdate($('#pmloc',sh));const l=locVal(sh,'pmloc');if(!l){const er=$('#pmerr',sh);er.textContent=$('#pmloc .locmsg',sh).textContent;er.hidden=false;return}
+  await W.batch([{op:'set',c:'pallets',id:p.id,v:{...p,loc:l}},...palUnits(p.id).map(u=>({op:'set',c:'units',id:u.id,v:{...u,loc:l}}))]);await logIt({type:'pal-move',note:palNo(p),from:p.loc,loc:l});closeSheet();toast(`${palNo(p)} moved to ${l}`);render()}))})}
+function palRenameSheet(p){openSheet(`Rename ${palNo(p)}`,`<label class="field"><span>Name</span><input class="in" id="prn" value="${esc(p.name||'')}"></label><button class="btn pri block" data-primary id="prgo">Save</button>`,sh=>{
+ $('#prgo',sh).addEventListener('click',e=>busy(e.target,async()=>{await W.set('pallets',p.id,{...p,name:$('#prn',sh).value.trim()});closeSheet();toast('Saved');render()}))})}
+function palDelSheet(p){const U=palUnits(p.id);openSheet(`Delete ${palNo(p)}?`,`<p style="margin:0">${U.length?`It still has ${plural(U.length,'item')} on it (${esc(U.map(u=>u.sku).join(', '))}). Deleting takes them out of stock.`:'It’s empty.'}</p><div class="btns"><button class="btn bad" id="pdgo">Delete pallet</button><button class="btn" data-close>Keep it</button></div>`,sh=>{
+ $('#pdgo',sh).addEventListener('click',e=>busy(e.target,async()=>{await W.batch([...U.map(u=>({op:'del',c:'units',id:u.id})),{op:'del',c:'pallets',id:p.id}]);for(const u of U)await logIt({type:'count',sku:u.sku,loc:p.loc,prev:u.qty,qty:0,note:`Pallet ${palNo(p)} deleted`});await logIt({type:'pal-del',note:palNo(p),loc:p.loc});closeSheet();toast(`${palNo(p)} deleted`);go('pallets')}))})}
+async function palLabel(p){if(MODE==='claude')return toast('Labels print from the company site.',true);
+ const w=window.open('','_blank');if(!w)return toast('Allow pop-ups for this site to print labels.',true);w.document.write('<p style="font:20px system-ui;padding:24px">Making the label…</p>');
+ try{await loadScript(QR_SRC)}catch(e){w.close();return toast('Couldn’t load the QR maker. Check the connection.',true)}
+ const q=qrcode(0,'M');q.addData('FORCE:PAL:'+p.id);q.make();const U=palUnits(p.id);
+ w.document.open();w.document.write(`<!doctype html><title>${esc(palNo(p))}</title><style>body{font-family:system-ui,sans-serif;margin:0;padding:24px;color:#111}h1{font:800 84px/1 Georgia,serif;margin:0}h2{font-size:30px;margin:10px 0 14px}.q svg{width:300px;height:300px}table{border-collapse:collapse;width:100%;font-size:18px;margin-top:20px}td{border-bottom:1px solid #bbb;padding:7px 6px}@page{size:letter;margin:12mm}</style>
+ <div style="display:flex;gap:28px;align-items:center"><div class="q">${q.createSvgTag(8,2)}</div><div><h1>${esc(palNo(p))}</h1><h2>${esc(p.name||'Pallet')}</h2><div style="font-size:26px">Spot <b>${esc(p.loc||'')}</b></div><div style="font-size:15px;color:#555;margin-top:8px">Force Cabinets · Gilbert · scan to open in the app</div></div></div>
+ <table>${U.map(u=>`<tr><td><b>${esc(u.sku)}</b></td><td>${esc(descOf(u.sku))}</td><td style="text-align:right">${esc(qtyText(u.sku,u.qty))}</td></tr>`).join('')}</table><script>setTimeout(function(){print()},400)<\/script>`);w.document.close()}
+
+/* ================= 3D map (office, inside Find) ================= */
+const THREE_SRC='https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js',ORBIT_SRC='https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js';
+// meters, x east, z south; same site plan as the earlier full build. The doors area is placed across from Rack D (approximate).
+const LAY={D:{rack:1,fx:-11.1,nd:1,z0:0,bw:2.8,ly:[.15,1.85,3.55,5.25],dep:2.4,deep:1,up:0x2E8B6E,beam:0xD9531E},
+ R0:{rack:1,fx:7.6,nd:1,z0:-8,bw:2.75,ly:[.15,1.45,2.65,3.85],dep:1.1,up:0x3B434B,beam:0xE0622A},
+ R1:{rack:1,fx:11.9,nd:-1,z0:-16.1,bw:2.45,ly:[.15,1.05,1.95,2.85,3.75],dep:1.1,up:0x3B434B,beam:0x3B434B},
+ HR1:{shelf:1,sx:13.6,sz:-46.6,dir:1,bw:1.2,sh:.42,dep:.6},HR2:{shelf:1,sx:17.4,sz:-46.6,dir:1,bw:1.8,sh:.42,dep:.6},
+ BK:{x0:14,z0:-8},CL1:{axis:'z',sx:13,sz:-8,dir:-1,bl:2.6,arm:1.3,base:.25,rh:.5},CL2:{axis:'x',sx:22.8,sz:3.6,dir:-1,flip:1,bl:2.6,arm:1.3,base:.25,rh:.5},
+ BD:{axis:'x',sx:6.4,sz:-4.6,dir:-1,len:2.6,wid:1.3},DR:{axis:'z',sx:-5.4,sz:-2,dir:1}};
+const BLD3=[[-15,4.6,4,-53,0xC9CCC6],[4.6,31,4,-47,0xB9BDB8]];
+const TINT={hardware:0x2F6FDB,packaging:0xE0A21B,boards:0xC9A877,doors:0x7B5BD6};
+function frame3(zid){const L=LAY[zid];if(L.rack)return{O:[L.fx,L.z0],a:[0,-1],n:[L.nd,0]};if(zid==='BK')return{O:[L.x0,L.z0],a:[0,-1],n:[1,0]};
+ if(L.shelf||L.axis==='x')return{O:[L.sx,L.sz],a:[1,0],n:[0,L.dir]};return{O:[L.sx,L.sz],a:[0,-1],n:[L.dir,0]}}
+const at3=(f,s,t)=>[f.O[0]+f.a[0]*s+f.n[0]*t,f.O[1]+f.a[1]*s+f.n[1]*t],dim3=(f,sa,sn)=>[Math.abs(f.a[0])*sa+Math.abs(f.n[0])*sn,Math.abs(f.a[1])*sa+Math.abs(f.n[1])*sn];
+function geo3(l){const z=zone(l.z),L=LAY[l.z],f=frame3(l.z);let s,t,y,sa,sn,h;
+ if(L.rack){const bwi=L.bw-.1,pb=l.z==='D'?{a:'c',b:'d'}[l.bin]:l.bin,so=(pb==='c'?-1:1)*L.nd*bwi/4;s=(l.bay-.5)*L.bw+so;t=L.deep?-.6:-L.dep/2;y=L.ly[l.L-1]+.02;h=l.L<L.ly.length?Math.min(1.25,L.ly[l.L]-L.ly[l.L-1]-.2):1.25;sa=bwi/2-.1;sn=L.deep?1.1:L.dep-.06}
+ else if(L.shelf){s=(l.bay-.5)*L.bw;t=L.dep/2;y=.1+(l.L-1)*L.sh+.03;sa=L.bw-.08;sn=L.dep-.04;h=L.sh-.08}
+ else if(l.z==='BK'){s=(l.col-.5)*1.5;t=(l.bunk-.5)*2.9;y=.1;sa=1.27;sn=2.5;h=4.6}
+ else if(z.kind==='cant'){const cols=z.rowsBy.length,pos=L.flip?cols-l.col:l.col-1;s=(pos+.5)*L.bl;t=L.arm/2+.12;y=L.base+(l.L-1)*L.rh+.06;sa=L.bl-.15;sn=1.25;h=L.rh-.12}
+ else if(l.z==='BD'){s=L.len/2;t=L.wid/2;y=.1;sa=L.len-.1;sn=L.wid-.1;h=2.2}
+ else{const i=+l.id.split('-')[1];s=(i-.5)*2.6;t=.8;y=.02;sa=2.2;sn=1.4;h=1.6}
+ const[x,zz]=at3(f,s,t),[w,d]=dim3(f,sa,sn);return{x,y,z:zz,w,d,h}}
+let W3=null,W3P=null;
+function initMap(){if(W3P)return W3P;W3P=loadScript(THREE_SRC).then(()=>loadScript(ORBIT_SRC)).then(buildMap).catch(e=>{W3P=null;throw e});return W3P}
+function buildMap(){const T=THREE,SP=Object.values(LOC).filter(l=>LAY[l.z]),G={};SP.forEach(l=>G[l.id]=geo3(l));
+ const ren=new T.WebGLRenderer({antialias:true});ren.setPixelRatio(Math.min(devicePixelRatio,2));
+ const scene=new T.Scene();scene.background=new T.Color(0xE6E9E3);const cam=new T.PerspectiveCamera(48,1,.1,500);
+ scene.add(new T.HemisphereLight(0xffffff,0x8a8d88,1));const dl=new T.DirectionalLight(0xffffff,.45);dl.position.set(20,60,30);scene.add(dl);
+ const cube=new T.BoxGeometry(1,1,1),o=new T.Object3D(),mats={};const mat=(c,em)=>mats[c+(em?'e':'')]||(mats[c+(em?'e':'')]=new T.MeshStandardMaterial({color:c,roughness:.7,metalness:.1,emissive:em?c:0,emissiveIntensity:em?.35:0}));
+ const inst=(list,c,em,grp)=>{if(!list.length)return;const m=new T.InstancedMesh(cube,mat(c,em),list.length);list.forEach((b,i)=>{o.position.set(b[0],b[1]+b[4]/2,b[2]);o.scale.set(b[3],b[4],b[5]);o.updateMatrix();m.setMatrixAt(i,o.matrix)});grp.add(m)};
+ BLD3.forEach(([x0,x1,z0,z1,c])=>{const m=new T.Mesh(new T.PlaneGeometry(x1-x0,z0-z1),new T.MeshStandardMaterial({color:c,roughness:1}));m.rotation.x=-Math.PI/2;m.position.set((x0+x1)/2,0,(z0+z1)/2);scene.add(m)});
+ // structure
+ const parts={},add=(c,x,y,z,w,h,d)=>(parts[c]=parts[c]||[]).push([x,y,z,w,h,d]);
+ const pf=(zid,c,s,t,y,sa,sn,h)=>{const f=frame3(zid),[x,z]=at3(f,s,t),[w,d]=dim3(f,sa,sn);add(c,x,y,z,w,h,d)};
+ add(0xDEDAD0,9.5,0,-42,7,3,8);
+ ZONES.forEach(zn=>{const L=LAY[zn.id];if(!L)return;
+  if(L.rack){const top=L.ly[L.ly.length-1]+1.45;for(let k=0;k<=zn.bays;k++){pf(zn.id,L.up,k*L.bw,0,0,.09,.09,top);pf(zn.id,L.up,k*L.bw,-L.dep,0,.09,.09,top)}
+   for(let r=1;r<=zn.bays;r++)L.ly.forEach(y=>{pf(zn.id,L.beam,(r-.5)*L.bw,0,y-.14,L.bw-.1,.07,.13);pf(zn.id,L.beam,(r-.5)*L.bw,-L.dep,y-.14,L.bw-.1,.07,.13);pf(zn.id,0xA6ABAD,(r-.5)*L.bw,-L.dep/2,y-.02,L.bw-.12,L.dep-.04,.02)})}
+  if(L.shelf){const top=.1+zn.shelves*L.sh+.1;for(let k=0;k<=zn.bays;k++){pf(zn.id,0x1C1E21,k*L.bw,.03,0,.05,.05,top);pf(zn.id,0x1C1E21,k*L.bw,L.dep-.03,0,.05,.05,top)}
+   for(let b=1;b<=zn.bays;b++)for(let s2=1;s2<=zn.shelves;s2++)pf(zn.id,0xC9AE84,(b-.5)*L.bw,L.dep/2,.1+(s2-1)*L.sh,L.bw-.06,L.dep-.02,.025)}
+  if(zn.kind==='cant'){const cols=zn.rowsBy.length;for(let c=0;c<cols;c++){const rows=zn.rowsBy[L.flip?cols-1-c:c],top=L.base+rows*L.rh+.3;[c*L.bl,(c+1)*L.bl].forEach(s2=>pf(zn.id,0x2E7D3A,s2,-.12,0,.22,.25,top));
+   for(let r=1;r<=rows;r++)[c*L.bl+.15,(c+1)*L.bl-.15].forEach(s2=>pf(zn.id,0xD9531E,s2,L.arm/2,L.base+(r-1)*L.rh-.1,.09,L.arm,.1))}}
+  if(zn.id==='BK')for(let b=1;b<=4;b++)for(let c=1;c<=4;c++){const s2=(c-.5)*1.5,t=(b-.5)*2.9;pf('BK',0xF2C318,s2,t-1.3,0,1.38,.05,.01);pf('BK',0xF2C318,s2,t+1.3,0,1.38,.05,.01);pf('BK',0xF2C318,s2-.69,t,0,.05,2.6,.01);pf('BK',0xF2C318,s2+.69,t,0,.05,2.6,.01)}
+  if(zn.id==='BD'){pf('BD',0xD7263D,L.len/2,0,0,L.len,.08,.01);pf('BD',0xD7263D,L.len/2,L.wid,0,L.len,.08,.01);pf('BD',0xD7263D,0,L.wid/2,0,.08,L.wid,.01);pf('BD',0xD7263D,L.len,L.wid/2,0,.08,L.wid,.01)}
+  if(zn.id==='DR')for(let i=1;i<=zn.n;i++){const s2=(i-.5)*2.6;pf('DR',0x7B5BD6,s2,.1,0,2.2,.06,.01);pf('DR',0x7B5BD6,s2,1.5,0,2.2,.06,.01);pf('DR',0x7B5BD6,s2-1.1,.8,0,.06,1.4,.01);pf('DR',0x7B5BD6,s2+1.1,.8,0,.06,1.4,.01)}});
+ const sg=new T.Group();for(const c in parts)inst(parts[c],+c,false,sg);scene.add(sg);
+ // invisible hit boxes, one per spot
+ const hit=new T.InstancedMesh(cube,new T.MeshBasicMaterial({visible:false}),SP.length);SP.forEach((l,i)=>{const g=G[l.id];o.position.set(g.x,g.y+g.h/2,g.z);o.scale.set(g.w,g.h,g.d);o.updateMatrix();hit.setMatrixAt(i,o.matrix)});scene.add(hit);
+ let content=new T.Group();scene.add(content);const pin=new T.Mesh(new T.CylinderGeometry(.08,.08,1,10),new T.MeshBasicMaterial({color:0x3F7D0E}));pin.visible=false;scene.add(pin);
+ let HL=new Set(),STRONG=new Set();
+ function refresh(){scene.remove(content);content=new T.Group();const by={};
+  SP.forEach(l=>{const U=unitsAt(l.id);if(!U.length)return;const g=G[l.id],t=typeOf(U[0].sku),hl=HL.has(l.id),st=STRONG.has(l.id),c=st||hl?0x6ABF16:TINT[t]||0x8E8E93;
+   let h=t==='boards'?Math.min(g.h,Math.max(.08,U.reduce((a,u)=>a+u.qty,0)*.019)):t==='doors'?1.2:Math.min(g.h-.1,.85);
+   const k=c+(st||hl?'e':'');(by[k]=by[k]||{c,em:st||hl,L:[]}).L.push([g.x,g.y,g.z,g.w*.92,h,g.d*.92])});
+  for(const k in by)inst(by[k].L,by[k].c,by[k].em,content);
+  if(!HL.size&&!STRONG.size)content.children.forEach(m=>{m.material=m.material.clone();m.material.transparent=false});
+  scene.add(content);const s1=[...STRONG][0];pin.visible=!!s1;if(s1){const g=G[s1];pin.position.set(g.x,g.y+g.h+3,g.z);pin.scale.set(1,6,1)}labels()}
+ const olay=document.createElement('div');olay.style.cssText='position:absolute;inset:0;pointer-events:none;overflow:hidden';let labs=[];const v3=new T.Vector3();
+ const ZC={};ZONES.forEach(zn=>{const L2=SP.filter(l=>l.z===zn.id);if(!L2.length)return;let x=0,z=0,y=0;L2.forEach(l=>{x+=G[l.id].x;z+=G[l.id].z;y=Math.max(y,G[l.id].y+G[l.id].h)});ZC[zn.id]={x:x/L2.length,z:z/L2.length,y,f:frame3(zn.id)}});
+ function labels(){olay.innerHTML='';const L=[...Object.entries(ZC).map(([id,c])=>({t:zone(id).short,p:[c.x,c.y+1.2,c.z]})),...[...STRONG,...HL].slice(0,12).map(id=>({t:id,p:[G[id].x,G[id].y+G[id].h+.6,G[id].z],hl:1}))];
+  labs=L.map(x=>{const e=document.createElement('span');e.className='lb'+(x.hl?' hl':'');e.textContent=x.t;olay.append(e);return{e,v:new T.Vector3(...x.p)}})}
+ // labels never overlap: highlighted spots first, then areas; a crowded label hides until you zoom in
+ function place(){const w=ren.domElement.clientWidth,h=ren.domElement.clientHeight,done=[];[...labs].sort((a,b)=>(b.e.classList.contains('hl')?1:0)-(a.e.classList.contains('hl')?1:0)).forEach(L=>{v3.copy(L.v).project(cam);let vis=v3.z<1&&Math.abs(v3.x)<1.05&&Math.abs(v3.y)<1.05;
+  if(vis){if(!L.w){L.e.style.display='';L.w=L.e.offsetWidth||60;L.h=L.e.offsetHeight||20}const x=(v3.x+1)/2*w,y=(1-v3.y)/2*h,r={l:x-L.w/2-3,r:x+L.w/2+3,t:y-L.h-2,b:y+2};if(done.some(q=>r.l<q.r&&r.r>q.l&&r.t<q.b&&r.b>q.t))vis=false;else{done.push(r);L.e.style.left=x+'px';L.e.style.top=y+'px'}}L.e.style.display=vis?'':'none'})}
+ const ctrl=new T.OrbitControls(cam,ren.domElement);Object.assign(ctrl,{enableDamping:true,dampingFactor:.1,maxPolarAngle:Math.PI*.47,minDistance:3,maxDistance:110,screenSpacePanning:false});
+ cam.position.set(30,40,14);ctrl.target.set(4,0,-20);ctrl.update();
+ let anim=null,running=false;
+ function fly(p,t,ms=800){const p0=cam.position.clone(),t0=ctrl.target.clone(),P=new T.Vector3(...p),Tt=new T.Vector3(...t),st=performance.now(),D=matchMedia('(prefers-reduced-motion: reduce)').matches?1:ms;
+  anim=()=>{const k=Math.min(1,(performance.now()-st)/D),e=k<.5?2*k*k:1-Math.pow(-2*k+2,2)/2;cam.position.lerpVectors(p0,P,e);ctrl.target.lerpVectors(t0,Tt,e);if(k>=1)anim=null}}
+ function flyZone(id){if(!id||!ZC[id]){fly([30,40,14],[4,0,-20]);return}const c=ZC[id],n=c.f.n,span=Math.max(10,SP.filter(l=>l.z===id).length>40?26:14);fly([c.x+n[0]*span+4,span*.75,c.z+n[1]*span+4],[c.x,1,c.z])}
+ function flySpot(id){const g=G[id];if(!g)return;const zc=ZC[LOC[id].z],n=zc.f.n;fly([g.x+n[0]*8+2,g.y+6,g.z+n[1]*8+2],[g.x,g.y+.5,g.z])}
+ function loop(){if(!running)return;requestAnimationFrame(loop);if(anim)anim();ctrl.update();ren.render(scene,cam);place()}
+ function size(){const st=ren.domElement.parentElement;if(!st)return;ren.setSize(st.clientWidth,st.clientHeight);cam.aspect=st.clientWidth/Math.max(1,st.clientHeight);cam.updateProjectionMatrix()}
+ addEventListener('resize',size);
+ const rc=new T.Raycaster(),v2=new T.Vector2();let down=null;
+ ren.domElement.addEventListener('pointerdown',e=>down=[e.clientX,e.clientY]);
+ ren.domElement.addEventListener('pointerup',e=>{if(!down||Math.hypot(e.clientX-down[0],e.clientY-down[1])>8)return;const r=ren.domElement.getBoundingClientRect();v2.set((e.clientX-r.left)/r.width*2-1,-(e.clientY-r.top)/r.height*2+1);rc.setFromCamera(v2,cam);
+  const h=rc.intersectObject(hit)[0];if(!h)return;const id=SP[h.instanceId].id;if(unitsAt(id).length||palAt(id)){VIEW.loc=id;go('spot')}else toast(`${id} · ${LOC[id].pos} · empty`)});
+ refresh();
+ return W3={canvas:ren.domElement,olay,size,refresh,flyZone,flySpot,start(){if(!running){running=true;loop()}},stop(){running=false},
+  highlight(hl,strong,doFly){HL=hl;STRONG=strong;refresh();if(doFly){const f=[...strong][0];if(f)flySpot(f);else if(hl.size){const zs=[...new Set([...hl].map(id=>LOC[id].z))];if(zs.length===1)flyZone(zs[0])}}}}}
+function mapBlock(){return `<section><div class="stage" id="map3d"><div class="msg">Loading the 3D map…</div></div>
+ <div class="chips" id="mapz" role="group" aria-label="Fly to"><button type="button" class="chip" data-fz="">Whole site</button>${ZONES.map(z=>`<button type="button" class="chip" data-fz="${z.id}">${esc(z.short)}</button>`).join('')}</div>
+ <div class="legend"><span><i style="background:#2F6FDB"></i>Hardware</span><span><i style="background:#C9A877"></i>Boards</span><span><i style="background:#E0A21B"></i>Supplies</span><span><i style="background:#7B5BD6"></i>Doors</span><span><i style="background:#6ABF16"></i>Matches your search</span><span>Drag to turn · pinch or scroll to zoom · tap a spot to open it</span></div></section>`}
+function mapMount(m){const st=$('#map3d',m);if(!st)return;initMap().then(w=>{if(!document.body.contains(st))return;st.innerHTML='';st.append(w.canvas,w.olay);w.size();mapHL(!!VIEW.mapSku);w.start()}).catch(()=>{st.innerHTML='<div class="msg">The 3D map couldn’t load. Check the connection.</div>'});
+ $$('[data-fz]',m).forEach(b=>b.addEventListener('click',()=>W3&&W3.flyZone(b.dataset.fz)))}
+function mapHL(doFly){if(!W3)return;const strong=new Set(VIEW.mapSku?unitsOf(VIEW.mapSku).map(u=>u.loc):[]),hl=new Set();
+ if(!VIEW.mapSku&&((VIEW.q||'').trim()||VIEW.cat))findList(VIEW.q).slice(0,60).forEach(i=>unitsOf(i.sku).forEach(u=>hl.add(u.loc)));
+ W3.highlight(hl,strong,doFly);if(doFly)VIEW.mapSku=VIEW.mapSku}
+
 /* ================= scanning ================= */
 let CAM=null;
 function stopCam(){if(CAM){CAM.stop=true;CAM.stream&&CAM.stream.getTracks().forEach(t=>t.stop());CAM=null}}
 function handleScan(txt){txt=String(txt||'').trim();closeSheet();if(!txt)return;
+ const pq=txt.match(/^FORCE:PAL:(.+)$/i);if(pq){if(S.pallets[pq[1]]){VIEW.pal=pq[1];go('pallet')}else toast('That pallet was deleted or isn’t in the app.',true);return}
  const sp=txt.match(/^FORCE:SPOT:(.+)$/i);if(sp){const l=normLoc(sp[1]);if(l){VIEW.loc=l;go('spot');return}}
  const hw=txt.match(/^FORCE:HW:(.+)$/i);const raw=hw?hw[1]:txt;
  if(/^Pallet:/i.test(txt))return toast('That’s an old cabinet pallet sheet. Cabinet pallets aren’t in this app yet.',true);
